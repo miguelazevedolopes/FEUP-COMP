@@ -5,14 +5,81 @@ SMART_NODE_CREATION=false;
 SKIP : " " | "\t" | "\r" | "\n";
 
 TOKEN :
+	< IMPORT : "import" > 
 	< PLUS : "+" > |
 	< MINUS : "-" > |
 	< TIMES : "*" > |
 	< DIVIDE : "/" > |
+	< EQUAL : "="> |
+	< AND : "&&"> |
+	< LESS_THAN : "<"> |
+	< MORE_THAN : ">"> |
+	< OPEN_BRACKETS : "["> |
+	< CLOSE_BRACKETS : "]"> |
+	< OPEN_CURLY_BRACKETS: "{">|
+	< CLOSE_CURLY_BRACKETS: "}">|
+	< TRUE : "true"> |
+	< FALSE : "false"> |
+	< THIS : "this" > |
+	< INT : "int" >|
+	< BOOLEAN : "boolean" > |
+	< NEW : "new" > |
+	< NOT : "!" > |
+	< COMMA : "," > |
+	< SEMI_COLON : ";" > |
+	< LENGTH : "length" > |
+	< IF : "if" > |
+	< ELSE : "else" > |
+	< THEN : "then" > |
+	< WHILE : "while" > |
+
+
+	< PUBLIC : "public"> |
+	< PRIVATE : "private" > |
+	< RETURN : "return" > |
+
+	< STATIC : "static" > |
+	< VOID : "void" > |
+	< MAIN : "main" > | 
+	
+	
 	< OPEN_PAREN : "(" > |
 	< CLOSE_PAREN : ")" > |
-	< INTEGER : (["0" - "9"])+ >
+	< INTEGER_LITERAL : (["0" - "9"])+ >
+
+	
+	
 ;
+
+Program = ImportDeclaration, ClassDeclaration, EOF
+ImportDeclaration = {"import", Identifier, { ”.” , Identifier }, ";"};
+ClassDeclaration = "class", Identifier, [ "extends", Identifier ], "{", { VarDeclaration }, { MethodDeclaration } "}";
+VarDeclaration = Type, Identifier, ";";
+MethodDeclaration = "public", Type, Identifier, "(" ,[ Type, Identifier, { ",", Type, Identifier }, ] , ")", "{", { VarDeclaration }, { Statement }, "return", Expression, ";" , "}"
+					| "public" , "static" , "void" , "main", "(", "String", "[", "]", Identifier, ")", "{", { VarDeclaration }, {Statement},"}";
+Type = "int", "[", "]"
+		|"boolean"
+		|"int"
+		|Identifier;
+Statement="{", {Statement}, "}"
+			|"if", "(", Expression, ")", Statement, "else", Statement
+			|"while", "(", Expression, ")", Statement
+			|Expression, ";" 
+			|Identifier, "=", Expression, ";"
+			|Identifier, "[", Expression, "]", "=", Expression, ";";
+Expression = Expression, ("&&" | "<" | "+" | "-" | "*"| "/"), Expression
+			|Expression, "[", Expression, "]"
+			|Expression, ".", "length"
+			|Expression, ".", Identifier, "(", [Expression{ ",", Expression}], ")"
+			|IntegerLiteral
+			|"true"
+			|"false"
+			|Identifier
+			|"this"
+			|"new", "int", "[", Expression, "]"
+			|"new", Identifier, "(", ")"
+			|"!", Expression
+			|"(", Expression, ")";
 
 Start : AdditiveExpression <EOF> ;
 
