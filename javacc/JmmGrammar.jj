@@ -5,7 +5,7 @@ SMART_NODE_CREATION=false;
 SKIP : " " | "\t" | "\r" | "\n";
 
 TOKEN :
-	< IMPORT : "import" > 
+	< IMPORT : "import" > |
 	< PLUS : "+" > |
 	< MINUS : "-" > |
 	< TIMES : "*" > |
@@ -23,10 +23,14 @@ TOKEN :
 	< THIS : "this" > |
 	< INT : "int" >|
 	< BOOLEAN : "boolean" > |
+	< STRING : "string" > |
 	< NEW : "new" > |
+
 	< NOT : "!" > |
 	< COMMA : "," > |
 	< SEMI_COLON : ";" > |
+	< PERIOD : "."> |
+
 	< LENGTH : "length" > |
 	< IF : "if" > |
 	< ELSE : "else" > |
@@ -41,47 +45,115 @@ TOKEN :
 	< STATIC : "static" > |
 	< VOID : "void" > |
 	< MAIN : "main" > | 
+	< CLASS : "class" > |
+	< EXTENDS : "extends" > |
 	
 	
 	< OPEN_PAREN : "(" > |
 	< CLOSE_PAREN : ")" > |
 	< INTEGER_LITERAL : (["0" - "9"])+ >
 
-	
-	
 ;
 
-Program = ImportDeclaration, ClassDeclaration, EOF
-ImportDeclaration = {"import", Identifier, { ”.” , Identifier }, ";"};
-ClassDeclaration = "class", Identifier, [ "extends", Identifier ], "{", { VarDeclaration }, { MethodDeclaration } "}";
-VarDeclaration = Type, Identifier, ";";
-MethodDeclaration = "public", Type, Identifier, "(" ,[ Type, Identifier, { ",", Type, Identifier }, ] , ")", "{", { VarDeclaration }, { Statement }, "return", Expression, ";" , "}"
-					| "public" , "static" , "void" , "main", "(", "String", "[", "]", Identifier, ")", "{", { VarDeclaration }, {Statement},"}";
-Type = "int", "[", "]"
-		|"boolean"
-		|"int"
-		|Identifier;
-Statement="{", {Statement}, "}"
-			|"if", "(", Expression, ")", Statement, "else", Statement
-			|"while", "(", Expression, ")", Statement
-			|Expression, ";" 
-			|Identifier, "=", Expression, ";"
-			|Identifier, "[", Expression, "]", "=", Expression, ";";
-Expression = Expression, ("&&" | "<" | "+" | "-" | "*"| "/"), Expression
-			|Expression, "[", Expression, "]"
-			|Expression, ".", "length"
-			|Expression, ".", Identifier, "(", [Expression{ ",", Expression}], ")"
-			|IntegerLiteral
-			|"true"
-			|"false"
-			|Identifier
-			|"this"
-			|"new", "int", "[", Expression, "]"
-			|"new", Identifier, "(", ")"
-			|"!", Expression
-			|"(", Expression, ")";
 
-Start : AdditiveExpression <EOF> ;
+Program : ImportDeclaration ClassDeclaration <EOF>;
+
+ImportDeclaration : 
+	(
+		<IMPORT> Identifier
+		(
+			<PERIOD> Identifier
+		)*
+		<SEMI_COLON>
+	)*
+;
+
+ClassDeclaration : 
+	<CLASS> Identifier
+	(
+		<EXTENDS> Identifier
+	)? 
+	<OPEN_CURLY_BRACKETS>
+	(
+		VarDeclaration
+	)*
+	(
+		MethodDeclaration
+	)*
+	<CLOSE_CURLY_BRACKETS>
+;
+
+VarDeclaration : Type Identifier <SEMI_COLON>;
+	
+MethodDeclaration : 
+	<PUBLIC> Type Identifier <OPEN_PAREN> 
+	(
+		Type
+		Identifier
+		(
+			<COMMA>
+			Type
+			Identifier
+		)*
+	)?
+	<CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
+	(
+		VarDeclaration
+	)*
+	(
+		Statement
+	)*
+	<RETURN> Expression <SEMI_COLON> <CLOSE_CURLY_BRACKETS> |
+	<PUBLIC> <STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> Identifier <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
+	(
+		VarDeclaration
+	)?
+	(
+		Statement
+	)?
+	<CLOSE_CURLY_BRACKETS>
+;
+
+Type : 
+	< INT > < OPEN_BRACKETS > < CLOSE_BRACKETS > |
+	< BOOLEAN > |
+	< INT > |
+	Identifier
+;
+
+Statement:
+	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS> |
+	<IF> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement <ELSE> Statement | 
+	<WHILE> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement | 
+	Expression <SEMI_COLON> | 
+	Identifier <EQUALS> Expression <SEMI_COLON>
+	Identifier < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON >
+	
+
+Expression: 
+	Expression ( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>)  Expression |
+	Expression <OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
+	Expression <PERIOD> <LENGTH> | 
+	Expression <PERIOD> Identifier <OPEN_PAREN> 
+		(Expression 
+			(
+				<COMMA> 
+				Expression
+			)*
+		)?
+		<CLOSE_PAREN> |
+	IntegerLiteral | 
+	<TRUE> |
+	<FALSE> |
+	Identifier |
+	< THIS > |	 
+	< NEW > < INT > < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > |		
+	< NEW > Identifier < OPEN_PAREN > < CLOSE_PAREN > |
+	< NOT > Expression |
+	< OPEN_PAREN > Expression < CLOSE_PAREN >
+;
+
+
 
 AdditiveExpression :
 	MultiplicativeExpression
@@ -99,8 +171,3 @@ MultiplicativeExpression :
 	)?
 ;
 
-Factor :
-	< INTEGER > |
-	< MINUS> Factor |
-	< OPEN_PAREN > AdditiveExpression < CLOSE_PAREN >
-;
