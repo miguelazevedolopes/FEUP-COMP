@@ -30,6 +30,7 @@ TOKEN :
 	< COMMA : "," > |
 	< SEMI_COLON : ";" > |
 	< PERIOD : "."> |
+	< UNDERSCORE : "_" > |
 
 	< LENGTH : "length" > |
 	< IF : "if" > |
@@ -51,12 +52,15 @@ TOKEN :
 	
 	< OPEN_PAREN : "(" > |
 	< CLOSE_PAREN : ")" > |
-	< INTEGER_LITERAL : (["0" - "9"])+ >
+	< INTEGER_LITERAL : (["0" - "9"])+ > |
+	< CHAR : ["A" - "z"]>  
 
 ;
 
 
-Program : ImportDeclaration ClassDeclaration <EOF>;
+Start : ImportDeclaration;
+
+Identifier : (<CHAR>)+ (< INTEGER_LITERAL > | (<CHAR>) | <UNDERSCORE>)*;
 
 ImportDeclaration : 
 	(
@@ -114,6 +118,7 @@ MethodDeclaration :
 	<CLOSE_CURLY_BRACKETS>
 ;
 
+/*
 Type : 
 	< INT > < OPEN_BRACKETS > < CLOSE_BRACKETS > |
 	< BOOLEAN > |
@@ -127,9 +132,8 @@ Statement:
 	<WHILE> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement | 
 	Expression <SEMI_COLON> | 
 	Identifier <EQUALS> Expression <SEMI_COLON>
-	Identifier < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON >
+	Identifier < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON >;
 	
-
 Expression: 
 	Expression ( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>)  Expression |
 	Expression <OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
@@ -142,7 +146,7 @@ Expression:
 			)*
 		)?
 		<CLOSE_PAREN> |
-	IntegerLiteral | 
+	<IntegerLiteral> | 
 	<TRUE> |
 	<FALSE> |
 	Identifier |
@@ -164,10 +168,11 @@ AdditiveExpression :
 ;
 
 MultiplicativeExpression :
-	Factor
+	<IntegerLiteral>
 	(
 		(< TIMES > | < DIVIDE >)
-		Factor
+		<IntegerLiteral>
 	)?
 ;
 
+*/
