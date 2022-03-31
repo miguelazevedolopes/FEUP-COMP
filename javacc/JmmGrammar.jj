@@ -56,7 +56,7 @@ TOKEN :
 ;
 
 
-Program : ImportDeclaration ClassDeclaration <EOF>;
+Start : ImportDeclaration ClassDeclaration <EOF>;
 
 ImportDeclaration : 
 	(
@@ -128,20 +128,24 @@ Statement:
 	Expression <SEMI_COLON> | 
 	Identifier <EQUALS> Expression <SEMI_COLON>
 	Identifier < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON >
-	
+;
 
 Expression: 
-	Expression ( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>)  Expression |
-	Expression <OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
-	Expression <PERIOD> <LENGTH> | 
-	Expression <PERIOD> Identifier <OPEN_PAREN> 
+	Expression_Recursion ( ( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>) Expression |
+	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
+	<PERIOD> <LENGTH> | 
+	<PERIOD> Identifier <OPEN_PAREN> 
 		(Expression 
 			(
 				<COMMA> 
 				Expression
 			)*
 		)?
-		<CLOSE_PAREN> |
+		<CLOSE_PAREN> )
+	
+;
+
+Expression_Recursion : 
 	IntegerLiteral | 
 	<TRUE> |
 	<FALSE> |
@@ -164,10 +168,11 @@ AdditiveExpression :
 ;
 
 MultiplicativeExpression :
-	Factor
+	IntegerLiteral
 	(
 		(< TIMES > | < DIVIDE >)
-		Factor
+		IntegerLiteral
 	)?
 ;
+
 
