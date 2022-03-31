@@ -58,7 +58,7 @@ TOKEN :
 ;
 
 
-Start : ImportDeclaration;
+Start : ImportDeclaration ClassDeclaration <EOF>;
 
 Identifier : (<CHAR>)+ (< INTEGER_LITERAL > | (<CHAR>) | <UNDERSCORE>)*;
 
@@ -132,21 +132,26 @@ Statement:
 	<WHILE> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement | 
 	Expression <SEMI_COLON> | 
 	Identifier <EQUALS> Expression <SEMI_COLON>
-	Identifier < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON >;
-	
+	Identifier < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON >
+;
+
 Expression: 
-	Expression ( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>)  Expression |
-	Expression <OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
-	Expression <PERIOD> <LENGTH> | 
-	Expression <PERIOD> Identifier <OPEN_PAREN> 
+	Expression_Recursion ( ( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>) Expression |
+	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
+	<PERIOD> <LENGTH> | 
+	<PERIOD> Identifier <OPEN_PAREN> 
 		(Expression 
 			(
 				<COMMA> 
 				Expression
 			)*
 		)?
-		<CLOSE_PAREN> |
-	<IntegerLiteral> | 
+		<CLOSE_PAREN> )
+	
+;
+
+Expression_Recursion : 
+	IntegerLiteral | 
 	<TRUE> |
 	<FALSE> |
 	Identifier |
@@ -156,8 +161,6 @@ Expression:
 	< NOT > Expression |
 	< OPEN_PAREN > Expression < CLOSE_PAREN >
 ;
-
-
 
 AdditiveExpression :
 	MultiplicativeExpression
