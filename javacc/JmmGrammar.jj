@@ -23,9 +23,8 @@ TOKEN :
 	< THIS : "this" > |
 	< INT : "int" >|
 	< BOOLEAN : "boolean" > |
-	< STRING : "string" > |
+	< STRING : "String" > |
 	< NEW : "new" > |
-
 	< NOT : "!" > |
 	< COMMA : "," > |
 	< SEMI_COLON : ";" > |
@@ -49,24 +48,22 @@ TOKEN :
 	< CLASS : "class" > |
 	< EXTENDS : "extends" > |
 	
-	
 	< OPEN_PAREN : "(" > |
 	< CLOSE_PAREN : ")" > |
 	< INTEGER_LITERAL : (["0" - "9"])+ > |
-	< CHAR : ["A" - "z"]>  
-
+	< UPPER_CHAR : ["A" - "Z"]> |
+	< LOWER_CHAR : ["a" - "z"]> 
 ;
 
 
-Start : ImportDeclaration ClassDeclaration <EOF>;
+Start : ImportDeclaration ClassDeclaration  < EOF >;
 
-Identifier : (<CHAR>)+ (< INTEGER_LITERAL > | (<CHAR>) | <UNDERSCORE>)*;
+Identifier : (<LOWER_CHAR>|<UPPER_CHAR>)+ (< INTEGER_LITERAL > | <LOWER_CHAR>|<UPPER_CHAR> | <UNDERSCORE>)*;
 
 Type : 
-	< INT > < OPEN_BRACKETS > < CLOSE_BRACKETS > |
+	< INT > (< OPEN_BRACKETS > < CLOSE_BRACKETS >)? |
 	< BOOLEAN > |
-	< INT > |
-	Identifier
+	Identifier 
 ;
 
 Statement:
@@ -74,93 +71,60 @@ Statement:
 	<IF> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement <ELSE> Statement | 
 	<WHILE> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement | 
 	Expression <SEMI_COLON> | 
-	Identifier <EQUAL> Expression <SEMI_COLON>
+	Identifier <EQUAL> Expression <SEMI_COLON> |
 	Identifier < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON >
 ;
 
 ImportDeclaration : 
-	(
-		<IMPORT> Identifier
-		(
-			<PERIOD> Identifier
-		)*
-		<SEMI_COLON>
-	)*
+	(<IMPORT> Identifier (<PERIOD> Identifier)* <SEMI_COLON>)*
 ;
 
 ClassDeclaration : 
-	<CLASS> Identifier
-	(
-		<EXTENDS> Identifier
-	)? 
-	<OPEN_CURLY_BRACKETS>
-	(
-		VarDeclaration
-	)*
-	(
-		MethodDeclaration
-	)*
+	<CLASS> Identifier ( <EXTENDS> Identifier )?  <OPEN_CURLY_BRACKETS>
+	(VarDeclaration)*
+	(MethodDeclaration)*
 	<CLOSE_CURLY_BRACKETS>
 ;
 
 VarDeclaration : Type Identifier <SEMI_COLON>;
 	
-MethodDeclaration : 
-	<PUBLIC> Type Identifier <OPEN_PAREN> 
-	(
-		Type
-		Identifier
-		(
-			<COMMA>
-			Type
-			Identifier
-		)*
-	)?
-	<CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
-	(
-		VarDeclaration
-	)*
-	(
-		Statement
-	)*
-	<RETURN> Expression <SEMI_COLON> <CLOSE_CURLY_BRACKETS> |
-	<PUBLIC> <STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> Identifier <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
-	(
-		VarDeclaration
-	)?
-	(
-		Statement
-	)?
+NormalMethod : 
+	Type Identifier <OPEN_PAREN> ( Type Identifier ( <COMMA> Type Identifier)*)?<CLOSE_PAREN> 
+	<OPEN_CURLY_BRACKETS>
+	(VarDeclaration)*
+	(Statement)*
+	<RETURN> Expression <SEMI_COLON> 
+	<CLOSE_CURLY_BRACKETS> 
+;
+
+MainMethod :
+	<STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> Identifier <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
+	(VarDeclaration)*
+	(Statement)*
 	<CLOSE_CURLY_BRACKETS>
 ;
 
-
-
-Expression: 
-	Expression_Recursion ( ( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>) Expression |
-	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
-	<PERIOD> <LENGTH> | 
-	<PERIOD> Identifier <OPEN_PAREN> 
-		(Expression 
-			(
-				<COMMA> 
-				Expression
-			)*
-		)?
-		<CLOSE_PAREN> )
-	
+MethodDeclaration : 
+	<PUBLIC> (MainMethod | NormalMethod)
 ;
 
-Expression_Recursion : 
-	<INTEGER_LITERAL> | 
-	<TRUE> |
-	<FALSE> |
-	Identifier |
-	< THIS > |	 
-	< NEW > < INT > < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > |		
-	< NEW > Identifier < OPEN_PAREN > < CLOSE_PAREN > |
-	< NOT > Expression |
-	< OPEN_PAREN > Expression < CLOSE_PAREN >
+Expression:
+	<INTEGER_LITERAL> (Expression2)?| 
+	<TRUE> (Expression2)?|
+	<FALSE> (Expression2)?|
+	Identifier (Expression2)?|
+	< THIS > (Expression2)?|	 
+	< NEW > < INT > < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > (Expression2)? |		
+	< NEW > Identifier < OPEN_PAREN > < CLOSE_PAREN > (Expression2)? | 
+	< NOT > Expression (Expression2)? |
+	< OPEN_PAREN > Expression < CLOSE_PAREN > (Expression2)?
+;
+
+Expression2:
+	( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>) Expression |
+	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
+	<PERIOD> ( <LENGTH> | (Identifier <OPEN_PAREN> ( Expression ( <COMMA> Expression )* )? <CLOSE_PAREN> ))
+	
 ;
 
 AdditiveExpression :
