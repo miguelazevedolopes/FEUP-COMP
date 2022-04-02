@@ -47,8 +47,8 @@ public class SimpleParser implements JmmParser {
         } catch(ParseException e){
             Stage stage = e.getToken().getType() == JmmGrammarConstants.TokenType.INVALID ? Stage.LEXICAL : Stage.SYNTATIC;
             return JmmParserResult.newError(Report.newError(stage, -1, -1, "Exception during parsing", e));
-        } catch (Exception e) {
+        } /*catch (Exception e) {
             return JmmParserResult.newError(Report.newError(Stage.SYNTATIC, -1, -1, "Exception during parsing", e));
-        } 
+        } */
     }
 }
