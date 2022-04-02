@@ -21,7 +21,7 @@ TOKEN :
 	< TRUE : "true"> |
 	< FALSE : "false"> |
 	< THIS : "this" > |
-	< INT : "int" >|
+	< INT : "int " >|
 	< BOOLEAN : "boolean" > |
 	< STRING : "String" > |
 	< NEW : "new" > |
