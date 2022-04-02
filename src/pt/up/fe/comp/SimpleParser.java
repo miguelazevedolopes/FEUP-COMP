@@ -44,12 +44,9 @@ public class SimpleParser implements JmmParser {
 
             return new JmmParserResult((JmmNode) root, Collections.emptyList(), config);
 
-        /*} catch(ParseException p){
-            int lineError = e.getStackTrace()[0].getLineNumber();
-            String message = e.getMessage();
-            reportList.add(new Report(ReportType.ERROR, Stage.SYNTATIC, lineError, message));
-            return new JmmParserResult(null, reportList);
-            return JmmParserResult.newError(Report.newError(Stage.LEXICAL, -1, -1, message, p));*/
+        } catch(ParseException e){
+            Stage stage = e.getToken().getType() == JmmGrammarConstants.TokenType.INVALID ? Stage.LEXICAL : Stage.SYNTATIC;
+            return JmmParserResult.newError(Report.newError(stage, -1, -1, "Exception during parsing", e));
         } catch (Exception e) {
             return JmmParserResult.newError(Report.newError(Stage.SYNTATIC, -1, -1, "Exception during parsing", e));
         } 
