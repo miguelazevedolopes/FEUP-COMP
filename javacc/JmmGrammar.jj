@@ -111,33 +111,23 @@ MethodDeclaration :
 	NormalMethod
 ;
 
-
-
-Expression: 
-	Expression_Recursion ( ( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>) Expression |
-	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
-	<PERIOD> <LENGTH> | 
-	<PERIOD> Identifier <OPEN_PAREN> 
-		(Expression 
-			(
-				<COMMA> 
-				Expression
-			)*
-		)?
-		<CLOSE_PAREN> )
-	
+Expression:
+	<INTEGER_LITERAL> (Expression2)?| 
+	<TRUE> (Expression2)?|
+	<FALSE> (Expression2)?|
+	Identifier (Expression2)?|
+	< THIS > (Expression2)?|	 
+	< NEW > < INT > < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > (Expression2)? |		
+	< NEW > Identifier < OPEN_PAREN > < CLOSE_PAREN > (Expression2)? | 
+	< NOT > Expression (Expression2)? |
+	< OPEN_PAREN > Expression < CLOSE_PAREN > (Expression2)?
 ;
 
-Expression_Recursion : 
-	<INTEGER_LITERAL> | 
-	<TRUE> |
-	<FALSE> |
-	Identifier |
-	< THIS > |	 
-	< NEW > < INT > < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > |		
-	< NEW > Identifier < OPEN_PAREN > < CLOSE_PAREN > |
-	< NOT > Expression |
-	< OPEN_PAREN > Expression < CLOSE_PAREN >
+Expression2:
+	( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>) Expression |
+	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
+	<PERIOD> ( <LENGTH> | (Identifier <OPEN_PAREN> ( Expression ( <COMMA> Expression )* )? <CLOSE_PAREN> ))
+	
 ;
 
 AdditiveExpression :
