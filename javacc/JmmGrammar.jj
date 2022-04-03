@@ -65,7 +65,7 @@ Start : ImportDeclaration ClassDeclaration < EOF >;
 
 Identifier : (<LOWER_CHAR>|<UPPER_CHAR>)+ (< INTEGER_LITERAL > | <LOWER_CHAR>|<UPPER_CHAR> | <UNDERSCORE>)* (<OPEN_BRACKETS> (<INTEGER_LITERAL> | Identifier) <CLOSE_BRACKETS>)?;
 
-Comment : 	<SINGLE_LINE_COM> []  |
+Comment : 	<SINGLE_LINE_COM> ( <LOWER_CHAR>|<UPPER_CHAR>|<MINUS>)* |
 			(<OPEN_COM> <CLOSE_COM>);
 
 Type : 
