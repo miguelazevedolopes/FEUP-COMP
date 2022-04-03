@@ -2,8 +2,8 @@ PARSER_PACKAGE=pt.up.fe.comp;
 PARSER_CLASS=JmmGrammarParser;
 SMART_NODE_CREATION=false;
 
-SKIP : " " | "\t" | "\r" | "\n";
 
+SKIP : " " | "\t" | "\r" | "\n";
 
 TOKEN :
 	< IMPORT : "import" > |
@@ -54,19 +54,18 @@ TOKEN :
 	< INTEGER_LITERAL : (["0" - "9"])+ > |
 	< UPPER_CHAR : ["A" - "Z"]> |
 	< LOWER_CHAR : ["a" - "z"]> | 
-
-	< SINGLE_LINE_COM : "//"> |
-	< OPEN_COM : "/*" > |
-	< CLOSE_COM : "*/" > 
+	< LINE_COMMENT : "//" (~["\n","\r"])*>  |
+	< BLOCK_COMMENT : "/*" (~[])* "*/" >
 ;
+
 
 
 Start : ImportDeclaration ClassDeclaration < EOF >;
 
 Identifier : (<LOWER_CHAR>|<UPPER_CHAR>)+ (< INTEGER_LITERAL > | <LOWER_CHAR>|<UPPER_CHAR> | <UNDERSCORE>)* (<OPEN_BRACKETS> (<INTEGER_LITERAL> | Identifier) <CLOSE_BRACKETS>)?;
 
-Comment : 	<SINGLE_LINE_COM> ( <LOWER_CHAR>|<UPPER_CHAR>|<MINUS>)* |
-			(<OPEN_COM> <CLOSE_COM>);
+Comment : 	<LINE_COMMENT>|
+			<BLOCK_COMMENT>;
 
 Type : 
 	< INT > (< OPEN_BRACKETS > < CLOSE_BRACKETS >)? |
