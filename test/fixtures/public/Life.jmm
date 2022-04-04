@@ -44,7 +44,7 @@ class Life {
         lineLen = lineLenA[0];
 
         xMax = lineLen - 1;
-        /*yMax = field.length / lineLen - 1;*/
+        /*yMax = field.length lineLen - 1;*/
 
         return true;
     }
@@ -164,7 +164,7 @@ class Life {
         field[99] = 0;
 
         return field;
-
+        
     }
 
     public boolean update() {
