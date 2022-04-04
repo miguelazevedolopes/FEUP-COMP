@@ -54,6 +54,7 @@ TOKEN :
 	< INTEGER_LITERAL : (["0" - "9"])+ > |
 	< LINE_COMMENT : "//" (~["\n","\r"])*>  |
 	< BLOCK_COMMENT: "/*" ((~["*","/"]) | ("*" (~["/"])))* "*/" > |
+	< AT : "@" > |
     < STRING_LITERAL: (["a"-"z"] | ["A"-"Z"] | "_")+ (["0" - "9"] | ["a"-"z"] | ["A"-"Z"] | "_")* >
 ;
 
@@ -67,6 +68,7 @@ Comment : 	<LINE_COMMENT>|
 Type : 
 	< INT > (< OPEN_BRACKETS > < CLOSE_BRACKETS >)? |
 	< BOOLEAN > |
+	<VOID> |
     Identifier
 ;   
 
@@ -86,8 +88,11 @@ ImportDeclaration :
 
 ClassDeclaration : 
     (Comment)*
-	<CLASS> Identifier ( <EXTENDS> Identifier )?  <OPEN_CURLY_BRACKETS>
+	(<PUBLIC>)?<CLASS> Identifier ( <EXTENDS> Identifier )?  <OPEN_CURLY_BRACKETS>
+	(<AT> <STRING_LITERAL>)*
+	(Comment)*
 	(VarDeclaration)*
+	(Comment)*
 	(MethodDeclaration)*
     (Comment)*
 	<CLOSE_CURLY_BRACKETS>
@@ -96,11 +101,17 @@ ClassDeclaration :
 VarDeclaration : Type Identifier <SEMI_COLON>;
 	
 NormalMethod : 
+	(Comment)*
+	(<AT> <STRING_LITERAL>)*
+	(Comment)*
 	Type Identifier <OPEN_PAREN> ( Type Identifier ( <COMMA> Type Identifier)*)?<CLOSE_PAREN> 
+	(Comment)*
 	<OPEN_CURLY_BRACKETS>
 	(Comment | LOOKAHEAD VarDeclaration | Statement)*
-	<RETURN> Expression <SEMI_COLON> 
+	(<RETURN> Expression <SEMI_COLON>)?
+	(Comment)*
 	<CLOSE_CURLY_BRACKETS> 
+	(Comment)*
 ;
 
 MainMethod :
@@ -123,7 +134,7 @@ Expression:
 	LOOKAHEAD < NEW > < INT > < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > (Expression2)? |		
 	< NEW > Identifier < OPEN_PAREN > < CLOSE_PAREN > (Expression2)? | 
 	< NOT > Expression (Expression2)? |
-	< OPEN_PAREN > Expression < CLOSE_PAREN > (Expression2)?
+	< OPEN_PAREN > Expression (Expression2)? < CLOSE_PAREN > (Expression2)?
 ;
 
 Expression2:
