@@ -84,11 +84,11 @@ public class GrammarTest {
         noErrors("public static void main(String[] args) {}", MAIN_METHOD);
     }
 
-    @Test
-    public void testInstanceMethodEmpty() {
-        noErrors("public int foo(int anInt) {return a;}",
-                INSTANCE_METHOD);
-    }
+    // @Test
+    // public void testInstanceMethodEmpty() {
+    //     noErrors("public int foo(int anInt, int[] anArray, boolean aBool, String aString) {return a;}",
+    //             INSTANCE_METHOD);
+    // }
 
     // @Test
     // public void testStmtScope() {
