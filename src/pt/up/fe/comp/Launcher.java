@@ -40,6 +40,8 @@ public class Launcher {
         // Parse stage
         JmmParserResult parserResult = parser.parse(input, config);
         
+        // Display AST
+        System.out.println("AST:\n\n" + parserResult.getRootNode().toTree());
 
         // Check if there are parsing errors
         TestUtils.noErrors(parserResult.getReports());
