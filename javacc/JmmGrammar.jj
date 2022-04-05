@@ -53,47 +53,43 @@ TOKEN :
 	< CLOSE_PAREN : ")" > |
 	< INTEGER_LITERAL : (["0" - "9"])+ > |
 	< AT : "@" > |
-    < STRING_LITERAL: (["a"-"z"] | ["A"-"Z"] | "_")+ (["0" - "9"] | ["a"-"z"] | ["A"-"Z"] | "_")* >
+    <IDENTIFIER: (["a"-"z"] | ["A"-"Z"] | "_")+ (["0" - "9"] | ["a"-"z"] | ["A"-"Z"] | "_")* >
 ;
 
 Start : ImportDeclaration ClassDeclaration < EOF >;
-
-Identifier : <STRING_LITERAL> (<OPEN_BRACKETS> (<INTEGER_LITERAL> | Identifier) <CLOSE_BRACKETS>)?;
 
 
 Type : 
 	< INT > (< OPEN_BRACKETS > < CLOSE_BRACKETS >)? |
 	< BOOLEAN > |
 	<VOID> |
-    Identifier
+    <IDENTIFIER>
 ;   
 
 Statement:
 	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS> |
 	<IF> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement <ELSE> Statement | 
 	<WHILE> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement |
-	LOOKAHEAD Identifier <EQUAL> Expression <SEMI_COLON> |
-    Expression <SEMI_COLON> |
-	Identifier < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON >
+    LOOKAHEAD <IDENTIFIER> < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON > |
+	LOOKAHEAD <IDENTIFIER> <EQUAL> Expression <SEMI_COLON> |
+    Expression <SEMI_COLON> 
 ;
 
 ImportDeclaration : 
-	(<IMPORT> Identifier (<PERIOD> Identifier)* <SEMI_COLON>)* 
+	(<IMPORT> <IDENTIFIER> (<PERIOD> <IDENTIFIER>)* <SEMI_COLON>)* 
 ;
 
 ClassDeclaration : 
-	(<PUBLIC>)?<CLASS> Identifier ( <EXTENDS> Identifier )?  <OPEN_CURLY_BRACKETS>
-	(<AT> <STRING_LITERAL>)*
+	(<PUBLIC>)?<CLASS> <IDENTIFIER> ( <EXTENDS> <IDENTIFIER> )?  <OPEN_CURLY_BRACKETS>
 	(VarDeclaration)*
 	(MethodDeclaration)*
 	<CLOSE_CURLY_BRACKETS>
 ;
 
-VarDeclaration : Type Identifier <SEMI_COLON>;
+VarDeclaration : Type <IDENTIFIER> <SEMI_COLON>;
 	
 NormalMethod : 
-	(<AT> <STRING_LITERAL>)*
-	Type Identifier <OPEN_PAREN> ( Type Identifier ( <COMMA> Type Identifier)*)?<CLOSE_PAREN> 
+	Type <IDENTIFIER> <OPEN_PAREN> ( Type <IDENTIFIER> ( <COMMA> Type <IDENTIFIER>)*)?<CLOSE_PAREN> 
 	<OPEN_CURLY_BRACKETS>
 	(LOOKAHEAD VarDeclaration | Statement)*
 	(<RETURN> Expression <SEMI_COLON>)?
@@ -101,7 +97,7 @@ NormalMethod :
 ;
 
 MainMethod :
-	<STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> Identifier <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
+	<STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> <IDENTIFIER> <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
 	(LOOKAHEAD VarDeclaration | Statement)*
     
 	<CLOSE_CURLY_BRACKETS>
@@ -116,17 +112,17 @@ Expression:
 	<TRUE> (Expression2)?|
 	<FALSE> (Expression2)?|
     <THIS > (Expression2)?|
-    Identifier (Expression2)?|	 
+    <IDENTIFIER> (Expression2)?|	 
 	LOOKAHEAD < NEW > < INT > < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > (Expression2)? |		
-	< NEW > Identifier < OPEN_PAREN > < CLOSE_PAREN > (Expression2)? | 
+	< NEW > <IDENTIFIER> < OPEN_PAREN > < CLOSE_PAREN > (Expression2)? | 
 	< NOT > Expression (Expression2)? |
 	< OPEN_PAREN > Expression (Expression2)? < CLOSE_PAREN > (Expression2)?
 ;
 
 Expression2:
 	( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>) Expression |
-	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS> |
-	<PERIOD> ( <LENGTH> (Expression2)? | (Identifier <OPEN_PAREN> (Expression ( <COMMA> Expression )* )? <CLOSE_PAREN> (Expression2)? ))
+	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS> (Expression2)? |
+	<PERIOD> ( <LENGTH> (Expression2)? | (<IDENTIFIER> <OPEN_PAREN> (Expression ( <COMMA> Expression )* )? <CLOSE_PAREN> (Expression2)? ))
 ;
 
 AdditiveExpression :
