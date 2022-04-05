@@ -35,7 +35,7 @@ public class SimpleParser implements JmmParser {
             parser.Start();
 
             Node root = parser.rootNode();
-            root.dump("");
+            root.dump(""); //prints the tree on the screen
 
             if (!(root instanceof JmmNode)) {
                 return JmmParserResult.newError(new Report(ReportType.WARNING, Stage.SYNTATIC, -1,
