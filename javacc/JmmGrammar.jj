@@ -97,7 +97,7 @@ NormalMethod :
 ;
 
 MainMethod :
-	<STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> <IDENTIFIER> ({jjtThis.put("name", "name"); }) #Id <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
+	<STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> (<IDENTIFIER> {jjtThis.put("foo", "bar"); }) #Id <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
 	(LOOKAHEAD VarDeclaration | Statement)*
     
 	<CLOSE_CURLY_BRACKETS>
