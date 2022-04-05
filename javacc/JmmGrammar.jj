@@ -63,6 +63,7 @@ Type :
 	< INT > (< OPEN_BRACKETS > < CLOSE_BRACKETS >)? |
 	< BOOLEAN > |
 	<VOID> |
+	< STRING > |
     <IDENTIFIER>
 ;   
 

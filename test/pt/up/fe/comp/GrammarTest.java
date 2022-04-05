@@ -37,11 +37,11 @@ public class GrammarTest {
         }
 
         var result = TestUtils.parse(code, grammarRule);
-        // Consumer<? super Report> action;
-        // result.getReports().forEach((action2)->
-        // {
-        //     System.out.println(action2);
-        // });
+        Consumer<? super Report> action;
+        result.getReports().forEach((action2)->
+        {
+            System.out.println(action2);
+        });
 
         TestUtils.noErrors(result.getReports());
 
@@ -74,200 +74,200 @@ public class GrammarTest {
         noErrors("class Foo {int a; int[] b; int c; boolean d; Bar e;}");
     }
 
-    // @Test
-    // public void testVarDeclString() {
-    //     noErrors("String aString;", VARIABLE);
-    // }
+    @Test
+    public void testVarDeclString() {
+        noErrors("String aString;", VARIABLE);
+    }
 
     @Test
     public void testMainMethodEmpty() {
         noErrors("public static void main(String[] args) {}", MAIN_METHOD);
     }
 
-    // @Test
-    // public void testInstanceMethodEmpty() {
-    //     noErrors("public int foo(int anInt, int[] anArray, boolean aBool, String aString) {return a;}",
-    //             INSTANCE_METHOD);
-    // }
+    @Test
+    public void testInstanceMethodEmpty() {
+        noErrors("public int foo(int anInt, int[] anArray, boolean aBool, String aString) {return a;}",
+                INSTANCE_METHOD);
+    }
 
-    // @Test
-    // public void testStmtScope() {
-    //     noErrors("{a; b; c;}", STATEMENT);
-    // }
+    @Test
+    public void testStmtScope() {
+        noErrors("{a; b; c;}", STATEMENT);
+    }
 
-    // @Test
-    // public void testStmtEmptyScope() {
-    //     noErrors("{}", STATEMENT);
-    // }
+    @Test
+    public void testStmtEmptyScope() {
+        noErrors("{}", STATEMENT);
+    }
 
-    // @Test
-    // public void testStmtIfElse() {
-    //     noErrors("if(a){ifStmt1;ifStmt2;}else{elseStmt1;elseStmt2;}", STATEMENT);
-    // }
+    @Test
+    public void testStmtIfElse() {
+        noErrors("if(a){ifStmt1;ifStmt2;}else{elseStmt1;elseStmt2;}", STATEMENT);
+    }
 
-    // @Test
-    // public void testStmtIfElseWithoutBrackets() {
-    //     noErrors("if(a)ifStmt;else elseStmt;", STATEMENT);
-    // }
+    @Test
+    public void testStmtIfElseWithoutBrackets() {
+        noErrors("if(a)ifStmt;else elseStmt;", STATEMENT);
+    }
 
-    // @Test
-    // public void testStmtWhile() {
-    //     noErrors("while(a){whileStmt1;whileStmt2;}", STATEMENT);
-    // }
+    @Test
+    public void testStmtWhile() {
+        noErrors("while(a){whileStmt1;whileStmt2;}", STATEMENT);
+    }
 
-    // @Test
-    // public void testStmtWhileWithoutBrackets() {
-    //     noErrors("while(a)whileStmt1;", STATEMENT);
-    // }
+    @Test
+    public void testStmtWhileWithoutBrackets() {
+        noErrors("while(a)whileStmt1;", STATEMENT);
+    }
 
-    // @Test
-    // public void testStmtAssign() {
-    //     noErrors("a=b;", STATEMENT);
-    // }
+    @Test
+    public void testStmtAssign() {
+        noErrors("a=b;", STATEMENT);
+    }
 
-    // @Test
-    // public void testStmtArrayAssign() {
-    //     noErrors("anArray[a]=b;", STATEMENT);
-    // }
+    @Test
+    public void testStmtArrayAssign() {
+        noErrors("anArray[a]=b;", STATEMENT);
+    }
 
-    // @Test
-    // public void testExprTrue() {
-    //     noErrors("true", EXPRESSION);
-    // }
+    @Test
+    public void testExprTrue() {
+        noErrors("true", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprFalse() {
-    //     noErrors("false", EXPRESSION);
-    // }
+    @Test
+    public void testExprFalse() {
+        noErrors("false", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprThis() {
-    //     noErrors("this", EXPRESSION);
-    // }
+    @Test
+    public void testExprThis() {
+        noErrors("this", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprId() {
-    //     noErrors("a", EXPRESSION);
-    // }
+    @Test
+    public void testExprId() {
+        noErrors("a", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprIntLiteral() {
-    //     noErrors("10", EXPRESSION);
-    // }
+    @Test
+    public void testExprIntLiteral() {
+        noErrors("10", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprParen() {
-    //     noErrors("(10)", EXPRESSION);
-    // }
+    @Test
+    public void testExprParen() {
+        noErrors("(10)", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprMemberCall() {
-    //     noErrors("foo.bar(10, a, true)", EXPRESSION);
-    // }
+    @Test
+    public void testExprMemberCall() {
+        noErrors("foo.bar(10, a, true)", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprMemberCallChain() {
-    //     noErrors("callee.level1().level2(false, 10).level3(true)", EXPRESSION);
-    // }
+    @Test
+    public void testExprMemberCallChain() {
+        noErrors("callee.level1().level2(false, 10).level3(true)", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprLength() {
-    //     noErrors("a.length", EXPRESSION);
-    // }
+    @Test
+    public void testExprLength() {
+        noErrors("a.length", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprLengthChain() {
-    //     noErrors("a.length.length", EXPRESSION);
-    // }
+    @Test
+    public void testExprLengthChain() {
+        noErrors("a.length.length", EXPRESSION);
+    }
 
-    // @Test
-    // public void testArrayAccess() {
-    //     noErrors("a[10]", EXPRESSION);
-    // }
+    @Test
+    public void testArrayAccess() {
+        noErrors("a[10]", EXPRESSION);
+    }
 
-    // @Test
-    // public void testArrayAccessChain() {
-    //     noErrors("a[10][20]", EXPRESSION);
-    // }
+    @Test
+    public void testArrayAccessChain() {
+        noErrors("a[10][20]", EXPRESSION);
+    }
 
-    // @Test
-    // public void testParenArrayChain() {
-    //     noErrors("(a)[10]", EXPRESSION);
-    // }
+    @Test
+    public void testParenArrayChain() {
+        noErrors("(a)[10]", EXPRESSION);
+    }
 
-    // @Test
-    // public void testCallArrayAccessLengthChain() {
-    //     noErrors("callee.foo()[10].length", EXPRESSION);
-    // }
+    @Test
+    public void testCallArrayAccessLengthChain() {
+        noErrors("callee.foo()[10].length", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprNot() {
-    //     noErrors("!true", EXPRESSION);
-    // }
+    @Test
+    public void testExprNot() {
+        noErrors("!true", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprNewArray() {
-    //     noErrors("new int[!a]", EXPRESSION);
-    // }
+    @Test
+    public void testExprNewArray() {
+        noErrors("new int[!a]", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprNewClass() {
-    //     noErrors("new Foo()", EXPRESSION);
-    // }
+    @Test
+    public void testExprNewClass() {
+        noErrors("new Foo()", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprMult() {
-    //     noErrors("2 * 3", EXPRESSION);
-    // }
+    @Test
+    public void testExprMult() {
+        noErrors("2 * 3", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprDiv() {
-    //     noErrors("2 / 3", EXPRESSION);
-    // }
+    @Test
+    public void testExprDiv() {
+        noErrors("2 / 3", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprMultChain() {
-    //     noErrors("1 * 2 / 3 * 4", EXPRESSION);
-    // }
+    @Test
+    public void testExprMultChain() {
+        noErrors("1 * 2 / 3 * 4", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprAdd() {
-    //     noErrors("2 + 3", EXPRESSION);
-    // }
+    @Test
+    public void testExprAdd() {
+        noErrors("2 + 3", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprSub() {
-    //     noErrors("2 - 3", EXPRESSION);
-    // }
+    @Test
+    public void testExprSub() {
+        noErrors("2 - 3", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprAddChain() {
-    //     noErrors("1 + 2 - 3 + 4", EXPRESSION);
-    // }
+    @Test
+    public void testExprAddChain() {
+        noErrors("1 + 2 - 3 + 4", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprRelational() {
-    //     noErrors("1 < 2", EXPRESSION);
-    // }
+    @Test
+    public void testExprRelational() {
+        noErrors("1 < 2", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprRelationalChain() {
-    //     noErrors("1 < 2 < 3 < 4", EXPRESSION);
-    // }
+    @Test
+    public void testExprRelationalChain() {
+        noErrors("1 < 2 < 3 < 4", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprLogical() {
-    //     noErrors("1 && 2", EXPRESSION);
-    // }
+    @Test
+    public void testExprLogical() {
+        noErrors("1 && 2", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprLogicalChain() {
-    //     noErrors("1 && 2 && 3 && 4", EXPRESSION);
-    // }
+    @Test
+    public void testExprLogicalChain() {
+        noErrors("1 && 2 && 3 && 4", EXPRESSION);
+    }
 
-    // @Test
-    // public void testExprChain() {
-    //     noErrors("1 && 2 < 3 + 4 - 5 * 6 / 7", EXPRESSION);
-    // }
+    @Test
+    public void testExprChain() {
+        noErrors("1 && 2 < 3 + 4 - 5 * 6 / 7", EXPRESSION);
+    }
 
 }
