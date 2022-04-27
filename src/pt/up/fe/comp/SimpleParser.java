@@ -3,7 +3,6 @@
 import java.util.Collections;
 import java.util.Map;
 
-import com.javacc.parser.ParseException;
 
 import pt.up.fe.comp.jmm.ast.JmmNode;
 import pt.up.fe.comp.jmm.parser.JmmParser;
@@ -40,7 +39,7 @@ public class SimpleParser implements JmmParser {
         try {
 
             JmmGrammarParser parser = new JmmGrammarParser(SpecsIo.toInputStream(jmmCode));
-            // parser.Start();
+            //parser.Start();
             SpecsSystem.invoke(parser, startingRule);
 
             Node root = parser.rootNode();
@@ -55,7 +54,7 @@ public class SimpleParser implements JmmParser {
             return new JmmParserResult((JmmNode) root, Collections.emptyList(), config);
 
         } catch (Exception ex){
-            var e = TestUtils.getException(ex, ParseException.class);
+            ParseException e = TestUtils.getException(ex, ParseException.class);
             // ... test if ‘e’ is null and handle ‘ex’ in a more generic way 
             Token t = e.getToken(); 
             int line = t.getBeginLine(); 
@@ -65,12 +64,5 @@ public class SimpleParser implements JmmParser {
             return JmmParserResult.newError(report);
             
         }
-        catch (Exception e) {
-            return JmmParserResult.newError(Report.newError(Stage.SYNTATIC, -1, -1, "Exception during parsing", e));
-        } 
-        // catch(ParseException e){
-        //     Stage stage = e.getToken().getType() == JmmGrammarConstants.TokenType.INVALID ? Stage.LEXICAL : Stage.SYNTATIC;
-        //     return JmmParserResult.newError(Report.newError(stage, -1, -1, "Exception during parsing", e));
-        // }
     }
 }
