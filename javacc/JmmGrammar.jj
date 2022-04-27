@@ -176,14 +176,16 @@ DotExpression #void:
 								)#Identifier) #DotExpression(2))?
 ;
 
-
+IntegerLiteral:
+	(<INTEGER_LITERAL> {jjtThis.put("value", lastConsumedToken.getImage()); })
+;
 
 Expression2 #void:
 	New
 	| ((Identifier (AccessToArray )? ))
 	| (<THIS> #This)
 	| ((<TRUE> | <FALSE>) #Boolean)
-	| ( <INTEGER_LITERAL> #Literal)
+	| IntegerLiteral
 	| ( <NOT> DotExpression) #Negation
 	| ( <OPEN_PAREN> Expression <CLOSE_PAREN>)
 ;
