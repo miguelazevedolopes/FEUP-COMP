@@ -62,11 +62,11 @@ Identifier #Id:
 	(<IDENTIFIER> {jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 
-Type : 
-	< INT > (< OPEN_BRACKETS > < CLOSE_BRACKETS >)? |
-	< BOOLEAN > |
-	< VOID > |
-	< STRING > |
+Type #void: 
+	< INT >(< OPEN_BRACKETS > < CLOSE_BRACKETS > #TypeArray)? #TypeInt|
+	< BOOLEAN > #TypeBoolean|
+	< VOID > #TypeVoid|
+	< STRING > #TypeString|
     Identifier
 ;   
 
