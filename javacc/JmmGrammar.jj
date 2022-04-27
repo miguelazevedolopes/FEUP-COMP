@@ -58,8 +58,8 @@ TOKEN :
 
 Start : ImportDeclaration ClassDeclaration < EOF >;
 
-Identifier:
-	(<IDENTIFIER> {jjtThis.put("id", lastConsumedToken.getImage()); })
+Identifier #Id:
+	(<IDENTIFIER> {jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 
 Type : 
