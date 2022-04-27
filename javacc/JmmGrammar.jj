@@ -65,7 +65,7 @@ Identifier:
 Type : 
 	< INT > (< OPEN_BRACKETS > < CLOSE_BRACKETS >)? |
 	< BOOLEAN > |
-	<VOID> |
+	< VOID > |
 	< STRING > |
     Identifier
 ;   
@@ -143,6 +143,7 @@ Expression #void:
 
 And #void:
 	LessThan (LOOKAHEAD(2) <AND> LessThan #ANDD(2))*
+
 ;
 
 LessThan #void:
