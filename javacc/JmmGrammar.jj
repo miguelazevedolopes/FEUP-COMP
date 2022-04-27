@@ -104,8 +104,12 @@ ImportDeclaration :
 	(<IMPORT> Identifier (<PERIOD> Identifier)* <SEMI_COLON>)* 
 ;
 
+Extends:
+	<EXTENDS> Identifier 
+;
+
 ClassDeclaration : 
-	(<PUBLIC>)?<CLASS> Identifier ( <EXTENDS> Identifier )?  <OPEN_CURLY_BRACKETS>
+	(<PUBLIC>)?<CLASS> Identifier ( Extends )?  <OPEN_CURLY_BRACKETS>
 	(VarDeclaration)*
 	(MethodDeclaration)*
 	<CLOSE_CURLY_BRACKETS>
