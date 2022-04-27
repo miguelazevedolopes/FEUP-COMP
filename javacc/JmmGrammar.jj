@@ -67,13 +67,32 @@ Type :
     <IDENTIFIER>
 ;   
 
-Statement:
-	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS> |
-	<IF> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement <ELSE> Statement | 
-	<WHILE> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement |
-    LOOKAHEAD <IDENTIFIER> < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON > |
-	LOOKAHEAD <IDENTIFIER> <EQUAL> Expression <SEMI_COLON> |
-    Expression <SEMI_COLON> 
+Condition:
+	<OPEN_PAREN> Expression <CLOSE_PAREN>
+;
+
+WhileStatement:
+	<WHILE> Condition Statement
+;
+
+IfStatement:
+	<IF> Condition Statement <ELSE> Statement
+;
+
+AccessToArray:
+	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS>
+;
+
+Equality:
+	<IDENTIFIER> (AccessToArray)? <EQUAL> Expression <SEMI_COLON>
+;
+
+Statement :
+	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS>
+	| IfStatement
+	| WhileStatement
+	| (LOOKAHEAD(2) Equality | (Expression <SEMI_COLON>))
+
 ;
 
 
@@ -118,7 +137,7 @@ Expression :
 	And
 ;
 
-And #Void:
+And #void:
 	LessThan (LOOKAHEAD(2) <AND> LessThan #ANDD(2))*
 ;
 
