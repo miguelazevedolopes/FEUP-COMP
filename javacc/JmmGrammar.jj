@@ -76,6 +76,8 @@ Statement:
     Expression <SEMI_COLON> 
 ;
 
+
+
 ImportDeclaration : 
 	(<IMPORT> <IDENTIFIER> (<PERIOD> <IDENTIFIER>)* <SEMI_COLON>)* 
 ;
@@ -99,48 +101,85 @@ NormalMethod :
 
 MainMethod :
 	<STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> (<IDENTIFIER> {jjtThis.put("foo", "bar"); }) #Id <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
-	(LOOKAHEAD VarDeclaration | Statement)*
+	MethodBody
     
 	<CLOSE_CURLY_BRACKETS>
+;
+
+MethodBody :
+	(LOOKAHEAD VarDeclaration | Statement)*
 ;
 
 MethodDeclaration : 
 	<PUBLIC> (MainMethod | NormalMethod)
 ;
 
-Expression:
-	<INTEGER_LITERAL> (Expression2)?| 
-	<TRUE> (Expression2)?|
-	<FALSE> (Expression2)?|
-    <THIS > (Expression2)?|
-    <IDENTIFIER> (Expression2)?|	 
-	LOOKAHEAD < NEW > < INT > < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > (Expression2)? |		
-	< NEW > <IDENTIFIER> < OPEN_PAREN > < CLOSE_PAREN > (Expression2)? | 
-	< NOT > Expression (Expression2)? |
-	< OPEN_PAREN > Expression (Expression2)? < CLOSE_PAREN > (Expression2)?
+Expression :
+	And
 ;
 
-Expression2:
-	( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>) Expression |
-	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS> (Expression2)? |
-	<PERIOD> ( <LENGTH> (Expression2)? | (<IDENTIFIER> <OPEN_PAREN> (Expression ( <COMMA> Expression )* )? <CLOSE_PAREN> (Expression2)? ))
+And #Void:
+	LessThan (LOOKAHEAD(2) <AND> LessThan #ANDD(2))*
 ;
 
-AdditiveExpression :
-	MultiplicativeExpression
-	(
-		(< PLUS > | < MINUS >)
-		MultiplicativeExpression
-	)?
+LessThan #Void:
+	Sum ( LOOKAHEAD(2) <LESS_THAN> Sum #LESSTHAN(2))*
 ;
 
-MultiplicativeExpression :
-	<INTEGER_LITERAL>
-	(
-		(< TIMES > | < DIVIDE >)
-		<INTEGER_LITERAL>
-	)?
+Sum #Void:
+	Sub (LOOKAHEAD(2) <PLUS> Sub #SUM(2))*
 ;
+
+Sub #Void:
+	Mul (LOOKAHEAD(2) <MINUS> Sub # SUB(2))*
+;
+
+Mul #Void:
+	Div (LOOKAHEAD(2) <TIMES> Div #MUL(2))*
+;
+
+Div #Void:
+	DotExpression (LOOKAHEAD(2) <DIVIDE> DotExpression #DIV(2))*
+;
+
+DotExpression #Void:
+	Expression2  (LOOKAHEAD(2) ((<PERIOD> (<IDENTIFIER>|<LENGTH>)	(<OPEN_PAREN>
+											(Expression() 
+												(<COMMA> Expression())*
+											)?
+											<CLOSE_PAREN>
+								  		)?
+								)#Identifier) #DotExpression(2))?
+;
+
+
+
+Expression2 #Void:
+	New
+	| ((<IDENTIFIER> (AccessToArray )? ) #Identifier)
+	| (<THIS> #Identifier)
+	| ((<TRUE> | <FALSE>) #Boolean)
+	| ( <INTEGER_LITERAL> #Literal)
+	| ( <NOT> DotExpression) #Negation
+	| ( <OPEN_PAREN> Expression <CLOSE_PAREN>)
+;
+
+New #Void:
+	<NEW> (InitializeArray | NewObject)
+;
+
+InitializeArray #Void:
+	<INT> AccessToArray
+;
+
+NewObject:
+	<IDENTIFIER> <OPEN_PAREN> (Expression (<COMMA> Expression)*)? <CLOSE_PAREN>
+;
+
+AccessToArray:
+	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS>
+;
+
 
 // Injections for the implementation of JmmNode
 // Since this is injected into BaseNode, it affects only non-terminals
