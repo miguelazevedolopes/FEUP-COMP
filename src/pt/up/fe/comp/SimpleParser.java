@@ -10,6 +10,7 @@ import pt.up.fe.comp.jmm.report.Report;
 import pt.up.fe.comp.jmm.report.ReportType;
 import pt.up.fe.comp.jmm.report.Stage;
 import pt.up.fe.specs.util.SpecsIo;
+import pt.up.fe.specs.util.SpecsSystem;
 
 /**
  * Copyright 2022 SPeCS.
@@ -29,13 +30,20 @@ public class SimpleParser implements JmmParser {
     @Override
     public JmmParserResult parse(String jmmCode, Map<String, String> config) {
 
+        return parse(jmmCode, "Start", config);
+
+    }
+
+    public JmmParserResult parse(String jmmCode, String startingRule, Map<String, String> config){
         try {
 
             JmmGrammarParser parser = new JmmGrammarParser(SpecsIo.toInputStream(jmmCode));
-            parser.Start();
+            // parser.Start();
+            SpecsSystem.invoke(parser, startingRule);
 
             Node root = parser.rootNode();
-            root.dump("");
+
+            root.dump(""); //prints the tree on the screen
 
             if (!(root instanceof JmmNode)) {
                 return JmmParserResult.newError(new Report(ReportType.WARNING, Stage.SYNTATIC, -1,
@@ -44,14 +52,22 @@ public class SimpleParser implements JmmParser {
 
             return new JmmParserResult((JmmNode) root, Collections.emptyList(), config);
 
-        } catch(ParseException p){
-            int lineError = e.getStackTrace()[0].getLineNumber();
-            String message = e.getMessage();
-            /* reportList.add(new Report(ReportType.ERROR, Stage.SYNTATIC, lineError, message));
-            return new JmmParserResult(null, reportList); */
-            return JmmParserResult.newError(Report.newError(Stage.LEXICAL, -1, -1, message, p));
-        } catch (Exception e) {
+        } catch (ParseException ex){
+            var e = TestUtils.getException(ex, ParseException.class) 
+            // ... test if ‘e’ is null and handle ‘ex’ in a more generic way 
+            Token t = e.getToken(); 
+            int line = t.getBeginLine(); 
+            int column = t.getBeginColumn(); 
+            String message = e.getMessage(); 
+            Report report = Report.newError(stage, line, column, message, e); 
+            return JmmParserResult.newError(report);
+        }
+        catch (Exception e) {
             return JmmParserResult.newError(Report.newError(Stage.SYNTATIC, -1, -1, "Exception during parsing", e));
         } 
+        // catch(ParseException e){
+        //     Stage stage = e.getToken().getType() == JmmGrammarConstants.TokenType.INVALID ? Stage.LEXICAL : Stage.SYNTATIC;
+        //     return JmmParserResult.newError(Report.newError(stage, -1, -1, "Exception during parsing", e));
+        // }
     }
 }

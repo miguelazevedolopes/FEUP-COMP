@@ -13,15 +13,20 @@
 
 package pt.up.fe.comp;
 
+import java.util.function.Consumer;
+
 import org.junit.Test;
+
+import pt.up.fe.comp.jmm.report.Report;
 
 public class GrammarTest {
 
-    private static final String IMPORT = "";
-    private static final String MAIN_METHOD = "";
-    private static final String INSTANCE_METHOD = "";
-    private static final String STATEMENT = "";
-    private static final String EXPRESSION = "";
+    private static final String IMPORT = "ImportDeclaration";
+    private static final String MAIN_METHOD = "MethodDeclaration";
+    private static final String INSTANCE_METHOD = "MethodDeclaration";
+    private static final String STATEMENT = "Statement";
+    private static final String EXPRESSION = "Expression";
+    private static final String VARIABLE = "VarDeclaration";
 
     private static void noErrors(String code, String grammarRule) {
         if (grammarRule.isEmpty()) {
@@ -32,6 +37,12 @@ public class GrammarTest {
         }
 
         var result = TestUtils.parse(code, grammarRule);
+        Consumer<? super Report> action;
+        result.getReports().forEach((action2)->
+        {
+            System.out.println(action2);
+        });
+
         TestUtils.noErrors(result.getReports());
 
         System.out.println("Code: " + code + "\n");
@@ -40,7 +51,7 @@ public class GrammarTest {
     }
 
     private static void noErrors(String code) {
-        noErrors(code, "Program");
+        noErrors(code, "Start");
     }
 
     @Test
@@ -65,7 +76,7 @@ public class GrammarTest {
 
     @Test
     public void testVarDeclString() {
-        noErrors("String aString;", "VarDecl");
+        noErrors("String aString;", VARIABLE);
     }
 
     @Test
