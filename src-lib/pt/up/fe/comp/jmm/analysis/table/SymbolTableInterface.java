@@ -3,7 +3,7 @@ package pt.up.fe.comp.jmm.analysis.table;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface SymbolTable {
+public interface SymbolTableInterface {
 
     /**
      * @return a list of fully qualified names of imports

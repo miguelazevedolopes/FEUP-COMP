@@ -7,7 +7,7 @@ import java.util.Map;
 import org.specs.comp.ollir.ClassUnit;
 
 import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
-import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
+import pt.up.fe.comp.jmm.analysis.table.SymbolTableInterface;
 import pt.up.fe.comp.jmm.report.Report;
 import pt.up.fe.comp.jmm.report.ReportsProvider;
 import pt.up.fe.specs.util.SpecsCollections;
@@ -19,11 +19,11 @@ public class OllirResult implements ReportsProvider {
 
     private final String ollirCode;
     private final ClassUnit ollirClass;
-    private final SymbolTable symbolTable;
+    private final SymbolTableInterface symbolTable;
     private final List<Report> reports;
     private final Map<String, String> config;
 
-    private OllirResult(String ollirCode, ClassUnit ollirClass, SymbolTable symbolTable, List<Report> reports,
+    private OllirResult(String ollirCode, ClassUnit ollirClass, SymbolTableInterface symbolTable, List<Report> reports,
             Map<String, String> config) {
 
         this.ollirCode = ollirCode;
@@ -61,7 +61,7 @@ public class OllirResult implements ReportsProvider {
         return this.ollirClass;
     }
 
-    public SymbolTable getSymbolTable() {
+    public SymbolTableInterface getSymbolTable() {
         return this.symbolTable;
     }
 

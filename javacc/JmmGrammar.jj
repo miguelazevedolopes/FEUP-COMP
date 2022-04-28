@@ -58,39 +58,67 @@ TOKEN :
 
 Start : ImportDeclaration ClassDeclaration < EOF >;
 
-
-Type : 
-	< INT > (< OPEN_BRACKETS > < CLOSE_BRACKETS >)? |
-	< BOOLEAN > |
-	<VOID> |
-	< STRING > |
-    <IDENTIFIER>
-;   
-
-Statement:
-	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS> |
-	<IF> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement <ELSE> Statement | 
-	<WHILE> <OPEN_PAREN> Expression <CLOSE_PAREN> Statement |
-    LOOKAHEAD <IDENTIFIER> < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > < EQUAL > Expression < SEMI_COLON > |
-	LOOKAHEAD <IDENTIFIER> <EQUAL> Expression <SEMI_COLON> |
-    Expression <SEMI_COLON> 
+Identifier #Id:
+	(<IDENTIFIER> {jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 
+Type #void: 
+	< INT >(< OPEN_BRACKETS > < CLOSE_BRACKETS > #TypeArray)? #TypeInt|
+	< BOOLEAN > #TypeBoolean|
+	< VOID > #TypeVoid|
+	< STRING > #TypeString|
+    Identifier
+;   
+
+Condition #void:
+	<OPEN_PAREN> Expression <CLOSE_PAREN>
+;
+
+WhileStatement:
+	<WHILE> Condition Statement
+;
+
+IfStatement:
+	<IF> Condition Statement <ELSE> Statement
+;
+
+AccessToArray:
+	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS>
+;
+
+Equality:
+	Identifier (AccessToArray)? <EQUAL> Expression <SEMI_COLON>
+;
+
+Statement #void:
+	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS> #StatementBlock
+	| IfStatement
+	| WhileStatement
+	| (LOOKAHEAD(2) Equality | (Expression <SEMI_COLON>))
+
+;
+
+
+
 ImportDeclaration : 
-	(<IMPORT> <IDENTIFIER> (<PERIOD> <IDENTIFIER>)* <SEMI_COLON>)* 
+	(<IMPORT> Identifier (<PERIOD> Identifier)* <SEMI_COLON>)* 
+;
+
+Extends:
+	<EXTENDS> Identifier 
 ;
 
 ClassDeclaration : 
-	(<PUBLIC>)?<CLASS> <IDENTIFIER> ( <EXTENDS> <IDENTIFIER> )?  <OPEN_CURLY_BRACKETS>
+	(<PUBLIC>)?<CLASS> Identifier ( Extends )?  <OPEN_CURLY_BRACKETS>
 	(VarDeclaration)*
 	(MethodDeclaration)*
 	<CLOSE_CURLY_BRACKETS>
 ;
 
-VarDeclaration : Type <IDENTIFIER> <SEMI_COLON>;
+VarDeclaration : Type Identifier <SEMI_COLON>;
 	
 NormalMethod : 
-	Type <IDENTIFIER> <OPEN_PAREN> ( Type <IDENTIFIER> ( <COMMA> Type <IDENTIFIER>)*)?<CLOSE_PAREN> 
+	Type Identifier <OPEN_PAREN> ( Type Identifier ( <COMMA> Type Identifier)*)?<CLOSE_PAREN> 
 	<OPEN_CURLY_BRACKETS>
 	(LOOKAHEAD VarDeclaration | Statement)*
 	(<RETURN> Expression <SEMI_COLON>)?
@@ -98,49 +126,90 @@ NormalMethod :
 ;
 
 MainMethod :
-	<STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> (<IDENTIFIER> {jjtThis.put("foo", "bar"); }) #Id <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
-	(LOOKAHEAD VarDeclaration | Statement)*
+	<STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> Identifier  <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
+	MethodBody
     
 	<CLOSE_CURLY_BRACKETS>
 ;
 
-MethodDeclaration : 
+
+MethodBody :
+	(LOOKAHEAD VarDeclaration | Statement)*
+;
+
+MethodDeclaration #void: 
 	<PUBLIC> (MainMethod | NormalMethod)
 ;
 
-Expression:
-	<INTEGER_LITERAL> (Expression2)?| 
-	<TRUE> (Expression2)?|
-	<FALSE> (Expression2)?|
-    <THIS > (Expression2)?|
-    <IDENTIFIER> (Expression2)?|	 
-	LOOKAHEAD < NEW > < INT > < OPEN_BRACKETS > Expression < CLOSE_BRACKETS > (Expression2)? |		
-	< NEW > <IDENTIFIER> < OPEN_PAREN > < CLOSE_PAREN > (Expression2)? | 
-	< NOT > Expression (Expression2)? |
-	< OPEN_PAREN > Expression (Expression2)? < CLOSE_PAREN > (Expression2)?
+Expression #void:
+	And
 ;
 
-Expression2:
-	( <AND> | <LESS_THAN> | <PLUS> | <MINUS> | <TIMES> | <DIVIDE>) Expression |
-	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS> (Expression2)? |
-	<PERIOD> ( <LENGTH> (Expression2)? | (<IDENTIFIER> <OPEN_PAREN> (Expression ( <COMMA> Expression )* )? <CLOSE_PAREN> (Expression2)? ))
+And #void:
+	LessThan (LOOKAHEAD(2) <AND> LessThan #ANDD(2))*
+
 ;
 
-AdditiveExpression :
-	MultiplicativeExpression
-	(
-		(< PLUS > | < MINUS >)
-		MultiplicativeExpression
-	)?
+LessThan #void:
+	Sum ( LOOKAHEAD(2) <LESS_THAN> Sum #LESSTHAN(2))*
 ;
 
-MultiplicativeExpression :
-	<INTEGER_LITERAL>
-	(
-		(< TIMES > | < DIVIDE >)
-		<INTEGER_LITERAL>
-	)?
+Sum #void:
+	Sub (LOOKAHEAD(2) <PLUS> Sub #SUM(2))*
 ;
+
+Sub #void:
+	Mul (LOOKAHEAD(2) <MINUS> Sub # SUB(2))*
+;
+
+Mul #void:
+	Div (LOOKAHEAD(2) <TIMES> Div #MUL(2))*
+;
+
+Div #void:
+	DotExpression (LOOKAHEAD(2) <DIVIDE> DotExpression #DIV(2))*
+;
+
+DotExpression #void:
+	Expression2  (LOOKAHEAD(2) ((<PERIOD> (Identifier|<LENGTH>)	(<OPEN_PAREN>
+											(Expression() 
+												(<COMMA> Expression())*
+											)?
+											<CLOSE_PAREN>
+								  		)?
+								)#Identifier) #DotExpression(2))?
+;
+
+IntegerLiteral:
+	(<INTEGER_LITERAL> {jjtThis.put("value", lastConsumedToken.getImage()); })
+;
+
+Expression2 #void:
+	New
+	| ((Identifier (AccessToArray )? ))
+	| (<THIS> #This)
+	| ((<TRUE> | <FALSE>) #Boolean)
+	| IntegerLiteral
+	| ( <NOT> DotExpression) #Negation
+	| ( <OPEN_PAREN> Expression <CLOSE_PAREN>)
+;
+
+New #void:
+	<NEW> (InitializeArray | NewObject)
+;
+
+InitializeArray:
+	<INT> AccessToArray
+;
+
+NewObject:
+	Identifier <OPEN_PAREN> (Expression (<COMMA> Expression)*)? <CLOSE_PAREN>
+;
+
+AccessToArray:
+	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS>
+;
+
 
 // Injections for the implementation of JmmNode
 // Since this is injected into BaseNode, it affects only non-terminals
