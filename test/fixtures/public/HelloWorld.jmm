@@ -2,6 +2,9 @@ import ioPlus;
 import Minus;
 import iaaa;
 class HelloWorld {
+	String sss;
+	int[] b;
+
 	public static void main(String[] args) {
 		int[] a;
 		ioPlus.printHelloWorld();
