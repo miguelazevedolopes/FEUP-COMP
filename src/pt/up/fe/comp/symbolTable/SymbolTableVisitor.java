@@ -43,13 +43,11 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
             if(childKind.contains("Id")){
                 symbolTable.setClassName(child.get("name"));
             }
-            System.out.println(child);
             while(child.getKind().equals("Var")){
                 boolean isArray = false;
                 if(child.getJmmChild(0).getNumChildren() > 0){
                     isArray = true;
                 }
-                System.out.println("Addded field");
                 Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));
                 fields.add(symbol);
 
