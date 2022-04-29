@@ -1,4 +1,6 @@
 import ioPlus;
+import Minus;
+import iaaa;
 class HelloWorld {
 	public static void main(String[] args) {
 		int[] a;
