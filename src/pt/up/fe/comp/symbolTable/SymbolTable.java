@@ -100,5 +100,9 @@ public class SymbolTable implements SymbolTableInterface{
     public void setFields(List<Symbol> fields2) {
         this.fields = fields2;
     }
+
+    public void setExtends(String string) {
+        this.superExtends = string;
+    }
     
 }

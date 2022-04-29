@@ -1,7 +1,7 @@
 import ioPlus;
 import Minus;
 import iaaa;
-class HelloWorld {
+class HelloWorld extends Hello{
 	String sss;
 	int[] b;
 

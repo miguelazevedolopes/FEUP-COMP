@@ -41,6 +41,9 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
             JmmNode child = children.get(i);
             if(child.getKind().contains("Id")){
                 symbolTable.setClassName(child.get("name"));
+            }            
+            if(child.getKind().contains("Extends")){
+                symbolTable.setExtends(child.getJmmChild(0).get("name"));
             }
             while(child.getKind().equals("Var")){
                 boolean isArray = false;
