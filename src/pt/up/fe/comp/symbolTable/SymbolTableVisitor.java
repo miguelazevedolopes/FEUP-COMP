@@ -36,19 +36,34 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
 
     public Boolean visitClass(JmmNode node, Boolean dummy){
         List<JmmNode> children = node.getChildren();
-
+        List<Symbol> fields = new ArrayList<Symbol>();
         for (int i = 0; i < children.size(); i++){
             JmmNode child = children.get(i);
             String childKind = child.getKind();
             if(childKind.contains("Id")){
                 symbolTable.setClassName(child.get("name"));
             }
-            else if (childKind.equals("MainMethod") || childKind.equals("NormalMethod")) {
+            System.out.println(child);
+            while(child.getKind().equals("Var")){
+                boolean isArray = false;
+                if(child.getJmmChild(0).getNumChildren() > 0){
+                    isArray = true;
+                }
+                System.out.println("Addded field");
+                Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));
+                fields.add(symbol);
+
+                if(++i >= children.size())
+                    break;
+                child = children.get(i);
+            }
+            if (childKind.equals("MainMethod") || childKind.equals("NormalMethod")) {
                 visitMethod(child, dummy);
             
             }
         }
 
+        symbolTable.setFields(fields);
         return true;
     }
 
@@ -92,7 +107,10 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
                 }
                 Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));
                 parameters.add(symbol);
-                child = children.get(++i);
+
+                if(++i >= children.size())
+                    break;
+                child = children.get(i);
             }
             if(child.getKind().contains("MethodBody")){
                 localVariables = visitMethodBody(child, dummy);

@@ -96,5 +96,9 @@ public class SymbolTable implements SymbolTableInterface{
     public void addMethod(Method method) {
         this.methods.add(method);
     }
+
+    public void setFields(List<Symbol> fields2) {
+        this.fields = fields2;
+    }
     
 }
