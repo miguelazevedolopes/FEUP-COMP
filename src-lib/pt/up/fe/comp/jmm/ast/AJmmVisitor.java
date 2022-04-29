@@ -70,6 +70,8 @@ public abstract class AJmmVisitor<D, R> implements JmmVisitor<D, R> {
 
     @Override
     public R visit(JmmNode jmmNode, D data) {
+
+        System.out.println("Starting visit");
         SpecsCheck.checkNotNull(jmmNode, () -> "Node should not be null");
 
         return getVisit(jmmNode.getKind()).apply(jmmNode, data);

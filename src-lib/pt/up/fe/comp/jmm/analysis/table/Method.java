@@ -8,6 +8,12 @@ public class Method {
     private List<Symbol> localVariables=null;
     private Type type;
 
+    public Method(String methodSignature, List<Symbol> parameters, List<Symbol> localVariables, Type type) {
+        this.methodSignature = methodSignature;
+        this.parameters = parameters;
+        this.localVariables = localVariables;
+        this.type = type;
+    }
     public String getMethodSignature() {
         return methodSignature;
     }

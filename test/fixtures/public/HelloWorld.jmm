@@ -4,4 +4,9 @@ class HelloWorld {
 		int[] a;
 		ioPlus.printHelloWorld();
 	}
+
+	public boolean quicksort(int[] L) {
+        boolean lazy;
+        return lazy;
+    }
 }
