@@ -57,7 +57,7 @@ public class SymbolTable implements SymbolTableInterface{
     public List<String> getMethods() {
         List<String> methodsStrings = new ArrayList<String>();
         for (Method method : this.methods){
-            methodsStrings.add(method.getType().getName());
+            methodsStrings.add(method.getMethodSignature());
         }
         return methodsStrings;
     }
@@ -77,7 +77,7 @@ public class SymbolTable implements SymbolTableInterface{
             if(method.getMethodSignature()==methodSignature)
                 return method.getParameters();
         }
-        return null;
+        return new ArrayList<Symbol>();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class SymbolTable implements SymbolTableInterface{
             if(method.getMethodSignature()==methodSignature)
                 return method.getLocalVariables();
         }
-        return null;
+        return new ArrayList<Symbol>();
     }
 
     public void addImport(String importName){

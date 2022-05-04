@@ -47,12 +47,14 @@ public class Launcher {
         // Display AST
         System.out.println("AST:\n\n" + parserResult.getRootNode().toTree());
 
+        // Instantiate JmmAnalysis
         JmmAnalyser analyser = new JmmAnalyser();
 
-        JmmSemanticsResult analysisResult = analyser.semanticAnalysis(parserResult);
+        // Analysis stage
+        JmmSemanticsResult semanticResult = analyser.semanticAnalysis(parserResult);
 
         // Check if there are parsing errors
-        TestUtils.noErrors(analysisResult.getReports());
+        TestUtils.noErrors(semanticResult);
     }
 
 }

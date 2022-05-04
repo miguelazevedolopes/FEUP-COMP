@@ -81,42 +81,39 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
     public Boolean visitMethod(JmmNode node, Boolean dummy){
         List<JmmNode> children = node.getChildren();
         String name = node.get("name");
-        String signature = null;
         Type type = null;
         if(name.equals("main")){
-            signature = "void";
             type = new Type("void", false);
+        }
+        else{
+            String typeName = node.getChildren().get(0).getKind();
+            if(node.getChildren().get(0).getChildren().size()>0){
+                type = new Type(typeName, true);
+            }
+            else{
+                type = new Type(typeName, false);
+            }
+            
         }
         List<Symbol> parameters = new ArrayList<Symbol>();
         List<Symbol> localVariables = new ArrayList<Symbol>();
         for (int i = 0; i < children.size(); i++){
             JmmNode child = children.get(i);
-            if(child.getKind().contains("Boolean") || child.getKind().contains("Int") || child.getKind().contains("String") || child.getKind().contains("Void")){
+            
+            if(child.getKind().contains("Param")){
                 boolean isArray = false;
-                if(child.getNumChildren() == 0)
-                    isArray = true;
-                type = new Type(child.getKind(), isArray);
-                signature = child.getKind();
-
-            }
-
-            while(child.getKind().contains("Param")){
-                boolean isArray = false;
-                if(child.getJmmChild(0).getNumChildren()>0){
-                    isArray = true;
+                if(child.getChildren().get(0).getKind().contains("TypeArray")){
+                    isArray=true;
                 }
                 Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));
                 parameters.add(symbol);
-
-                if(++i >= children.size())
-                    break;
-                child = children.get(i);
             }
             if(child.getKind().contains("MethodBody")){
                 localVariables = visitMethodBody(child, dummy);
             }
         }
-        Method method = new Method(signature,parameters,localVariables, type);
+        System.out.println("size:"+parameters.size());
+        Method method = new Method(name,parameters,localVariables, type);
         symbolTable.addMethod(method);
         return true;
 
