@@ -82,6 +82,10 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
         List<JmmNode> children = node.getChildren();
         String name = node.get("name");
         Type type = null;
+        if(symbolTable.hasMethod(name)){
+            //reports.add(new Report(type, stage, line, message))
+            return false;
+        }
         if(name.equals("main")){
             type = new Type("void", false);
         }

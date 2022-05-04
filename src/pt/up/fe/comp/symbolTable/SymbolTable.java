@@ -24,6 +24,14 @@ public class SymbolTable implements SymbolTableInterface{
         this.methods = new ArrayList<>();
     }
 
+    public boolean hasMethod(String methodName){
+        for (Method method : methods) {
+            if(method.getMethodSignature()==methodName)
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public List<String> getImports() {
         return imports;
