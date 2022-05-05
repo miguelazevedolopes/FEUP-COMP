@@ -23,14 +23,12 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
 
     public Boolean visitMethod(JmmNode methodRoot,Boolean dummy){
         for (JmmNode child : methodRoot.getChildren()) {
-            switch(child.getKind()){
-                case "Return":
-                    switch(child.getJmmChild(0).getKind()){
-                        case "IntegerLiteral":
-                            
-                            break;
-                    }
-                break;
+            if(child.getKind().equals("Return")){
+                //verificar que o tipo do que está a ser retornado é igual ao que foi declarado no return type da funçao
+                switch(child.getJmmChild(0).getKind()){
+                    case "IntegerLiteral":
+                        break;
+                }
             }
         }
         return true;
