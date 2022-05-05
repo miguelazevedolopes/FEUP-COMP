@@ -3,7 +3,7 @@ package pt.up.fe.comp.jmm.analysis.table;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface SymbolTableInterface {
+public interface SymbolTable {
 
     /**
      * @return a list of fully qualified names of imports
@@ -53,6 +53,8 @@ public interface SymbolTableInterface {
      */
     List<Symbol> getLocalVariables(String methodSignature);
 
+
+    List<Method> getMethodList();
     /**
      * 
      * @return a String with information about the contents of the SymbolTable
@@ -95,7 +97,12 @@ public interface SymbolTableInterface {
             var paramsString = params.stream().map(param -> param != null ? param.print() : "<null param>")
                     .collect(Collectors.joining(", "));
             // builder.append(paramsString + ")\n");
+            
+            var localVariables =getLocalVariables(method);
             builder.append("; params: ").append(paramsString);
+            var localVariablesString = localVariables.stream().map(localVar -> localVar != null ? localVar.print() : "<null var>")
+                    .collect(Collectors.joining(", "));
+            builder.append("; local vars: ").append(localVariablesString);
             builder.append("\n");
         }
 

@@ -6,27 +6,27 @@ import java.util.List;
 import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.Method;
 
-import pt.up.fe.comp.jmm.analysis.table.SymbolTableInterface;
+import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
 import pt.up.fe.comp.jmm.analysis.table.Type;
 
-public class SymbolTable implements SymbolTableInterface{
-    private List<String> imports = new ArrayList<>();
-    private String className = null;
-    private String superExtends = null;
-    private List<Symbol> fields = new ArrayList<>();
-    private List<Method> methods = new ArrayList<>();
+public class SymbolTableBuilder implements SymbolTable{
+    private List<String> imports;
+    private String className;
+    private String superExtends;
+    private List<Symbol> fields;
+    private List<Method> methods;
 
-    public SymbolTable() {
+    public SymbolTableBuilder() {
         this.imports = new ArrayList<>();
-        this.className = null;
-        this.superExtends = null;
+        this.className = new String();
+        this.superExtends = new String();
         this.fields = new ArrayList<>();
         this.methods = new ArrayList<>();
     }
 
     public boolean hasMethod(String methodName){
         for (Method method : methods) {
-            if(method.getMethodSignature()==methodName)
+            if(method.getMethodSignature().equals(methodName))
                 return true;
         }
         return false;
@@ -95,6 +95,11 @@ public class SymbolTable implements SymbolTableInterface{
                 return method.getLocalVariables();
         }
         return new ArrayList<Symbol>();
+    }
+    
+    @Override
+    public List<Method> getMethodList(){
+        return methods;
     }
 
     public void addImport(String importName){

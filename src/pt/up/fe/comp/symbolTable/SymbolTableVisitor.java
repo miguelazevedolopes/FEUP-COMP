@@ -10,23 +10,24 @@ import pt.up.fe.comp.jmm.ast.AJmmVisitor;
 import pt.up.fe.comp.jmm.ast.JmmNode;
 import pt.up.fe.comp.jmm.ast.PreorderJmmVisitor;
 import pt.up.fe.comp.jmm.report.Report;
+import pt.up.fe.comp.jmm.report.ReportType;
+import pt.up.fe.comp.jmm.report.Stage;
 
 
 public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
     
-    private final SymbolTable symbolTable;
+    private final SymbolTableBuilder symbolTable;
     private final List<Report> reports;
 
 
     public SymbolTableVisitor() {
-        this.symbolTable = new SymbolTable();
+        this.symbolTable = new SymbolTableBuilder();
         this.reports = new ArrayList<>();
         addVisit("ClassDeclaration", this::visitClass);
         addVisit("ImportDeclaration", this::visitImport);
-
     }
 
-    public SymbolTable getSymbolTable() {
+    public SymbolTableBuilder getSymbolTable() {
         return symbolTable;
     }
 
@@ -83,7 +84,7 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
         String name = node.get("name");
         Type type = null;
         if(symbolTable.hasMethod(name)){
-            //reports.add(new Report(type, stage, line, message))
+            reports.add(new Report(ReportType.ERROR, Stage.SEMANTIC, -1,"Found duplicate method with signature "+name));
             return false;
         }
         if(name.equals("main")){
@@ -116,7 +117,6 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
                 localVariables = visitMethodBody(child, dummy);
             }
         }
-        System.out.println("size:"+parameters.size());
         Method method = new Method(name,parameters,localVariables, type);
         symbolTable.addMethod(method);
         return true;
@@ -128,13 +128,18 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
         List<Symbol> localVariables = new ArrayList<Symbol>();
         for (int i = 0; i < children.size(); i++){
             JmmNode child = children.get(i);
-            while(child.getKind().contains("Var")){
+            if(child.getKind().contains("Var")){
+                System.out.println("entrou");
                 boolean isArray = false;
-                Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));
+                JmmNode varType=child.getJmmChild(0);
+                Symbol symbol;
+                if(varType.getKind().equals("Id")){
+                    symbol = new Symbol(new Type(varType.get("name"),isArray), child.get("name"));
+                }
+                else{
+                    symbol = new Symbol(new Type(varType.getKind(),isArray), child.get("name"));
+                }
                 localVariables.add(symbol);
-                if(++i >= children.size())
-                    break;
-                child = children.get(i);
             }
         }
 

@@ -35,10 +35,10 @@ public class AnalyserTest {
         noErrors(SpecsIo.getResource("fixtures/public/Life.jmm"));
     }
 
-    @Test
-    public void quickSort() {
-        noErrors(SpecsIo.getResource("fixtures/public/QuickSort.jmm"));
-    }
+    // @Test
+    // public void quickSort() {
+    //     noErrors(SpecsIo.getResource("fixtures/public/QuickSort.jmm"));
+    // }
 
     @Test
     public void simple() {

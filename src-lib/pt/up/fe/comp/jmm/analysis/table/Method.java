@@ -3,9 +3,9 @@ package pt.up.fe.comp.jmm.analysis.table;
 import java.util.List;
 
 public class Method {
-    private String methodSignature=null;
-    private List<Symbol> parameters=null;
-    private List<Symbol> localVariables=null;
+    private String methodSignature;
+    private List<Symbol> parameters;
+    private List<Symbol> localVariables;
     private Type type;
 
     public Method(String methodSignature, List<Symbol> parameters, List<Symbol> localVariables, Type type) {

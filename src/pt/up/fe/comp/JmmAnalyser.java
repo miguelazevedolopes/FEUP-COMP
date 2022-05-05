@@ -4,7 +4,7 @@ import java.util.Collections;
 import pt.up.fe.comp.jmm.analysis.JmmAnalysis;
 import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
-import pt.up.fe.comp.symbolTable.SymbolTable;
+import pt.up.fe.comp.symbolTable.SymbolTableBuilder;
 import pt.up.fe.comp.symbolTable.SymbolTableVisitor;
 public class JmmAnalyser implements JmmAnalysis {
     
@@ -12,8 +12,8 @@ public class JmmAnalyser implements JmmAnalysis {
     public JmmSemanticsResult semanticAnalysis(JmmParserResult parserResult) {
         SymbolTableVisitor symbolTableVisitor = new SymbolTableVisitor(); 
         symbolTableVisitor.visit(parserResult.getRootNode());
-        SymbolTable symbolTable = symbolTableVisitor.getSymbolTable();
+        SymbolTableBuilder symbolTable = symbolTableVisitor.getSymbolTable();
         System.out.println(symbolTable.print());
-        return new JmmSemanticsResult(parserResult, symbolTable,Collections.emptyList());
+        return new JmmSemanticsResult(parserResult, symbolTable,symbolTableVisitor.getReports());
     }
 }
