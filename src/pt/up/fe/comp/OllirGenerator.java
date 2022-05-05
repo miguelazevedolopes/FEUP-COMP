@@ -1,5 +1,5 @@
-import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
-import pt.up.fe.comp.jmm.ast.AJmmVisitor;
+import pt.up.fe.comp.SymbolTable;
+import pt.up.fe.comp.jmm.astAJmmVisitor;
 import pt.up.fe.comp.jmm.ast.JmmNode; 
 
 public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
@@ -19,7 +19,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private Integer programVisit(JmmNode program, Integer dummy){
-        for (var importString : symbolTable.getImports()){
+        for (var import1 : symbolTable.getImports()){
             code.append("import ").append(importString).append(";\n");
         }
 
@@ -33,7 +33,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
      private Integer ClassDeclVisit(JmmNode program, Integer dummy){
          code.append("public ").append(symbolTable.getClassName());
          var superClass = symbolTable.getSuper();
-         if (superClass != null) code.append(" extends ").append(superClass);
+         if (superClass != null) code.append(" extends ").append(superclass);
         code.append("{\n");
          return 0;
      }
