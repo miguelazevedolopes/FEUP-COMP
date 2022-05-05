@@ -129,7 +129,6 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
         for (int i = 0; i < children.size(); i++){
             JmmNode child = children.get(i);
             if(child.getKind().contains("Var")){
-                System.out.println("entrou");
                 boolean isArray = false;
                 JmmNode varType=child.getJmmChild(0);
                 Symbol symbol;
