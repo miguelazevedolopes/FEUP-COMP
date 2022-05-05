@@ -10,6 +10,7 @@ import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
 import pt.up.fe.comp.jmm.analysis.table.Type;
 
 public class SymbolTableBuilder implements SymbolTable{
+    
     private List<String> imports;
     private String className;
     private String superExtends;
@@ -91,10 +92,24 @@ public class SymbolTableBuilder implements SymbolTable{
     @Override
     public List<Symbol> getLocalVariables(String methodSignature) {
         for (Method method : methods) {
-            if(method.getMethodSignature()==methodSignature)
+            if(method.getMethodSignature().equals(methodSignature))
                 return method.getLocalVariables();
         }
         return new ArrayList<Symbol>();
+    }
+
+    @Override
+    public Symbol getLocalVariable(String methodSignature,String variable) {
+        for (Method method : methods) {
+            if(method.getMethodSignature().equals(methodSignature)){
+                for (Symbol symbol : method.getLocalVariables()) {
+                    if(symbol.getName().equals(variable))
+                        return symbol;
+                }
+            }
+                
+        }
+        return null;
     }
     
     @Override
@@ -116,6 +131,16 @@ public class SymbolTableBuilder implements SymbolTable{
 
     public void setExtends(String string) {
         this.superExtends = string;
+    }
+
+    @Override
+    public Symbol getField(String methodSignature, String fieldName) {
+        for (Symbol field : fields) {
+            if(field.getName().equals(fieldName)){
+                return field;
+            }
+        }
+        return null;
     }
     
 }

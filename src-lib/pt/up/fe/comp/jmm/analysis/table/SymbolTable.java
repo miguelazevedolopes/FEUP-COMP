@@ -53,6 +53,9 @@ public interface SymbolTable {
      */
     List<Symbol> getLocalVariables(String methodSignature);
 
+    Symbol getLocalVariable(String methodSignature,String variable);
+
+    Symbol getField(String methodSignature,String fieldName);
 
     List<Method> getMethodList();
     /**
