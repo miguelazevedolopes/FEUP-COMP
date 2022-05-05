@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
+import pt.up.fe.comp.ollir.JmmOptimizer;
 import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
 import pt.up.fe.specs.util.SpecsIo;
 import pt.up.fe.specs.util.SpecsLogs;
@@ -57,6 +58,14 @@ public class Launcher {
         TestUtils.noErrors(semanticResult);
 
         System.out.println("Symbol Table:\n" + semanticResult.getSymbolTable().print());
+
+        JmmOptimizer optimizer = new JmmOptimizer();
+
+        // Analysis stage
+        var ollirCode = optimizer.toOllir(semanticResult);
+
+        // Check if there are parsing errors
+        // TestUtils.noErrors(optimizationResult);
     }
 
 }

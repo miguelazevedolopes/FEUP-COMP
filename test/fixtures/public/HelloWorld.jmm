@@ -1,17 +1,7 @@
 import ioPlus;
-import Minus;
-import iaaa;
-class HelloWorld extends Hello{
-	String sss;
-	int[] b;
-
+class HelloWorld {
 	public static void main(String[] args) {
 		int[] a;
 		ioPlus.printHelloWorld();
 	}
-
-	public boolean quicksort(int[] L) {
-        boolean lazy;
-        return lazy;
-    }
 }
