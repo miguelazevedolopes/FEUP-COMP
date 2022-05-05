@@ -55,6 +55,8 @@ public class Launcher {
 
         // Check if there are parsing errors
         TestUtils.noErrors(semanticResult);
+
+        System.out.println("Symbol Table:\n" + semanticResult.getSymbolTable().print());
     }
 
 }
