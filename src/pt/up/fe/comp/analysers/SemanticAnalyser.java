@@ -30,6 +30,7 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
 
             // Checks if return type matches the method's declared return type
             if(child.getKind().equals("Return")){
+                System.out.println("Methodname: "+ methodName);
                 switch(child.getJmmChild(0).getKind()){
                     case "IntegerLiteral":
                         if(!symbolTable.getReturnType(methodName).getName().equals("TypeInt"))

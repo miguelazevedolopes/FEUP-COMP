@@ -74,7 +74,7 @@ public class SymbolTableBuilder implements SymbolTable{
     @Override
     public Type getReturnType(String methodSignature) {
         for (Method method : methods) {
-            if(method.getMethodSignature()==methodSignature)
+            if(method.getMethodSignature().equals(methodSignature))
                 return method.getType();
         }
         return null;
@@ -83,7 +83,7 @@ public class SymbolTableBuilder implements SymbolTable{
     @Override
     public List<Symbol> getParameters(String methodSignature) {
         for (Method method : methods) {
-            if(method.getMethodSignature()==methodSignature)
+            if(method.getMethodSignature().equals(methodSignature))
                 return method.getParameters();
         }
         return new ArrayList<Symbol>();
@@ -107,7 +107,6 @@ public class SymbolTableBuilder implements SymbolTable{
                         return symbol;
                 }
             }
-                
         }
         return null;
     }
