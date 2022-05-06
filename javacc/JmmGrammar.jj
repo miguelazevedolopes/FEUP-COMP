@@ -131,7 +131,7 @@ Return:
 VarDeclaration #void: Var<SEMI_COLON>;
 	
 NormalMethod : 
-	Type <IDENTIFIER>  ({jjtThis.put("name", lastConsumedToken.getImage()); }) <OPEN_PAREN> (Param ( <COMMA> Param)*)?<CLOSE_PAREN> 
+	Type <IDENTIFIER>  ({jjtThis.put("name", lastConsumedToken.getImage()); jjtThis.put("isStatic", "false");}) <OPEN_PAREN> (Param ( <COMMA> Param)*)?<CLOSE_PAREN> 
 	<OPEN_CURLY_BRACKETS>
 	MethodBody
 	(Return)?
@@ -139,7 +139,7 @@ NormalMethod :
 ;
 
 MainMethod :
-	<STATIC> <VOID> (<MAIN>  {jjtThis.put("name", lastConsumedToken.getImage()); }) <OPEN_PAREN> Param  <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
+	<STATIC> <VOID> (<MAIN>  {jjtThis.put("name", lastConsumedToken.getImage()); jjtThis.put("isStatic", "true"); }) <OPEN_PAREN> Param  <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
 	MethodBody
     
 	<CLOSE_CURLY_BRACKETS>

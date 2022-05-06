@@ -107,7 +107,7 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
             
             if(child.getKind().contains("Param")){
                 boolean isArray = false;
-                if(child.getChildren().get(0).getKind().contains("TypeArray")){
+                if(child.getJmmChild(0).getNumChildren() > 0 && child.getJmmChild(0).getJmmChild(0).getKind().contains("TypeArray")){
                     isArray=true;
                 }
                 Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));

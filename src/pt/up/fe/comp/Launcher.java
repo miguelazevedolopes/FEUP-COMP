@@ -64,6 +64,7 @@ public class Launcher {
         // Analysis stage
         var ollirCode = optimizer.toOllir(semanticResult);
 
+        System.out.println("Ollir code:\n"+ ollirCode.getOllirCode() );
         // Check if there are parsing errors
         // TestUtils.noErrors(optimizationResult);
     }

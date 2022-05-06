@@ -1,5 +1,8 @@
 package pt.up.fe.comp.ollir;
 
+import java.util.stream.Collectors;
+
+import java_cup.runtime.symbol;
 import pt.up.fe.comp.ast.AstNode;
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
 import pt.up.fe.comp.jmm.ast.AJmmVisitor;
@@ -15,6 +18,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         addVisit("Start", this::programVisit);
         addVisit("ClassDeclaration", this::classDeclVisit);
+        addVisit("MainMethod", this::methodDeclVisit);
+        addVisit("NormalMethod", this::methodDeclVisit);
     }
 
     public String getCode(){
@@ -32,12 +37,51 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return 0;
     }
 
-    private Integer classDeclVisit(JmmNode program, Integer dummy){
+    private Integer classDeclVisit(JmmNode classDecl, Integer dummy){
         code.append("public ").append(symbolTable.getClassName());
         var superClass = symbolTable.getSuper();
         if (superClass != null) code.append(" extends ").append(superClass);
         code.append("{\n");
+
+        for (var child : classDecl.getChildren()){
+            visit(child);
+        }
+
         code.append("}\n");
         return 0;
-     }
+    }
+
+
+    private Integer methodDeclVisit(JmmNode methodDecl, Integer dummy){
+        var methodSignature = methodDecl.get("name");
+        var isStatic = Boolean.valueOf(methodDecl.get("isStatic"));
+
+        code.append(".method public ");
+        if(isStatic){
+            code.append("static ");
+        }
+
+        code.append(methodSignature + "(");
+
+        var params = symbolTable.getParameters(methodSignature);
+
+        var paramCode = params.stream()
+        .map(symbol -> OllirUtils.getCode(symbol))
+        .collect(Collectors.joining(", "));
+        
+        code.append(paramCode);
+
+        code.append(").");
+
+        code.append(OllirUtils.getCode(symbolTable.getReturnType(methodSignature)));
+
+        code.append(" {\n");
+
+        code.append("}\n");
+
+        return 0;
+    }
+
+
+
 }
