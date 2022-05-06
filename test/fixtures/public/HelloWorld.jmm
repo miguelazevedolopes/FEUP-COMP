@@ -2,6 +2,7 @@ import ioPlus;
 class HelloWorld extends Hello {
 	public static void main(String[] args) {
 		ioPlus.printHelloWorld();
+        a = 1;
 	}
 
 }

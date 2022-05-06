@@ -20,6 +20,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("ClassDeclaration", this::classDeclVisit);
         addVisit("MainMethod", this::methodDeclVisit);
         addVisit("NormalMethod", this::methodDeclVisit);
+        addVisit("MethodBody", this::methodBodyVisit);
+        addVisit("Statement", this::exprStmtVisit);
+        addVisit("DotExpression", this::memberCallVisit);
     }
 
     public String getCode(){
@@ -77,7 +80,45 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         code.append(" {\n");
 
+        for (var child : methodDecl.getChildren()){
+            if(child.getKind().equals("MethodBody")){
+                visit(child);
+            }
+        }
+
         code.append("}\n");
+
+        return 0;
+    }
+
+
+    private Integer methodBodyVisit(JmmNode methodBody, Integer dummy){
+        int lastParamIndex = -1;
+        for(int i = 0; i < methodBody.getNumChildren(); i++){
+            if(methodBody.getJmmChild(i).getKind().equals("Param")){
+                lastParamIndex = i;
+            }
+        }
+
+        // var stmts = methodBody.getChildren().subList(lastParamIndex +1, methodBody.getNumChildren());
+        // System.out.println(stmts);
+        // for(var stmt: stmts){
+        //     visit(stmt);
+        // }
+
+        return 0;
+    }
+
+
+    private Integer exprStmtVisit(JmmNode exprStmt, Integer dummy){
+        visit(exprStmt.getJmmChild(0));
+        code.append(";\n");
+        return 0;
+    }
+
+    private Integer memberCallVisit(JmmNode memberCall, Integer dummy){
+        visit(memberCall.getJmmChild(0));
+        code.append(".").append(memberCall.getJmmChild(1)).append("(");
 
         return 0;
     }
