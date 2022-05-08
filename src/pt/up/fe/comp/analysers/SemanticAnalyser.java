@@ -24,7 +24,21 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
         addVisit("ClassDeclaration", this::visitClass);
     }
 
-    public Boolean checkReturnType(JmmNode node, String methodName){
+    private Symbol getDeclaredSymbol(String name, String methodName){
+        Symbol returnSymbol=null;
+
+        returnSymbol=symbolTable.getLocalVariable(methodName, name);
+
+        if(returnSymbol==null){
+            returnSymbol=symbolTable.getField(methodName, name);
+        }
+        if(returnSymbol==null){
+            returnSymbol=symbolTable.getParameter(methodName, name);
+        }
+        return returnSymbol;
+    }
+
+    private void checkReturnType(JmmNode node, String methodName){
         switch(node.getJmmChild(0).getKind()){
             case "IntegerLiteral":
                 if(!symbolTable.getReturnType(methodName).getName().equals("TypeInt"))
@@ -35,13 +49,8 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1, "Return value doesn't match the declared method type. Expected "+symbolTable.getReturnType(methodName).getName()+" but got TypeBoolean"));
                 break;
             case "Id":
-                Symbol returnSymbol=symbolTable.getLocalVariable(methodName, node.getJmmChild(0).get("name"));
-                if(returnSymbol==null){
-                    returnSymbol=symbolTable.getField(methodName, node.getJmmChild(0).get("name"));
-                }
-                if(returnSymbol==null){
-                    returnSymbol=symbolTable.getParameter(methodName, node.getJmmChild(0).get("name"));
-                }
+                Symbol returnSymbol=getDeclaredSymbol(node.getJmmChild(0).get("name"), methodName);
+                if(returnSymbol==null) break;
                 if(!symbolTable.getReturnType(methodName).getName().equals(returnSymbol.getType().getName())){
                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1, "Return value doesn't match the declared method type. Expected "+symbolTable.getReturnType(methodName).getName()+" but got "+returnSymbol.getType().getName()));
                 }
@@ -64,51 +73,90 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
             default:
                 break;
         }
-        return true;
     }
 
-    public Boolean checkDeclaredVars(JmmNode node, String methodName){
-        return true;
-    }
-
-    public Boolean visitScope(JmmNode node, String methodName){
+    private void visitScope(JmmNode node, String methodName){
         for (JmmNode child : node.getChildren()) {
             switch(child.getKind()){
                 case "WhileStatement":
-                    visitScope(node.getJmmChild(0), methodName);
+                    visitScope(child, methodName);
                     break;
                 case "IfStatement":
-                    visitScope(node.getJmmChild(0), methodName);
+                    visitScope(child, methodName);
                     break;    
                 case "Return":
-                    checkReturnType(node, methodName);
+                    visitScope(child, methodName);
+                    checkReturnType(child, methodName);
+                    break;
+                case "Id":
+                    Symbol s=getDeclaredSymbol(child.get("name"), methodName);
+                    if(s==null){
+                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"The variable with name '"+child.get("name")+"'' is used without being declared"));
+                    }
                     break;
                 case "Equality":
-                    checkDeclaredVars(node,methodName);
+                    checkValidEquality(child, methodName);
+                    visitScope(child, methodName);
+                    break;
+                case "SUM":
+                    if(!child.getJmmChild(0).getKind().equals("IntegerLiteral") || !child.getJmmChild(1).getKind().equals("IntegerLiteral")){
+                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Invalid operation: "+child.getJmmChild(0).getKind()+" + "+child.getJmmChild(1).getKind()));
+                    }
                     break;
                 default:
                     break;
             }
         }
-        return true;
     }
 
-    public Boolean visitMethod(JmmNode methodRoot,Boolean dummy){
+    private void checkValidEquality(JmmNode child, String methodName) {
+        String firstChildName=child.getJmmChild(0).get("name");
+        Symbol firstChildSymbol=getDeclaredSymbol(firstChildName, methodName);
+        if(firstChildSymbol==null) return;
+        String secondChildKind=child.getJmmChild(1).getKind();
+        switch(secondChildKind){
+            case "SUM":
+                if(!firstChildSymbol.getType().getName().equals("TypeInt")){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"The result of a sum can't be assigned to a var of type "+firstChildSymbol.getType().getName()));
+                }
+                break;
+            case "IntegerLiteral":
+                if(!firstChildSymbol.getType().getName().equals("TypeInt")){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Can't assign an Integer Literal to a var of type "+firstChildSymbol.getType().getName()));
+                }
+                break;
+            case "Boolean":
+                if(!firstChildSymbol.getType().getName().equals("TypeBoolean")){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Can't assign an Boolean to a var of type "+firstChildSymbol.getType().getName()));
+                }
+                break;
+            case "String":
+                if(!firstChildSymbol.getType().getName().equals("TypeString")){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Can't assign a String to a var of type "+firstChildSymbol.getType().getName()));
+                }
+                break;
+        }
+    }
+
+    private void visitMethod(JmmNode methodRoot){
         JmmNode methodBodyNode=null;
         String methodName=methodRoot.get("name");
         for (JmmNode child : methodRoot.getChildren()) {
             if(child.getKind().equals("MethodBody")){
                 methodBodyNode=child;
             }
+            else if(child.getKind().equals("Return")){
+                visitScope(child, methodName);
+                checkReturnType(child, methodName);
+            }
         }
         visitScope(methodBodyNode, methodName);
-        return true;
     }
 
     public Boolean visitClass(JmmNode classRoot,Boolean dummy){
         for (JmmNode child : classRoot.getChildren()) {
             if (child.getKind().equals("MainMethod") || child.getKind().equals("NormalMethod")) {
-                visitMethod(child, dummy);
+                visitMethod(child);
             }
         }
         return true;
