@@ -99,9 +99,9 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                     visitScope(child, methodName);
                     break;
                 case "SUM":
-                    if(!child.getJmmChild(0).getKind().equals("IntegerLiteral") || !child.getJmmChild(1).getKind().equals("IntegerLiteral")){
-                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Invalid operation: "+child.getJmmChild(0).getKind()+" + "+child.getJmmChild(1).getKind()));
-                    }
+                    // if(!child.getJmmChild(0).getKind().equals("IntegerLiteral") || !child.getJmmChild(1).getKind().equals("IntegerLiteral")){
+                    //     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Invalid operation: "+child.getJmmChild(0).getKind()+" + "+child.getJmmChild(1).getKind()));
+                    // }
                     break;
                 default:
                     break;
