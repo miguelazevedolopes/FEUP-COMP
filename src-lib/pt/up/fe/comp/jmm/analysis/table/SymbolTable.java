@@ -46,6 +46,8 @@ public interface SymbolTable {
      */
     List<Symbol> getParameters(String methodSignature);
 
+    Symbol getParameter(String methodSignature, String varName);
+
     /**
      * 
      * @param methodSignature
