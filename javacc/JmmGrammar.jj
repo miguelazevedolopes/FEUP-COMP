@@ -62,7 +62,6 @@ IdentifierRule #Id:
 	(<IDENTIFIER> {jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 
-
 Type #void: 
 	< INT >(< OPEN_BRACKETS > < CLOSE_BRACKETS > #TypeArray)? #TypeInt|
 	< BOOLEAN_TOKEN > #TypeBoolean|
@@ -121,8 +120,8 @@ VarDeclaration : Type IdentifierRule <SEMI_COLON>;
 NormalMethod : 
 	Type IdentifierRule <OPEN_PAREN> ( Type IdentifierRule ( <COMMA> Type IdentifierRule)*)?<CLOSE_PAREN> 
 	<OPEN_CURLY_BRACKETS>
-	MethodBody
-	(Return)?
+	(LOOKAHEAD VarDeclaration | Statement)*
+	(<RETURN> Expression <SEMI_COLON>)?
 	<CLOSE_CURLY_BRACKETS> 
 ;
 
