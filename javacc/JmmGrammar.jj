@@ -21,9 +21,9 @@ TOKEN :
 	< CLOSE_CURLY_BRACKETS: "}">|
 	< TRUE : "true"> |
 	< FALSE : "false"> |
-	< THIS : "this" > |
+	< THIS_TOKEN : "this" > |
 	< INT : "int" >|
-	< BOOLEAN : "boolean" > |
+	< BOOLEAN_TOKEN : "boolean" > |
 	< STRING : "String" > |
 	< NEW : "new" > |
 	< NOT : "!" > |
@@ -58,17 +58,17 @@ TOKEN :
 
 Start : ImportDeclaration ClassDeclaration < EOF >;
 
-Identifier #Id:
+IdentifierRule #Id:
 	(<IDENTIFIER> {jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 
 
 Type #void: 
-	< INT > (< OPEN_BRACKETS > < CLOSE_BRACKETS > #TypeArray)? #TypeInt  |
-	< BOOLEAN > #TypeBoolean|
+	< INT >(< OPEN_BRACKETS > < CLOSE_BRACKETS > #TypeArray)? #TypeInt|
+	< BOOLEAN_TOKEN > #TypeBoolean|
 	< VOID > #TypeVoid|
-	<STRING> (<OPEN_BRACKETS> <CLOSE_BRACKETS> #TypeArray)? #TypeString |
-    Identifier
+	< STRING > #TypeString|
+    IdentifierRule
 ;   
 
 Condition #void:
@@ -88,7 +88,7 @@ AccessToArray:
 ;
 
 Equality:
-	Identifier (AccessToArray)? <EQUAL> Expression <SEMI_COLON>
+	IdentifierRule (AccessToArray)? <EQUAL> Expression <SEMI_COLON>
 ;
 
 Statement #void:
@@ -102,36 +102,24 @@ Statement #void:
 
 
 ImportDeclaration : 
-	(<IMPORT> Identifier (<PERIOD> Identifier)* <SEMI_COLON>)* 
+	(<IMPORT> IdentifierRule (<PERIOD> IdentifierRule)* <SEMI_COLON>)* 
 ;
 
-Extends:
-	<EXTENDS> Identifier 
+ExtendsRule:
+	<EXTENDS> IdentifierRule 
 ;
 
 ClassDeclaration : 
-	(<PUBLIC>)?<CLASS> Identifier ( Extends )?  <OPEN_CURLY_BRACKETS>
+	(<PUBLIC>)?<CLASS> IdentifierRule ( ExtendsRule )?  <OPEN_CURLY_BRACKETS>
 	(VarDeclaration)*
 	(MethodDeclaration)*
 	<CLOSE_CURLY_BRACKETS>
 ;
 
-Param: 
-	Type <IDENTIFIER> ({jjtThis.put("name", lastConsumedToken.getImage()); })
-;
-
-Var: 
-	Type <IDENTIFIER> ({jjtThis.put("name", lastConsumedToken.getImage()); })
-;
-
-Return:
-	(<RETURN> Expression <SEMI_COLON>)
-;
-
-VarDeclaration #void: Var<SEMI_COLON>;
+VarDeclaration : Type IdentifierRule <SEMI_COLON>;
 	
 NormalMethod : 
-	Type <IDENTIFIER>  ({jjtThis.put("name", lastConsumedToken.getImage()); }) <OPEN_PAREN> (Param ( <COMMA> Param)*)?<CLOSE_PAREN> 
+	Type IdentifierRule <OPEN_PAREN> ( Type IdentifierRule ( <COMMA> Type IdentifierRule)*)?<CLOSE_PAREN> 
 	<OPEN_CURLY_BRACKETS>
 	MethodBody
 	(Return)?
@@ -139,7 +127,7 @@ NormalMethod :
 ;
 
 MainMethod :
-	<STATIC> <VOID> (<MAIN>  {jjtThis.put("name", lastConsumedToken.getImage()); }) <OPEN_PAREN> Param  <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
+	<STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_BRACKETS> <CLOSE_BRACKETS> IdentifierRule  <CLOSE_PAREN> <OPEN_CURLY_BRACKETS>
 	MethodBody
     
 	<CLOSE_CURLY_BRACKETS>
@@ -184,13 +172,13 @@ Div #void:
 ;
 
 DotExpression #void:
-	Expression2  (LOOKAHEAD(2) ((<PERIOD> (Identifier|<LENGTH>)	(<OPEN_PAREN>
+	Expression2  (LOOKAHEAD(2) ((<PERIOD> (IdentifierRule|<LENGTH>)	(<OPEN_PAREN>
 											(Expression() 
 												(<COMMA> Expression())*
 											)?
 											<CLOSE_PAREN>
 								  		)?
-								)#Identifier) #DotExpression(2))?
+								)#IdentifierRule) #DotExpression(2))?
 ;
 
 IntegerLiteral:
@@ -199,8 +187,8 @@ IntegerLiteral:
 
 Expression2 #void:
 	New
-	| ((Identifier (AccessToArray )? ))
-	| (<THIS> #This)
+	| ((IdentifierRule (AccessToArray )? ))
+	| (<THIS_TOKEN> #This)
 	| ((<TRUE> | <FALSE>) #Boolean)
 	| IntegerLiteral
 	| ( <NOT> DotExpression) #Negation
@@ -216,7 +204,7 @@ InitializeArray:
 ;
 
 NewObject:
-	Identifier <OPEN_PAREN> (Expression (<COMMA> Expression)*)? <CLOSE_PAREN>
+	IdentifierRule <OPEN_PAREN> (Expression (<COMMA> Expression)*)? <CLOSE_PAREN>
 ;
 
 AccessToArray:
