@@ -4,6 +4,7 @@ import java.util.stream.Collectors;
 
 import java_cup.runtime.symbol;
 import pt.up.fe.comp.ast.AstNode;
+import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
 import pt.up.fe.comp.jmm.ast.AJmmVisitor;
 import pt.up.fe.comp.jmm.ast.JmmNode; 
@@ -27,11 +28,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("MethodBody", this::methodBodyVisit);
         addVisit("Statement", this::exprStmtVisit);
         addVisit("DotExpression", this::memberCallVisit);
-        addVisit("Var", this::varDeclVisit);
-        addVisit("SUM", this::sumVisit);
-        addVisit("Equality", this::equalVisit);
-        addVisit("NewObject", this::newVisit);
-        addVisit("ReturnRule", this::returnVisit);
+        
+        // addVisit("SUM", this::sumVisit);
+        addVisit("Equality", this::assignVisit);
+        // addVisit("NewObject", this::newVisit);
+        // addVisit("ReturnRule", this::returnVisit);
     }
 
     public String getCode(){
@@ -130,35 +131,18 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private Integer memberCallVisit(JmmNode memberCall, Integer dummy){
         visit(memberCall.getJmmChild(0));
         //type missing
-        code.append(".").append(" ");
-        code.append("invokevirtual(");
-        code.append(memberCall.getJmmChild(0).get("name")).append(".").append(" , "); // type missing after .
+        code.append("invokestatic(");
+        code.append(memberCall.getJmmChild(0).get("name")).append(",\""); // type missing after .
         code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
-        for(int i = 1; i < memberCall.getJmmChild(1).getNumChildren(); i++){
-            code.append("");
-        }
-        code.append(").").append(" ");//type missing
+        // for(int i = 1; i < memberCall.getJmmChild(1).getNumChildren(); i++){
+        //     code.append("");
+        // }
+        code.append("\").").append("V;\n"); //TODO: Check Type depending on variable assigned (void if none) 
 
         return 0;
     }
 
-    //I think this counts as cheating but as long as it works
-   private Integer varDeclVisit(JmmNode varDecl, Integer dummy){
-        var locals = symbolTable.getLocalVariables(methodSignature);
-        var varcountmax = locals.size();
-        for (var local : locals){
-            if(varcount >= varcountmax) break;
-            code.append(local.getName()).append(".");
-            if (local.getType().isArray()){
-                code.append("array.");
-            }
-            code.append(local.getType().getName());
-            code.append(";\n");
-            varcount++;
-        }
-        
-        return 0;
-    }
+
 
     //needs This to work on the example i was using, else will crash after making symbol table
     private Integer sumVisit(JmmNode sumStmt, Integer dummy){
@@ -182,18 +166,27 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     //this one's done, i think
-    private Integer equalVisit(JmmNode equalStmt, Integer dummy){
-        code.append(equalStmt.getJmmChild(0).get("name")).append(":=");
-        for(int i = 1; i < equalStmt.getNumChildren(); i++){
-            var curstmt = equalStmt.getJmmChild(i);
-            if (curstmt.getKind().equals("Id")){
-                code.append(curstmt.get("name"));
-            } else if (curstmt.getKind().equals("IntegerLiteral")){
-                code.append(curstmt.get("value"));
-            } else visit(curstmt);
+    private Integer assignVisit(JmmNode assignStmt, Integer dummy){
+        code.append(assignStmt.getJmmChild(0).get("name")).append(".");
+
+        Symbol var = symbolTable.getLocalVariable(methodSignature, assignStmt.getJmmChild(0).get("name"));
+        String type =OllirUtils.getOllirType(var.getType().getName());
+        code.append(type);
+        code.append(" :=.");
+        code.append(type).append(" ");
+
+        Symbol var2 = symbolTable.getLocalVariable(methodSignature, assignStmt.getJmmChild(0).get("name"));
+        if(assignStmt.getJmmChild(1).getKind().equals("IntegerLiteral")){
+           code.append(assignStmt.getJmmChild(1).get("value"));
         }
-        code.append(";\n");
+        else{
+            code.append(assignStmt.getJmmChild(1).get("name"));
+        }
+        String type2 = OllirUtils.getOllirType(var.getType().getName());
+        code.append(".").append(type2).append(";\n");
+
         return 0;
+
     }
 
     //also done, iirc

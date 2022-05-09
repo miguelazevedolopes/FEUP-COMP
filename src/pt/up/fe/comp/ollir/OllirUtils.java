@@ -24,6 +24,7 @@ public class OllirUtils {
     public static String getOllirType(String jmmType){
 
         switch(jmmType){
+            case "TypeInt": return "i32";
             case "TypeString": return "String";
             case "void": return "V";
             default: return jmmType;
