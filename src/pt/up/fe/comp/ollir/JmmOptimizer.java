@@ -14,7 +14,7 @@ public class JmmOptimizer implements JmmOptimization {
         var OllirGenerator = new OllirGenerator(semanticsResult.getSymbolTable());
         OllirGenerator.visit(semanticsResult.getRootNode());
         var ollirCode = OllirGenerator.getCode();
-        // String ollirCode = SpecsIo.getResource("fixtures/public/ollir/Fac.ollir");
+        //String ollirCode = SpecsIo.getResource("fixtures/public/ollir/Fac.ollir");
 
         return new OllirResult(semanticsResult, ollirCode, Collections.emptyList());
     }

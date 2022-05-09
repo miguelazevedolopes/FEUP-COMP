@@ -12,6 +12,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private final StringBuilder code;
     private final SymbolTable symbolTable;
 
+    public String curMethRetType;
+    public String methodSignature;
+    public Integer varcount = 0;
+
     public OllirGenerator(SymbolTable symbolTable){
         this.code = new StringBuilder();
         this.symbolTable = symbolTable;
@@ -23,6 +27,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("MethodBody", this::methodBodyVisit);
         addVisit("Statement", this::exprStmtVisit);
         addVisit("DotExpression", this::memberCallVisit);
+        addVisit("Var", this::varDeclVisit);
+        addVisit("Equality", this::equalVisit);
+        addVisit("NewObject", this::newVisit);
+        addVisit("ReturnRule", this::returnVisit);
     }
 
     public String getCode(){
@@ -56,7 +64,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
 
     private Integer methodDeclVisit(JmmNode methodDecl, Integer dummy){
-        var methodSignature = methodDecl.get("name");
+        methodSignature = methodDecl.get("name");
         var isStatic = Boolean.valueOf(methodDecl.get("isStatic"));
 
         code.append(".method public ");
@@ -75,6 +83,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         code.append(paramCode);
 
         code.append(").");
+
+        curMethRetType = OllirUtils.getCode(symbolTable.getReturnType(methodSignature));
 
         code.append(OllirUtils.getCode(symbolTable.getReturnType(methodSignature)));
 
@@ -99,12 +109,12 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                 lastParamIndex = i;
             }
         }
-
-        // var stmts = methodBody.getChildren().subList(lastParamIndex +1, methodBody.getNumChildren());
-        // System.out.println(stmts);
-        // for(var stmt: stmts){
-        //     visit(stmt);
-        // }
+        varcount = 0;
+        var stmts = methodBody.getChildren().subList(lastParamIndex +1, methodBody.getNumChildren());
+        for(var stmt: stmts){
+            //System.out.println("stmt is:" + stmt.getKind());
+            visit(stmt);
+        }
 
         return 0;
     }
@@ -118,10 +128,75 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private Integer memberCallVisit(JmmNode memberCall, Integer dummy){
         visit(memberCall.getJmmChild(0));
-        code.append(".").append(memberCall.getJmmChild(1)).append("(");
+        code.append(".").append(" ");
+        code.append("invokevirtual(");
+        code.append(memberCall.getJmmChild(0).get("name")).append(".").append(" , ");
+        code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+        for(int i = 1; i < memberCall.getJmmChild(1).getNumChildren(); i++){
+            code.append("");
+        }
+        code.append(").").append(" ");
 
         return 0;
     }
+
+   private Integer varDeclVisit(JmmNode varDecl, Integer dummy){
+        var locals = symbolTable.getLocalVariables(methodSignature);
+        var varcountmax = locals.size();
+        for (var local : locals){
+            if(varcount >= varcountmax) break;
+            code.append(local.getName()).append(".");
+            if (local.getType().isArray()){
+                code.append("array.");
+            }
+            code.append(local.getType().getName());
+            code.append(";\n");
+            varcount++;
+        }
+        
+        return 0;
+    }
+
+    private Integer equalVisit(JmmNode equalStmt, Integer dummy){
+        code.append(equalStmt.getJmmChild(0).get("name")).append(":=");
+        for(int i = 1; i < equalStmt.getNumChildren(); i++){
+            var curstmt = equalStmt.getJmmChild(i);
+            if (curstmt.getKind().equals("Id")){
+                code.append(curstmt.get("name"));
+            } else if (curstmt.getKind().equals("IntegerLiteral")){
+                code.append(curstmt.get("value"));
+            } else visit(curstmt);
+        }
+        code.append(";\n");
+        return 0;
+    }
+
+    private Integer newVisit(JmmNode newStmt, Integer dummy){
+        code.append(".").append(newStmt.getJmmChild(0).get("name")).append(" new(");
+        code.append(newStmt.getJmmChild(0).get("name"));
+        for (int i = 1; i < newStmt.getNumChildren(); i++){
+            code.append(",");
+            var curstmt = newStmt.getJmmChild(i);
+            if (curstmt.getKind().equals("Id")){
+                code.append(curstmt.get("name"));
+            } else if (curstmt.getKind().equals("IntegerLiteral")){
+                code.append(curstmt.get("value"));
+            } else visit(curstmt);
+        }
+        code.append(")");
+        code.append(".").append(newStmt.getJmmChild(0).get("name"));
+        return 0;
+    }
+
+    private Integer returnVisit(JmmNode returnStmt, Integer dummy){
+        code.append("return stmt supposed here");
+        //code.append("ret.").append(curMethRetType).append(" ").append(returnStmt.getJmmChild(0).get("name")).append(returnStmt.getJmmChild(0).get("type"));
+
+        return 0;
+    }
+
+
+    
 
 
 
