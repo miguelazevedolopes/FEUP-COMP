@@ -129,18 +129,20 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private Integer memberCallVisit(JmmNode memberCall, Integer dummy){
         visit(memberCall.getJmmChild(0));
+        //type missing
         code.append(".").append(" ");
         code.append("invokevirtual(");
-        code.append(memberCall.getJmmChild(0).get("name")).append(".").append(" , ");
+        code.append(memberCall.getJmmChild(0).get("name")).append(".").append(" , "); // type missing after .
         code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
         for(int i = 1; i < memberCall.getJmmChild(1).getNumChildren(); i++){
             code.append("");
         }
-        code.append(").").append(" ");
+        code.append(").").append(" ");//type missing
 
         return 0;
     }
 
+    //I think this counts as cheating but as long as it works
    private Integer varDeclVisit(JmmNode varDecl, Integer dummy){
         var locals = symbolTable.getLocalVariables(methodSignature);
         var varcountmax = locals.size();
@@ -158,6 +160,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return 0;
     }
 
+    //needs This to work on the example i was using, else will crash after making symbol table
     private Integer sumVisit(JmmNode sumStmt, Integer dummy){
         /* var sumChild1 = sumStmt.getJmmChild(0);
         var sumChild2 = sumStmt.getJmmChild(1);
@@ -178,6 +181,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return 0;
     }
 
+    //this one's done, i think
     private Integer equalVisit(JmmNode equalStmt, Integer dummy){
         code.append(equalStmt.getJmmChild(0).get("name")).append(":=");
         for(int i = 1; i < equalStmt.getNumChildren(); i++){
@@ -192,6 +196,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return 0;
     }
 
+    //also done, iirc
     private Integer newVisit(JmmNode newStmt, Integer dummy){
         code.append(".").append(newStmt.getJmmChild(0).get("name")).append(" new(");
         code.append(newStmt.getJmmChild(0).get("name"));
@@ -209,6 +214,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return 0;
     }
 
+    //probs done
     private Integer returnVisit(JmmNode returnStmt, Integer dummy){
         code.append("return stmt supposed here");
         //code.append("ret.").append(curMethRetType).append(" ").append(returnStmt.getJmmChild(0).get("name")).append(returnStmt.getJmmChild(0).get("type"));
