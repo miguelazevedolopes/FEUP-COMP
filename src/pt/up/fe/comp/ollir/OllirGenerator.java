@@ -31,7 +31,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("DotExpression", this::memberCallVisit);
         
         // addVisit("SUM", this::sumVisit);
-        addVisit("Equality", this::assignVisit);
+        //addVisit("Equality", this::assignVisit);
         // addVisit("NewObject", this::newVisit);
         // addVisit("ReturnRule", this::returnVisit);
     }
@@ -115,7 +115,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         varcount = 0;
         var stmts = methodBody.getChildren().subList(lastParamIndex +1, methodBody.getNumChildren());
         for(var stmt: stmts){
-            //System.out.println("stmt is:" + stmt.getKind());
             visit(stmt);
         }
 
