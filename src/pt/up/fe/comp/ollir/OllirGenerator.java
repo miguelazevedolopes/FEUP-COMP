@@ -28,6 +28,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("Statement", this::exprStmtVisit);
         addVisit("DotExpression", this::memberCallVisit);
         addVisit("Var", this::varDeclVisit);
+        addVisit("SUM", this::sumVisit);
         addVisit("Equality", this::equalVisit);
         addVisit("NewObject", this::newVisit);
         addVisit("ReturnRule", this::returnVisit);
@@ -154,6 +155,26 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             varcount++;
         }
         
+        return 0;
+    }
+
+    private Integer sumVisit(JmmNode sumStmt, Integer dummy){
+        /* var sumChild1 = sumStmt.getJmmChild(0);
+        var sumChild2 = sumStmt.getJmmChild(1);
+        if (sumChild1.getKind().equals("Id")){
+            code.append(sumChild1.get("name"));
+        } else if (sumChild1.getKind().equals("IntegerLiteral")){
+            code.append(sumChild1.get("value"));
+        } else visit(sumChild1);
+
+        code.append(" + ");
+
+        if (sumChild2.getKind().equals("Id")){
+            code.append(sumChild2.get("name"));
+        } else if (sumChild2.getKind().equals("IntegerLiteral")){
+            code.append(sumChild2.get("value"));
+        } else visit(sumChild2); */
+
         return 0;
     }
 
