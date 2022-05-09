@@ -218,6 +218,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             code.append(OllirUtils.getOllirType("TypeIntArray"));
 
         }
+        else if (assignStmt.getJmmChild(1).getKind().equals("AccessToArray")){
+            code.append(assignStmt.getJmmChild(2).get("value")).append(".");
+            code.append(OllirUtils.getOllirType("TypeInt"));
+
+        }
         code.append(";\n");
 
         return 0;

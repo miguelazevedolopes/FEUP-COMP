@@ -8,6 +8,8 @@ class HelloWorld extends Hello {
 		ioPlus.printHelloWorld();
 
 		test_arr = new int[5];
+
+		test_arr[0] = 14;
 	}
 
 }
