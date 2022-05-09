@@ -79,9 +79,17 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
         for (JmmNode child : node.getChildren()) {
             switch(child.getKind()){
                 case "WhileStatement":
+                    String statementExpressionType = resolveType(child.getJmmChild(0),methodName);
+                    if(!statementExpressionType.equals("TypeBoolean")){
+                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Expressions in conditions must return a boolean, instead got "+ statementExpressionType));
+                    }
                     visitScope(child, methodName);
                     break;
                 case "IfStatement":
+                    statementExpressionType = resolveType(child.getJmmChild(0),methodName);
+                    if(!statementExpressionType.equals("TypeBoolean")){
+                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Expressions in conditions must return a boolean, instead got "+ statementExpressionType));
+                    }
                     visitScope(child, methodName);
                     break;    
                 case "Return":
@@ -114,6 +122,95 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                         reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Invalid operation: "+child.getJmmChild(0).getKind()+" + "+child.getJmmChild(1).getKind()));
                     }
                     break;
+                case "DotExpression":
+                    if(child.getJmmChild(0).getKind().equals("This")){
+                        String methodCallName=child.getJmmChild(1).getJmmChild(0).get("name");
+                        if(symbolTable.methodExists(methodCallName)){
+                            List<JmmNode> args=child.getJmmChild(1).getChildren();
+                            List<Symbol> params = symbolTable.getParameters(methodCallName);
+                            if((args.size()-1)!=params.size()){
+                                reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. Too many/little arguments."));
+                                
+                            }
+                            else{
+                                for (int i=1;i<args.size();i++) {
+                                    if(args.get(i).getKind().equals("Id")){
+                                        Symbol localVar=getDeclaredSymbol(args.get(i).get("name"),methodName);
+                                        if(localVar==null){
+                                            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"The variable with name '"+args.get(i).get("name")+"'' is used without being declared"));
+                                        }
+                                        else if(!params.get(i-1).getType().getName().equals(localVar.getType().getName())){
+                                            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. The param types don't match the ones being passed as argument."));
+                                        }
+                                    }
+                                    else if(args.get(i).getKind().equals("DotExpression")){
+                                        String type=resolveType(args.get(i), methodName);
+                                        if(!params.get(i-1).getType().getName().equals(type)){
+                                            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. The param types don't match the ones being passed as argument."));
+                                        }
+                                    }
+                                    else if(!params.get(i-1).getType().getName().equals(args.get(i).getKind())){
+                                        if(!(params.get(i-1).getType().getName().equals("TypeInt") && args.get(i).getKind().equals("IntegerLiteral")))
+                                            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. The param types don't match the ones being passed as argument."));
+                                    }
+                                }
+                            }
+                        }
+                        else if(symbolTable.getSuper().isEmpty()){
+                            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"'"+methodCallName+ "' : there is no such method with that signature."));
+                        }
+                    }
+                    else if(child.getJmmChild(0).getKind().equals("Id")){
+                        if(!symbolTable.getImports().contains(child.getJmmChild(0).get("name"))){
+                            Symbol firstIdentifier=getDeclaredSymbol(child.getJmmChild(0).get("name"),methodName);
+                            if(firstIdentifier==null){
+                                reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"The variable with name '"+child.getJmmChild(0).get("name")+"' is used without being declared"));
+                            }
+                            else{
+                                if(firstIdentifier.getType().getName().equals(symbolTable.getClassName())){
+
+                                    String methodCallName=child.getJmmChild(1).getJmmChild(0).get("name");
+                                    if(symbolTable.methodExists(methodCallName)){
+                                        List<JmmNode> args=child.getJmmChild(1).getChildren();
+                                        List<Symbol> params = symbolTable.getParameters(methodCallName);
+                                        if((args.size()-1)!=params.size()){
+                                            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. Too many/little arguments."));
+                                        }
+                                        else{
+                                            for (int i=1;i<args.size();i++) {
+                                                if(args.get(i).getKind().equals("Id")){
+                                                    Symbol localVar=getDeclaredSymbol(args.get(i).get("name"),methodName);
+                                                    if(localVar==null){
+                                                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"The variable with name '"+args.get(i).get("name")+"'' is used without being declared"));
+                                                    }
+                                                    else if(!params.get(i-1).getType().getName().equals(localVar.getType().getName())){
+                                                        if(!(params.get(i-1).getType().getName().equals("TypeInt") && args.get(i).getKind().equals("IntegerLiteral")))
+                                                            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. The param types don't match the ones being passed as argument."));
+                                                    }
+                                                }
+                                                else if(args.get(i).getKind().equals("DotExpression")){
+                                                    String type=resolveType(args.get(i), methodName);
+                                                    if(!params.get(i-1).getType().getName().equals(type)){
+                                                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. The param types don't match the ones being passed as argument."));
+                                                    }
+                                                }
+                                                else if(!(params.get(i-1).getType().getName().equals(args.get(i).getKind()))){
+                                                    if(!(params.get(i-1).getType().getName().equals("TypeInt") && args.get(i).getKind().equals("IntegerLiteral")))
+                                                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. The param types don't match the ones being passed as argument."));
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else if(symbolTable.getSuper().isEmpty()){
+                                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"'"+methodCallName+ "' : there is no such method with that signature."));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    
+                    break;
                 default:
                     break;
             }
@@ -135,43 +232,72 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                     return "Undefined";
                 }
                 else if (s.getType().isArray()){
-                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+s.getName()+"': "+"Array isn't being accessed properly"));
-                    return "Undefined";
+                    if(child.getChildren().size()==0 || !child.getJmmChild(0).getKind().equals("AccessToArray")){
+                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+s.getName()+"': "+"array isn't being accessed properly"));
+                        return "Undefined";
+                    }
+                    else{
+                        JmmNode indexAccessNode=child.getJmmChild(0).getJmmChild(0);
+                        if(!(indexAccessNode.getKind().equals("IntegerLiteral") || indexAccessNode.getKind().equals("Id")) ){
+                            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+s.getName()+"': "+"array access must be done using a integer type expression."));
+                            return "Undefined";
+                        }
+                        else if(indexAccessNode.getKind().equals("Id")){
+                            String indexAccessVarName=indexAccessNode.get("name");
+                            Symbol indexAccessSymbol=getDeclaredSymbol(indexAccessVarName, methodName);
+                            if(indexAccessSymbol==null){
+                                reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"The variable with name '"+indexAccessVarName+"' is used without being declared"));
+                                return "Undefined";
+                            }
+                            else{
+                                String indexVarType=indexAccessSymbol.getType().getName();
+                                if(!indexVarType.equals("TypeInt")){
+                                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+indexAccessVarName+"': "+"array access must be done using a integer type expression. Instead got var '"+indexAccessVarName+"' with type "+indexVarType));
+                                    return "Undefined";
+                                };
+                            }
+                        }
+                    }
+                    return s.getType().getName();
                 }
                 else{
                     return s.getType().getName();
                 }
-            // case "AccessToArray":
-            //     s=getDeclaredSymbol(child.get("name"), methodName);
-            //     if(s==null){
-            //         reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"The variable with name '"+child.get("name")+"'' is used without being declared"));
-            //         return "Undefined";
-            //     }
-            //     return "TypeInt";
             case "SUM":
                 return "TypeInt";
             case "MUL":
                 return "TypeInt";
             case "DotExpression":
-                if(child.getJmmChild(0).getKind().equals("This")){
-                    String name=child.getJmmChild(1).getJmmChild(0).get("name");
-                    return symbolTable.getReturnType(name).getName();
+                String dotExpressionMethodName=child.getJmmChild(1).getJmmChild(0).get("name");
+                if(symbolTable.methodExists(dotExpressionMethodName)){
+                    return symbolTable.getReturnType(dotExpressionMethodName).getName();
                 }
                 return "Undefined";
+            case "ANDD":
+                return "TypeBoolean";
+            case "Negation":
+                return "TypeBoolean";
+            case "LESSTHAN":
+                return "TypeBoolean";
         }
         return "Undefined";
     }
 
     private void checkValidEquality(JmmNode child, String methodName) {
-        String firstChildName=child.getJmmChild(0).get("name");
-        Symbol firstChildSymbol=getDeclaredSymbol(firstChildName, methodName);
-        if(firstChildSymbol==null) return;
-        String secondChildKind=child.getJmmChild(1).getKind();
+        
+        JmmNode firstChild=child.getJmmChild(0);
+        JmmNode secondChild=child.getJmmChild(1);
+        Symbol firstChildSymbol=getDeclaredSymbol(firstChild.get("name"), methodName);
         Boolean firstIsAccessed=false;
-        if(secondChildKind.equals("AccessToArray")){
-            secondChildKind=child.getJmmChild(2).getKind();
-            if(child.getJmmChild(1).getJmmChild(0).getKind().equals("Id")){
-                String indexVarName=child.getJmmChild(1).getJmmChild(0).get("name");
+        if(firstChild.getChildren().size()>0){
+            String arrayName=firstChild.get("name");
+            Symbol arraySymbol=getDeclaredSymbol(arrayName, methodName);
+            if(arraySymbol==null){
+                reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"The variable with name '"+arrayName+"' is used without being declared"));
+            }
+
+            if(firstChild.getJmmChild(0).getJmmChild(0).getKind().equals("Id")){
+                String indexVarName=firstChild.getJmmChild(0).getJmmChild(0).get("name");
                 Symbol indexVarSymbol=getDeclaredSymbol(indexVarName, methodName);
                 String indexVarType=null;
                 if(indexVarSymbol==null){
@@ -180,20 +306,20 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                 else{
                     indexVarType=getDeclaredSymbol(indexVarName, methodName).getType().getName();
                     if(!indexVarType.equals("TypeInt")){
-                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"array access must be done using a integer type expression. Instead got var '"+indexVarName+"' with type "+indexVarType));
+                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+arrayName+"': "+"array access must be done using a integer type expression. Instead got var '"+indexVarName+"' with type "+indexVarType));
                     };
                 }
                 
             }
-            else if(!child.getJmmChild(1).getJmmChild(0).getKind().equals("IntegerLiteral")){
-                reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"array access must be done using a integer type expression. Instead got type "+child.getJmmChild(1).getJmmChild(0).getKind()));
+            else if(!firstChild.getJmmChild(0).getJmmChild(0).getKind().equals("IntegerLiteral")){
+                reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+arrayName+"': "+"array access must be done using a integer type expression. Instead got type "+child.getJmmChild(1).getJmmChild(0).getKind()));
             }
             firstIsAccessed=true;
         }
         if(firstIsAccessed && !firstChildSymbol.getType().isArray()){
             reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"is not an array"));
         }
-        switch(secondChildKind){
+        switch(secondChild.getKind()){
             case "SUM":
                 if(!firstChildSymbol.getType().getName().equals("TypeInt")){
                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"The result of a sum can't be assigned to a var of type "+firstChildSymbol.getType().getName()));
@@ -226,7 +352,10 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Array isn't being accessed properly"));
                 }
                 break;
+            case "Id":
+                break;
         }
+        
     }
 
     private void visitMethod(JmmNode methodRoot){

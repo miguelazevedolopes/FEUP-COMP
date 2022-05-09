@@ -33,6 +33,8 @@ public interface SymbolTable {
      */
     List<String> getMethods();
 
+    Boolean methodExists(String methodSignature);
+
     /**
      * 
      * @return the return type of the given method

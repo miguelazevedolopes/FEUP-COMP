@@ -155,5 +155,15 @@ public class SymbolTableBuilder implements SymbolTable{
         }
         return null;
     }
+
+    @Override
+    public Boolean methodExists(String methodSignature) {
+        for (Method method : methods) {
+            if(method.getMethodSignature().equals(methodSignature))
+                return true;
+
+        }
+        return false;
+    }
     
 }

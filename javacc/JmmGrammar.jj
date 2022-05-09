@@ -59,9 +59,12 @@ TOKEN :
 Start : ImportDeclaration ClassDeclaration < EOF >;
 
 Identifier #Id:
-	(<IDENTIFIER> {jjtThis.put("name", lastConsumedToken.getImage()); })
+	(<IDENTIFIER> {jjtThis.put("name", lastConsumedToken.getImage()); }) (AccessToArray)?
 ;
 
+Length #Length:
+	<LENGTH>
+;
 
 Type #void: 
 	< INT > (< OPEN_BRACKETS > < CLOSE_BRACKETS > #TypeArray)? #TypeInt  |
@@ -80,7 +83,7 @@ WhileStatement:
 ;
 
 IfStatement:
-	<IF> Condition Statement <ELSE> Statement
+	<IF> Condition Statement (<ELSE> Statement)*
 ;
 
 AccessToArray:
@@ -88,7 +91,7 @@ AccessToArray:
 ;
 
 Equality:
-	Identifier (AccessToArray)? <EQUAL> Expression <SEMI_COLON>
+	Identifier <EQUAL> Expression <SEMI_COLON>
 ;
 
 Statement #void:
@@ -184,7 +187,7 @@ Div #void:
 ;
 
 DotExpression #void:
-	Expression2  (LOOKAHEAD(2) ((<PERIOD> (Identifier|<LENGTH>)	(<OPEN_PAREN>
+	Expression2  (LOOKAHEAD(2) ((<PERIOD> (Length|Identifier)	(<OPEN_PAREN>
 											(Expression() 
 												(<COMMA> Expression())*
 											)?
@@ -199,7 +202,7 @@ IntegerLiteral:
 
 Expression2 #void:
 	New
-	| ((Identifier (AccessToArray )? ))
+	| Identifier
 	| (<THIS> #This)
 	| ((<TRUE> | <FALSE>) #Boolean)
 	| IntegerLiteral
@@ -217,10 +220,6 @@ InitializeArray:
 
 NewObject:
 	Identifier <OPEN_PAREN> (Expression (<COMMA> Expression)*)? <CLOSE_PAREN>
-;
-
-AccessToArray:
-	<OPEN_BRACKETS> Expression <CLOSE_BRACKETS>
 ;
 
 
