@@ -2,6 +2,9 @@ package pt.up.fe.comp.jasmin;
 import javax.management.RuntimeErrorException;
 
 import org.specs.comp.ollir.ClassUnit;
+import org.specs.comp.ollir.Method;
+
+import pt.up.fe.specs.util.SpecsIo;
 
 public class OllirToJasmin{
 
@@ -17,10 +20,30 @@ public class OllirToJasmin{
     public String getCode(){
 
         var code = new StringBuilder();
-
         code.append(".class public ").append(ollir.getClassName()).append("\n"); //Add class name
-        code.append(".super "); //Add super class
-        code.append(ollir.getSuperClass()).append("\n");
+    
+        var superClassName = ollir.getSuperClass();
+        code.append(".super ").append(superClassName).append("\n"); //Add super class
+
+        /*Generate code for method
+        Always the same template*/
+        code.append(SpecsIo.getResource("src/pt/up/fe/comp/jasmin/jasminConstructor.template").replace("${SUPER_NAME}",superClassName)).append('\n');
+
+
+        //TODO: Generate fields
+
+
+
+        //TODO: Generate methods
+        
+        for(var method: ollir.getMethods()){
+            //System.out.println("METHOD " + method.getMethodName());
+            JasminMethod jasminMethod = new JasminMethod(method, ollir.getClassName());
+
+            
+
+        }
+
 
         return code.toString();
     }
