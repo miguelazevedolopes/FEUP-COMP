@@ -2,6 +2,7 @@ package pt.up.fe.comp.ollir;
 
 import java.util.stream.Collectors;
 
+import jasmin.sym;
 import java_cup.runtime.symbol;
 import pt.up.fe.comp.ast.AstNode;
 import pt.up.fe.comp.jmm.analysis.table.Symbol;
@@ -185,15 +186,26 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     //this one's done, i think
     private Integer assignVisit(JmmNode assignStmt, Integer dummy){
         Symbol symbol = symbolTable.getLocalVariable(methodSignature, assignStmt.getJmmChild(0).get("name"));
+        if(symbol == null){
+            symbol = symbolTable.getParam(methodSignature, assignStmt.getJmmChild(0).get("name"));
+        }
+        if(symbol == null){
+            symbol = symbolTable.getField(methodSignature, assignStmt.getJmmChild(0).get("name"));
+        }
         code.append(OllirUtils.getCode(symbol));
     
-
         code.append(" :=.");
         
         code.append(OllirUtils.getOllirType(symbol.getType().getName())).append(" ");
 
         if(assignStmt.getJmmChild(1).getKind().equals("Id")){
             Symbol symbol2 = symbolTable.getLocalVariable(methodSignature, assignStmt.getJmmChild(1).get("name"));
+            if(symbol2 == null){
+                symbol2 = symbolTable.getParam(methodSignature, assignStmt.getJmmChild(1).get("name"));
+            }
+            if(symbol2 == null){
+                symbol2 = symbolTable.getField(methodSignature, assignStmt.getJmmChild(1).get("name"));
+            }
             code.append(OllirUtils.getCode(symbol2));
         }
         else if (assignStmt.getJmmChild(1).getKind().equals("IntegerLiteral")){
