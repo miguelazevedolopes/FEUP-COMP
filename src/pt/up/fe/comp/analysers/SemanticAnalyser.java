@@ -99,9 +99,20 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                     visitScope(child, methodName);
                     break;
                 case "SUM":
-                    // if(!child.getJmmChild(0).getKind().equals("IntegerLiteral") || !child.getJmmChild(1).getKind().equals("IntegerLiteral")){
-                    //     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Invalid operation: "+child.getJmmChild(0).getKind()+" + "+child.getJmmChild(1).getKind()));
-                    // }
+                    visitScope(child, methodName);
+                    String firstOperandType = resolveType(child.getJmmChild(0),methodName);
+                    String secondOperandType = resolveType(child.getJmmChild(1),methodName);
+                    if(!firstOperandType.equals(secondOperandType) || !firstOperandType.equals("TypeInt")){
+                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Invalid operation: "+child.getJmmChild(0).getKind()+" + "+child.getJmmChild(1).getKind()));
+                    }
+                    break;
+                case "MUL":
+                    visitScope(child, methodName);
+                    firstOperandType = resolveType(child.getJmmChild(0),methodName);
+                    secondOperandType = resolveType(child.getJmmChild(1),methodName);
+                    if(!firstOperandType.equals(secondOperandType) || !(firstOperandType.equals("TypeInt") || firstOperandType.equals("TypeString") )){
+                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Invalid operation: "+child.getJmmChild(0).getKind()+" + "+child.getJmmChild(1).getKind()));
+                    }
                     break;
                 default:
                     break;
@@ -109,30 +120,110 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
         }
     }
 
+    private String resolveType(JmmNode child, String methodName) {
+        switch(child.getKind()){
+            case "Boolean":
+                return "TypeBoolean";
+            case "String":
+                return "TypeString";
+            case "IntegerLiteral":
+                return "TypeInt";
+            case "Id":
+                Symbol s=getDeclaredSymbol(child.get("name"), methodName);
+                if(s==null){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"The variable with name '"+child.get("name")+"'' is used without being declared"));
+                    return "Undefined";
+                }
+                else if (s.getType().isArray()){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+s.getName()+"': "+"Array isn't being accessed properly"));
+                    return "Undefined";
+                }
+                else{
+                    return s.getType().getName();
+                }
+            // case "AccessToArray":
+            //     s=getDeclaredSymbol(child.get("name"), methodName);
+            //     if(s==null){
+            //         reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"The variable with name '"+child.get("name")+"'' is used without being declared"));
+            //         return "Undefined";
+            //     }
+            //     return "TypeInt";
+            case "SUM":
+                return "TypeInt";
+            case "MUL":
+                return "TypeInt";
+            case "DotExpression":
+                if(child.getJmmChild(0).getKind().equals("This")){
+                    String name=child.getJmmChild(1).getJmmChild(0).get("name");
+                    return symbolTable.getReturnType(name).getName();
+                }
+                return "Undefined";
+        }
+        return "Undefined";
+    }
+
     private void checkValidEquality(JmmNode child, String methodName) {
         String firstChildName=child.getJmmChild(0).get("name");
         Symbol firstChildSymbol=getDeclaredSymbol(firstChildName, methodName);
         if(firstChildSymbol==null) return;
         String secondChildKind=child.getJmmChild(1).getKind();
+        Boolean firstIsAccessed=false;
+        if(secondChildKind.equals("AccessToArray")){
+            secondChildKind=child.getJmmChild(2).getKind();
+            if(child.getJmmChild(1).getJmmChild(0).getKind().equals("Id")){
+                String indexVarName=child.getJmmChild(1).getJmmChild(0).get("name");
+                Symbol indexVarSymbol=getDeclaredSymbol(indexVarName, methodName);
+                String indexVarType=null;
+                if(indexVarSymbol==null){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"The variable with name '"+indexVarName+"' is used without being declared"));
+                }
+                else{
+                    indexVarType=getDeclaredSymbol(indexVarName, methodName).getType().getName();
+                    if(!indexVarType.equals("TypeInt")){
+                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"array access must be done using a integer type expression. Instead got var '"+indexVarName+"' with type "+indexVarType));
+                    };
+                }
+                
+            }
+            else if(!child.getJmmChild(1).getJmmChild(0).getKind().equals("IntegerLiteral")){
+                reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"array access must be done using a integer type expression. Instead got type "+child.getJmmChild(1).getJmmChild(0).getKind()));
+            }
+            firstIsAccessed=true;
+        }
+        if(firstIsAccessed && !firstChildSymbol.getType().isArray()){
+            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"is not an array"));
+        }
         switch(secondChildKind){
             case "SUM":
                 if(!firstChildSymbol.getType().getName().equals("TypeInt")){
                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"The result of a sum can't be assigned to a var of type "+firstChildSymbol.getType().getName()));
+                }
+                else if(!firstIsAccessed && firstChildSymbol.getType().isArray()){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Array isn't being accessed properly"));
                 }
                 break;
             case "IntegerLiteral":
                 if(!firstChildSymbol.getType().getName().equals("TypeInt")){
                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Can't assign an Integer Literal to a var of type "+firstChildSymbol.getType().getName()));
                 }
+                else if(!firstIsAccessed && firstChildSymbol.getType().isArray()){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Array isn't being accessed properly"));
+                }
                 break;
             case "Boolean":
                 if(!firstChildSymbol.getType().getName().equals("TypeBoolean")){
                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Can't assign an Boolean to a var of type "+firstChildSymbol.getType().getName()));
                 }
+                else if(!firstIsAccessed && firstChildSymbol.getType().isArray()){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Array isn't being accessed properly"));
+                }
                 break;
             case "String":
                 if(!firstChildSymbol.getType().getName().equals("TypeString")){
                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Can't assign a String to a var of type "+firstChildSymbol.getType().getName()));
+                }
+                else if(!firstIsAccessed && firstChildSymbol.getType().isArray()){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,-1,"Variable '"+firstChildSymbol.getName()+"': "+"Array isn't being accessed properly"));
                 }
                 break;
         }
