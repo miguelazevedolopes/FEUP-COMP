@@ -88,6 +88,19 @@ public class SymbolTableBuilder implements SymbolTable{
         }
         return new ArrayList<Symbol>();
     }
+    @Override
+    public Symbol getParam(String methodSignature, String param) {
+        for (Method method : methods) {
+            if(method.getMethodSignature().equals(methodSignature))
+                for (Symbol symbol : method.getParameters()) {
+                    if(symbol.getName().equals(param))
+                        return symbol;
+                }
+        }
+        return null;
+    }
+
+
 
     @Override
     public List<Symbol> getLocalVariables(String methodSignature) {

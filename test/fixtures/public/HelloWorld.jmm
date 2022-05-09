@@ -1,10 +1,13 @@
 import ioPlus;
 class HelloWorld extends Hello {
+
 	public static void main(String[] args) {
+		int[] test_arr;
 		int a;
 		a = 10;
 		ioPlus.printHelloWorld();
-		a = 10;
+
+		test_arr = new int[5];
 	}
 
 }

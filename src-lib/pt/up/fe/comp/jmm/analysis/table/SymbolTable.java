@@ -57,6 +57,8 @@ public interface SymbolTable {
 
     Symbol getField(String methodSignature,String fieldName);
 
+    Symbol getParam(String methodSignature,String param);
+
     List<Method> getMethodList();
     /**
      * 

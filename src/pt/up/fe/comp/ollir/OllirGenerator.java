@@ -165,25 +165,48 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return 0;
     }
 
+    private Integer varVisit(JmmNode var, Integer dummy){
+
+        code.append(var.get("name")).append(".");
+
+        Symbol symbol = symbolTable.getLocalVariable(methodSignature, var.get("name"));
+        if(symbol == null){
+            symbol = symbolTable.getParam(methodSignature, var.get("name"));
+        }
+        if(symbol == null){
+            symbol = symbolTable.getField(methodSignature, var.get("name"));
+        }
+        String type =OllirUtils.getOllirType(symbol.getType().getName());
+        code.append(type);
+        return 0;
+    }
+
+
     //this one's done, i think
     private Integer assignVisit(JmmNode assignStmt, Integer dummy){
-        code.append(assignStmt.getJmmChild(0).get("name")).append(".");
+        Symbol symbol = symbolTable.getLocalVariable(methodSignature, assignStmt.getJmmChild(0).get("name"));
+        code.append(OllirUtils.getCode(symbol));
+    
 
-        Symbol var = symbolTable.getLocalVariable(methodSignature, assignStmt.getJmmChild(0).get("name"));
-        String type =OllirUtils.getOllirType(var.getType().getName());
-        code.append(type);
         code.append(" :=.");
-        code.append(type).append(" ");
+        
+        code.append(OllirUtils.getOllirType(symbol.getType().getName())).append(" ");
 
-        Symbol var2 = symbolTable.getLocalVariable(methodSignature, assignStmt.getJmmChild(0).get("name"));
-        if(assignStmt.getJmmChild(1).getKind().equals("IntegerLiteral")){
-           code.append(assignStmt.getJmmChild(1).get("value"));
+        if(assignStmt.getJmmChild(1).getKind().equals("Id")){
+            Symbol symbol2 = symbolTable.getLocalVariable(methodSignature, assignStmt.getJmmChild(1).get("name"));
+            code.append(OllirUtils.getCode(symbol2));
         }
-        else{
-            code.append(assignStmt.getJmmChild(1).get("name"));
+        else if (assignStmt.getJmmChild(1).getKind().equals("IntegerLiteral")){
+            code.append(assignStmt.getJmmChild(1).get("value")).append(".");
+            code.append(OllirUtils.getOllirType("TypeInt"));
+
         }
-        String type2 = OllirUtils.getOllirType(var.getType().getName());
-        code.append(".").append(type2).append(";\n");
+        else if (assignStmt.getJmmChild(1).getKind().equals("InitializeArray")){
+            code.append(assignStmt.getJmmChild(1).getJmmChild(0).getJmmChild(0).get("value")).append(".");
+            code.append(OllirUtils.getOllirType("TypeIntArray"));
+
+        }
+        code.append(";\n");
 
         return 0;
 

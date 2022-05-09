@@ -1,7 +1,9 @@
 package pt.up.fe.comp.ollir;
 
 import pt.up.fe.comp.jmm.analysis.table.Symbol;
+import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
 import pt.up.fe.comp.jmm.analysis.table.Type;
+import pt.up.fe.comp.jmm.ast.JmmNode;
 
 public class OllirUtils {
     
@@ -27,9 +29,12 @@ public class OllirUtils {
             case "TypeInt": return "i32";
             case "TypeString": return "String";
             case "void": return "V";
+            case "TypeIntArray": return "array.i32";
             default: return jmmType;
         }
     }
+
+
 
 
 }
