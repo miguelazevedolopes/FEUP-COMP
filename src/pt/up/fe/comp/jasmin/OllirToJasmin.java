@@ -39,8 +39,8 @@ public class OllirToJasmin{
         for(var method: ollir.getMethods()){
             //System.out.println("METHOD " + method.getMethodName());
             JasminMethod jasminMethod = new JasminMethod(method, ollir.getClassName());
+            jasminMethod.generateCode();
 
-            
 
         }
 

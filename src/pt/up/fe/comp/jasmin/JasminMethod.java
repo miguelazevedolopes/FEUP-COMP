@@ -37,25 +37,6 @@ public class JasminMethod {
         }
     }
 
-    private void generateDeclaration(){
-        jasminCode.append("\n\n.method ");
-
-        //TODO: Access modifiers
-        String accessModifiers = getAccessModifiers(method.getMethodAccessModifier(), method.isConstructMethod());
-        jasminCode.append(accessModifiers);
-
-        if (method.isConstructMethod())
-            jasminCode.append(" <init>");
-        else {
-            if (method.isStaticMethod()) jasminCode.append(" static");
-            if (method.isFinalMethod()) jasminCode.append(" final");
-
-            jasminCode.append(" ").append(method.getMethodName());
-        }
-        jasminCode.append("(").append(JasminUtils.getParametersFromMethod(this)).append(")");
-
-    }
-
     private String getAccessModifiers(AccessModifiers accessModifier, boolean isConstructMethod){
         switch (accessModifier) {
             case PUBLIC:
@@ -69,6 +50,24 @@ public class JasminMethod {
             default:
                 return "";
         }
+    }
+
+    private void generateDeclaration(){
+        jasminCode.append("\n\n.method ");
+
+        String accessModifiers = getAccessModifiers(method.getMethodAccessModifier(), method.isConstructMethod());
+        jasminCode.append(accessModifiers);
+
+        if (method.isConstructMethod())
+            jasminCode.append(" <init>");
+        else {
+            if (method.isStaticMethod()) jasminCode.append(" static");
+            if (method.isFinalMethod()) jasminCode.append(" final");
+
+            jasminCode.append(" ").append(method.getMethodName());
+        }
+        jasminCode.append("(").append(JasminUtils.getParametersFromMethod(this)).append(")");
+
     }
 
     public void generateReturnType() {
@@ -95,7 +94,7 @@ public class JasminMethod {
         jasminCode.append(res);
     }
 
-    public void getCode(){
+    public void generateCode(){
 
         generateDeclaration();
         generateReturnType();
