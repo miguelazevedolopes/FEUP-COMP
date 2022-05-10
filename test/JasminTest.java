@@ -25,7 +25,7 @@ public class JasminTest {
 
         System.out.println("-----Jasmin Code-----\n\n" + jasminResult.getJasminCode());
         TestUtils.noErrors(jasminResult);
-        jasminResult.run();
+        jasminResult.compile();
         //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
     }
 
