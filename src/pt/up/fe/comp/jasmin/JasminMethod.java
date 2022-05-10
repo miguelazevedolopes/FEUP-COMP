@@ -94,17 +94,40 @@ public class JasminMethod {
         jasminCode.append(res);
     }
 
-    public void generateCode(){
+    public String getCode(){
 
         generateDeclaration();
+
         generateReturnType();
         
         //TODO: Next are instructions
+
+        for(var inst: method.getInstructions()){
+            generateInstruction(inst);
+        }
 
 
 
 
         jasminCode.append("\n.end method");
+
+        return jasminCode.toString();
+    }
+
+    private void generateInstruction(Instruction instruction) {
+        StringBuilder auxiliaryJasmin = new StringBuilder();
+        String currLabel = "";
+        if (!method.getLabels(instruction).isEmpty()){
+            if (!currLabel.equals(method.getLabels(instruction).get(0))) {
+                currLabel = method.getLabels(instruction).get(0);
+                for (String label : method.getLabels(instruction)) {
+                    auxiliaryJasmin.append("\n\t").append(label).append(":");
+                }
+            }
+        }
+                
+
+
     } 
 
     

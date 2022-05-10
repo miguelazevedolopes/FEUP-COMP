@@ -1,6 +1,7 @@
 package pt.up.fe.comp.jasmin;
-import javax.management.RuntimeErrorException;
+import java.util.ArrayList;
 
+import javax.management.RuntimeErrorException;
 import org.specs.comp.ollir.ClassUnit;
 import org.specs.comp.ollir.Method;
 
@@ -12,6 +13,7 @@ public class OllirToJasmin{
     protected StringBuilder jasminCode;
 
     public OllirToJasmin(ClassUnit ollir){
+        jasminCode = new StringBuilder();
         this.ollir = ollir;
     }
 
@@ -19,34 +21,45 @@ public class OllirToJasmin{
 
     public String getCode(){
 
-        var code = new StringBuilder();
-        code.append(".class public ").append(ollir.getClassName()).append("\n"); //Add class name
-    
-        var superClassName = ollir.getSuperClass();
-        code.append(".super ").append(superClassName).append("\n"); //Add super class
+        jasminCode.append(".class public ").append(ollir.getClassName()).append("\n"); //Add class name
+        
+        
+        String superClassName = ollir.getSuperClass();
+
+        if(superClassName == null){
+            superClassName = "java/lang/Object";
+        }
+        jasminCode.append(".super ").append(superClassName).append("\n"); //Add super class
+
 
         /*Generate code for method
         Always the same template*/
-        code.append(SpecsIo.getResource("src/pt/up/fe/comp/jasmin/jasminConstructor.template").replace("${SUPER_NAME}",superClassName)).append('\n');
-
+        String template = getTemplate();
+        jasminCode.append(template.replace("${SUPER_NAME}",superClassName)).append('\n');
 
         //TODO: Generate fields
 
 
 
-        //TODO: Generate methods
-        
-        for(var method: ollir.getMethods()){
-            //System.out.println("METHOD " + method.getMethodName());
-            JasminMethod jasminMethod = new JasminMethod(method, ollir.getClassName());
-            jasminMethod.generateCode();
-
-
+        //TODO: Generate the rest of the methods
+        ArrayList<Method> methods = ollir.getMethods();
+        for(var method: methods.subList(1, methods.size())){
+            JasminMethod jasminMethod = new JasminMethod(method, ollir.getClassName());           
+            jasminCode.append(jasminMethod.getCode());
         }
 
 
-        return code.toString();
+        return jasminCode.toString();
     }
+
+    private String getTemplate() {
+        StringBuilder template = new StringBuilder();
+        template.append(".method public <init>()V\n").append("\taload_0\n");
+        template.append("\tinvokenonvirtual ${SUPER_NAME}<init>()V\n").append("\treturn\n").append(".end method");
+        return template.toString();
+    }
+
+
 
     public String getSuperClass(String className){
         for (var importString : ollir.getImports()){
