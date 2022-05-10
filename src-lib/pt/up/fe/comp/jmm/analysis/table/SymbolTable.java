@@ -3,6 +3,7 @@ package pt.up.fe.comp.jmm.analysis.table;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 public interface SymbolTable {
 
     /**
@@ -113,5 +114,8 @@ public interface SymbolTable {
 
         return builder.toString();
     }
+
+    String getVariableType(String methodSignature, String name);
+
 
 }

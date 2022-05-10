@@ -27,9 +27,16 @@ public class OllirUtils {
 
         switch(jmmType){
             case "TypeInt": return "i32";
+            case "IntegerLiteral": return "i32";
             case "TypeString": return "String";
             case "void": return "V";
             case "TypeIntArray": return "array.i32";
+            case "ANDD": return "&&";
+            case "SUM": return "+";
+            case "SUB": return "-";
+            case "LESSTHAN": return "<";
+            case "MUL": return "*";
+            case "DIV": return "/";
             default: return jmmType;
         }
     }

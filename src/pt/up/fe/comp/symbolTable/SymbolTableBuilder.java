@@ -5,7 +5,6 @@ import java.util.List;
 
 import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.Method;
-
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
 import pt.up.fe.comp.jmm.analysis.table.Type;
 
@@ -153,6 +152,19 @@ public class SymbolTableBuilder implements SymbolTable{
             }
         }
         return null;
+    }
+
+    @Override
+    public String getVariableType(String methodSignature, String name) {
+        Symbol s = getLocalVariable(methodSignature, name);
+        if(s == null){
+            s = getParam(methodSignature, name);
+        }
+        if(s==null){
+            s=getField(methodSignature, name);
+        }
+        // TODO Auto-generated method stub
+        return s.getType().getName();
     }
     
 }
