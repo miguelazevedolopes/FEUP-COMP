@@ -238,7 +238,7 @@ public class JasminMethod {
 
         var methodClass = ((Operand)instruction.getFirstArg()).getName();
         Element secondArg = instruction.getSecondArg();
-        instruction.getSecondArg().show();
+
         code.append(methodClass).append("/"); //TODO fully classified name
         code.append(((LiteralElement) secondArg).getLiteral().replace("\"", ""));
 

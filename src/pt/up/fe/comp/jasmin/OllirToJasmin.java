@@ -52,7 +52,7 @@ public class OllirToJasmin{
     private String getTemplate() {
         StringBuilder template = new StringBuilder();
         template.append(".method public <init>()V\n").append("\taload_0\n");
-        template.append("\tinvokenonvirtual ${SUPER_NAME}<init>()V\n").append("\treturn\n").append(".end method");
+        template.append("\tinvokenonvirtual ${SUPER_NAME}/<init>()V\n").append("\treturn\n").append(".end method");
         return template.toString();
     }
 
