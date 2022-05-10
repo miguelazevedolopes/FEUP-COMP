@@ -34,7 +34,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("NormalMethod", this::methodDeclVisit);
         addVisit("MethodBody", this::methodBodyVisit);
         addVisit("Equality", this::stmtVisit);
-        addVisit("DotExpression", this::expressionVisit);
+        addVisit("DotExpression", this::stmtVisit);
         /*
         addVisit("SUM", this::twoWayVisit);
         addVisit("SUB", this::twoWayVisit);
@@ -114,14 +114,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
 
     private Integer methodBodyVisit(JmmNode methodBody, Integer dummy){
-        int lastParamIndex = -1;
-        for(int i = 0; i < methodBody.getNumChildren(); i++){
-            if(methodBody.getJmmChild(i).getKind().equals("Param")){
-                lastParamIndex = i;
-            }
-        }
-        varcount = 0;
-        var stmts = methodBody.getChildren().subList(lastParamIndex +1, methodBody.getNumChildren());
+
+        var stmts = methodBody.getChildren();
+        System.out.println(stmts);
         for(var stmt: stmts){
             visit(stmt);
         }
@@ -158,7 +153,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         }
         expressionVisit(assignStmt.getJmmChild(i),0);
 
-        code.append(";\n");
     }
 
 
@@ -179,6 +173,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "IntegerLiteral": code.append(expression.get("value")).append(".").append(OllirUtils.getOllirType("TypeInt")); break;
             case "InitializeArray": code.append("new(array, ").append(expression.getJmmChild(0).getJmmChild(0).get("value"))
                                         .append(".").append(OllirUtils.getOllirType("TypeInt")).append(").array.i32"); break;
+            case "NewObject": code.append("new").append(expression.getJmmChild(0).get("name"));
             // case "AccessToArray": code.append(arg0)
             default: break;
         }
@@ -192,7 +187,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "StatementBlock": break;
             case "IfStatement": break;
             case "WhileStatement": break;
-            case "Equality": assignStmtVisit(stmt);break; //Assignment
+            case "Equality": assignStmtVisit(stmt); code.append(";\n"); break; //Assignment
+            case "DotExpression": expressionVisit(stmt, dummy); code.append(";\n"); break; 
         }
         return 0;
     }
@@ -223,8 +219,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         //TODO: Check Type depending on variable assigned (void if none);
         //kind of solved, added every function from the imports as V, don't know if that is correct
-        if(met1 != null) code.append("\").").append(OllirUtils.getOllirType(met1.getType().getName())).append(";\n");
-        else  code.append("\").").append("V;\n"); 
+        if(met1 != null) code.append("\").").append(OllirUtils.getOllirType(met1.getType().getName()));
+        else  code.append("\").V");
 
     }
 
