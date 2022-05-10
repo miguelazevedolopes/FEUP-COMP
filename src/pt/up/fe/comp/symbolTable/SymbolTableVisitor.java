@@ -92,6 +92,9 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
         }
         else{
             String typeName = node.getChildren().get(0).getKind();
+            if(typeName.equals("Id")){
+                typeName = node.getChildren().get(0).get("name");
+            }
             if(node.getChildren().get(0).getChildren().size()>0){
                 type = new Type(typeName, true);
             }
