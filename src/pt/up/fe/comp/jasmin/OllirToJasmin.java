@@ -24,12 +24,9 @@ public class OllirToJasmin{
         jasminCode.append(".class public ").append(ollir.getClassName()).append("\n"); //Add class name
         
         
-        String superClassName = ollir.getSuperClass();
+        String superClassName =  getFullyClassifiedName(ollir.getSuperClass());
 
-        if(superClassName == null){
-            superClassName = "java/lang/Object";
-        }
-        jasminCode.append(".super ").append(superClassName).append("\n"); //Add super class
+        jasminCode.append(".super ").append(superClassName).append("\n\n"); //Add super class
 
 
         /*Generate code for method
@@ -44,7 +41,7 @@ public class OllirToJasmin{
         //TODO: Generate the rest of the methods
         ArrayList<Method> methods = ollir.getMethods();
         for(var method: methods.subList(1, methods.size())){
-            JasminMethod jasminMethod = new JasminMethod(method, ollir.getClassName());           
+            JasminMethod jasminMethod = new JasminMethod(method, ollir.getClassName(), ollir.getSuperClass(), ollir);           
             jasminCode.append(jasminMethod.getCode());
         }
 
@@ -61,7 +58,7 @@ public class OllirToJasmin{
 
 
 
-    public String getSuperClass(String className){
+    public String getFullyClassifiedName(String className){
         for (var importString : ollir.getImports()){
             var imports = importString.split("\\."); //get all imports
 
@@ -79,7 +76,7 @@ public class OllirToJasmin{
 
 
         }
-        throw new RuntimeErrorException(null, "Couldn't find import for the class " + className);
+        return "java/lang/Object";
 
     }
 }

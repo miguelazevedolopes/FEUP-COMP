@@ -18,10 +18,25 @@ public class JasminTest {
         JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
 
         System.out.println("-----Jasmin Code-----\n\n" + jasminResult.getJasminCode());
-        
+        TestUtils.noErrors(jasminResult);
         jasminResult.compile();
         //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
     }
+
+    @Test
+    public void testCompileHelloWorld(){
+
+        String ollirCode =  SpecsIo.getResource("fixtures/public/ollir/HelloWorld.ollir");
+
+        OllirResult ollirResult = new OllirResult(ollirCode, null);
+        JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
+
+        System.out.println("-----Jasmin Code-----\n\n" + jasminResult.getJasminCode());
+        TestUtils.noErrors(jasminResult);
+        jasminResult.compile();
+        //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
+    }
+
 
     @Test
     public void testRunHelloWorld() {
