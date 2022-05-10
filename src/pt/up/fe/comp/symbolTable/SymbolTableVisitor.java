@@ -84,7 +84,7 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
         String name = node.get("name");
         Type type = null;
         if(symbolTable.hasMethod(name)){
-            reports.add(new Report(ReportType.ERROR, Stage.SEMANTIC, -1,"Found duplicate method with signature "+name));
+            reports.add(new Report(ReportType.ERROR, Stage.SEMANTIC, Integer.parseInt(node.get("line")),Integer.parseInt(node.get("col")),"Found duplicate method with signature "+name));
             return false;
         }
         if(name.equals("main")){
