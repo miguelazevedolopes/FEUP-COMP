@@ -48,7 +48,7 @@ class Lazysort extends Quicksort {
         int _allowedNameL;
         int _allowedNameI;
 		int rand;
-        _allowedNameL = L.length;
+        _allowedNameL = L.lengt; //TODO: length not working as id
         
         _allowedNameI = 0;
         while (_allowedNameI < _allowedNameL/2) {

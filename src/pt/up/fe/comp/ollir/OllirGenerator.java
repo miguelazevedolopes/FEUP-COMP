@@ -116,7 +116,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private Integer methodBodyVisit(JmmNode methodBody, Integer dummy){
 
         var stmts = methodBody.getChildren();
-        System.out.println(stmts);
         for(var stmt: stmts){
             visit(stmt);
         }
@@ -196,13 +195,17 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private void memberCallVisit(JmmNode memberCall){
         visit(memberCall.getJmmChild(0));
         //type missing
+        System.out.println("No error1");
         if(memberCall.getJmmChild(0).getKind().equals("This")){
             code.append("invokespecial(").append("this, \"<init>");
         } else {
             code.append("invokestatic(");
+
             code.append(memberCall.getJmmChild(0).get("name")).append(",\"");
             code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
         }
+
+        System.out.println("No error3");
         // for(int i = 1; i < memberCall.getJmmChild(1).getNumChildren(); i++){
         //     code.append("");
         // } 
@@ -210,6 +213,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         Method met1 = null;
         for (var s : symbolTable.getMethodList()){
             //System.out.println("in for");
+            System.out.println(memberCall.getKind() + "-> " + memberCall.getNumChildren());
+            System.out.println(memberCall.getJmmChild(1));
+            System.out.println(memberCall.getJmmChild(1).getJmmChild(0));
+            System.out.println("");
             if (s.getMethodSignature().equals(memberCall.getJmmChild(1).getJmmChild(0).get("name"))){
                 //System.out.println("in if: "+ s.getMethodSignature());
                 met1 = s;
