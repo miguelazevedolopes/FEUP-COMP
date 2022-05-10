@@ -7,6 +7,7 @@ import java_cup.runtime.symbol;
 import pt.up.fe.comp.ast.AstNode;
 import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
+import pt.up.fe.comp.jmm.analysis.table.Method;
 import pt.up.fe.comp.jmm.ast.AJmmVisitor;
 import pt.up.fe.comp.jmm.ast.JmmNode; 
 
@@ -17,6 +18,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     public String curMethRetType;
     public String methodSignature;
     public Integer varcount = 0;
+
+    public Symbol twoWaySymbol1 = null;
+    public Method twoWayMethod1 = null;
+    public Symbol twoWaySymbol2 = null;
+    public Method twoWayMethod2 = null;
 
     public OllirGenerator(SymbolTable symbolTable){
         this.code = new StringBuilder();
@@ -30,10 +36,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("Statement", this::exprStmtVisit);
         addVisit("DotExpression", this::memberCallVisit);
         
-        // addVisit("SUM", this::sumVisit);
-        //addVisit("Equality", this::assignVisit);
-        // addVisit("NewObject", this::newVisit);
-        // addVisit("ReturnRule", this::returnVisit);
+        /* addVisit("SUM", this::twoWayVisit);
+        addVisit("SUB", this::twoWayVisit);
+        addVisit("MUL", this::twoWayVisit);
+        addVisit("DIV", this::twoWayVisit);
+        addVisit("Equality", this::assignVisit);
+        addVisit("NewObject", this::newVisit);
+        addVisit("ReturnRule", this::returnVisit); */
     }
 
     public String getCode(){
@@ -131,36 +140,101 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private Integer memberCallVisit(JmmNode memberCall, Integer dummy){
         visit(memberCall.getJmmChild(0));
         //type missing
-        code.append("invokestatic(");
-        code.append(memberCall.getJmmChild(0).get("name")).append(",\""); // type missing after .
-        code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+        if(memberCall.getJmmChild(0).getKind().equals("This")){
+            code.append("invokespecial(").append("this, \"<init>");
+        } else {
+            code.append("invokestatic(");
+            code.append(memberCall.getJmmChild(0).get("name")).append(",\"");
+            code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+        }
         // for(int i = 1; i < memberCall.getJmmChild(1).getNumChildren(); i++){
         //     code.append("");
-        // }
-        code.append("\").").append("V;\n"); //TODO: Check Type depending on variable assigned (void if none) 
+        // } 
+
+        Method met1 = null;
+        for (var s : symbolTable.getMethodList()){
+            //System.out.println("in for");
+            if (s.getMethodSignature().equals(memberCall.getJmmChild(1).getJmmChild(0).get("name"))){
+                //System.out.println("in if: "+ s.getMethodSignature());
+                met1 = s;
+                break;
+            }
+        }
+
+        //TODO: Check Type depending on variable assigned (void if none);
+        //kind of solved, added every function from the imports as V, don't know if that is correct
+        if(met1 != null) code.append("\").").append(OllirUtils.getOllirType(met1.getType().getName())).append(";\n");
+        else  code.append("\").").append("V;\n"); 
 
         return 0;
     }
 
 
-
-    //needs This to work on the example i was using, else will crash after making symbol table
-    private Integer sumVisit(JmmNode sumStmt, Integer dummy){
-        /* var sumChild1 = sumStmt.getJmmChild(0);
+    private Integer twoWayVisit(JmmNode sumStmt, Integer dummy){
+        var sumChild1 = sumStmt.getJmmChild(0);
         var sumChild2 = sumStmt.getJmmChild(1);
+        
+        if(sumStmt.getJmmChild(0).getKind().equals("DotExpression")){
+            for (var s : symbolTable.getMethodList()){
+                if (s.getMethodSignature().equals(sumStmt.getJmmChild(0).getJmmChild(1).getJmmChild(0).get("name"))){
+                    twoWayMethod1 = s;
+                    break;
+                }
+            }
+        } else{
+            twoWaySymbol1 = symbolTable.getLocalVariable(methodSignature, sumStmt.getJmmChild(0).get("name"));
+            if(twoWaySymbol1 == null){
+                twoWaySymbol1 = symbolTable.getParam(methodSignature, sumStmt.getJmmChild(0).get("name"));
+            }
+            if(twoWaySymbol1 == null){
+                twoWaySymbol1 = symbolTable.getField(methodSignature, sumStmt.getJmmChild(0).get("name"));
+            }
+        }
+
+        if(sumStmt.getJmmChild(1).getKind().equals("DotExpression")){
+            for (var s : symbolTable.getMethodList()){
+                if (s.getMethodSignature().equals(sumStmt.getJmmChild(1).getJmmChild(1).getJmmChild(0).get("name"))){
+                    twoWayMethod2 = s;
+                    break;
+                }
+            }
+        } else{
+            twoWaySymbol2 = symbolTable.getLocalVariable(methodSignature, sumStmt.getJmmChild(1).get("name"));
+            if(twoWaySymbol2 == null){
+                twoWaySymbol2 = symbolTable.getParam(methodSignature, sumStmt.getJmmChild(1).get("name"));
+            }
+            if(twoWaySymbol2 == null){
+                twoWaySymbol2 = symbolTable.getField(methodSignature, sumStmt.getJmmChild(1).get("name"));
+            }
+        }
+
+        code.append("t1.");
+        if(twoWaySymbol1 != null) code.append(OllirUtils.getOllirType(twoWaySymbol1.getType().getName())).append(" ");
+        else code.append(OllirUtils.getOllirType(twoWayMethod1.getType().getName())).append(" ");
+        code.append(":=.");
+        if(twoWaySymbol1 != null) code.append(OllirUtils.getOllirType(twoWaySymbol1.getType().getName())).append(" ");
+        else code.append(OllirUtils.getOllirType(twoWayMethod1.getType().getName())).append(" ");
         if (sumChild1.getKind().equals("Id")){
-            code.append(sumChild1.get("name"));
+            code.append(sumChild1.get("name")).append(".");
         } else if (sumChild1.getKind().equals("IntegerLiteral")){
-            code.append(sumChild1.get("value"));
+            code.append(sumChild1.get("value")).append(".");
         } else visit(sumChild1);
+        if(twoWaySymbol1 != null) code.append(OllirUtils.getOllirType(twoWaySymbol1.getType().getName())).append("\n");
+        else code.append(OllirUtils.getOllirType(twoWayMethod1.getType().getName())).append("\n");        
 
-        code.append(" + ");
-
+        code.append("t2.");
+        if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append(" ");
+        else code.append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append(" ");
+        code.append(":=.");
+        if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append(" ");
+        else code.append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append(" ");
         if (sumChild2.getKind().equals("Id")){
-            code.append(sumChild2.get("name"));
+            code.append(sumChild2.get("name")).append(".");
         } else if (sumChild2.getKind().equals("IntegerLiteral")){
-            code.append(sumChild2.get("value"));
-        } else visit(sumChild2); */
+            code.append(sumChild2.get("value")).append(".");
+        } else visit(sumChild2);
+        if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append("\n");
+        //else code.append(".").append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append("\n"); 
 
         return 0;
     }
@@ -182,7 +256,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
 
-    //this one's done, i think
+    //this one's done, I think
     private Integer assignVisit(JmmNode assignStmt, Integer dummy){
         Symbol symbol = symbolTable.getLocalVariable(methodSignature, assignStmt.getJmmChild(0).get("name"));
         if(symbol == null){
@@ -223,7 +297,98 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                 code.append(OllirUtils.getOllirType("TypeInt"));
             }
 
+        } else if (assignStmt.getJmmChild(1).getKind().equals("SUM")){
+            var symbolCode = OllirUtils.getCode(symbol);
+            var typeCode = OllirUtils.getOllirType(symbol.getType().getName());
+            code.delete(code.length()-symbolCode.length()-typeCode.length()-5, code.length()-1);
+            visit(assignStmt.getJmmChild(1));
+
+            //TODO: meter os tipos do t1 e t2 na soma
+            code.append(OllirUtils.getCode(symbol));
+    
+            code.append(" :=.");
+        
+            code.append(OllirUtils.getOllirType(symbol.getType().getName())).append(" ");
+
+            code.append("t1.");
+            if(twoWaySymbol1 != null) code.append(OllirUtils.getOllirType(twoWaySymbol1.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod1.getType().getName())).append(" ");
+            code.append("+ .");
+            if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append(" ");
+            code.append("t2.");
+            if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append(" ");
+
+        }  else if (assignStmt.getJmmChild(1).getKind().equals("MUL")){
+            var symbolCode = OllirUtils.getCode(symbol);
+            var typeCode = OllirUtils.getOllirType(symbol.getType().getName());
+            code.delete(code.length()-symbolCode.length()-typeCode.length()-5, code.length()-1);
+
+            visit(assignStmt.getJmmChild(1));
+
+            //TODO: meter os tipos do t1 e t2 na soma
+            code.append(OllirUtils.getCode(symbol));
+    
+            code.append(" :=.");
+        
+            code.append(OllirUtils.getOllirType(symbol.getType().getName())).append(" ");
+            code.append("t1.");
+            if(twoWaySymbol1 != null) code.append(OllirUtils.getOllirType(twoWaySymbol1.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod1.getType().getName())).append(" ");
+            code.append("* .");
+            if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append(" ");
+            code.append("t2.");
+            if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append(" ");
+
+        } else if (assignStmt.getJmmChild(1).getKind().equals("SUB")){
+            var symbolCode = OllirUtils.getCode(symbol);
+            var typeCode = OllirUtils.getOllirType(symbol.getType().getName());
+            code.delete(code.length()-symbolCode.length()-typeCode.length()-5, code.length()-1);
+
+            visit(assignStmt.getJmmChild(1));
+
+            //TODO: meter os tipos do t1 e t2 na soma
+            code.append(OllirUtils.getCode(symbol));
+    
+            code.append(" :=.");
+        
+            code.append(OllirUtils.getOllirType(symbol.getType().getName())).append(" ");
+            code.append("t1.");
+            if(twoWaySymbol1 != null) code.append(OllirUtils.getOllirType(twoWaySymbol1.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod1.getType().getName())).append(" ");
+            code.append("- .");
+            if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append(" ");
+            code.append("t2.");
+            if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append(" ");
+        } else if (assignStmt.getJmmChild(1).getKind().equals("DIV")){
+            var symbolCode = OllirUtils.getCode(symbol);
+            var typeCode = OllirUtils.getOllirType(symbol.getType().getName());
+            code.delete(code.length()-symbolCode.length()-typeCode.length()-5, code.length()-1);
+
+            visit(assignStmt.getJmmChild(1));
+
+            //TODO: meter os tipos do t1 e t2 na soma
+            code.append(OllirUtils.getCode(symbol));
+    
+            code.append(" :=.");
+        
+            code.append(OllirUtils.getOllirType(symbol.getType().getName())).append(" ");
+            code.append("t1.");
+            if(twoWaySymbol1 != null) code.append(OllirUtils.getOllirType(twoWaySymbol1.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod1.getType().getName())).append(" ");
+            code.append("/ .");
+            if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append(" ");
+            code.append("t2.");
+            if(twoWaySymbol2 != null) code.append(OllirUtils.getOllirType(twoWaySymbol2.getType().getName())).append(" ");
+            else code.append(OllirUtils.getOllirType(twoWayMethod2.getType().getName())).append(" ");
         }
+
         code.append(";\n");
 
         return 0;
