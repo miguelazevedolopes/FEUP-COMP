@@ -222,7 +222,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         code.append("t").append(tempCount).append(".i32 :=.i32 ");
         code.append("t").append(tempCount-1).append(".i32 ");
         code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
-            .append(".").append(OllirUtils.getOllirType(binOp.getJmmChild(1).getKind())).append(" ");
+            .append(".").append(getType(binOp.getJmmChild(1))).append(" ");
         expressionVisit(binOp.getJmmChild(1), 0);
         code.append(";\n");
         tempCount++;
