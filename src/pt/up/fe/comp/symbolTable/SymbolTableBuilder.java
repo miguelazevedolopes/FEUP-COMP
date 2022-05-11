@@ -18,8 +18,8 @@ public class SymbolTableBuilder implements SymbolTable{
 
     public SymbolTableBuilder() {
         this.imports = new ArrayList<>();
-        this.className = null;
-        this.superExtends = null;
+        this.className = new String();
+        this.superExtends = new String();
         this.fields = new ArrayList<>();
         this.methods = new ArrayList<>();
     }

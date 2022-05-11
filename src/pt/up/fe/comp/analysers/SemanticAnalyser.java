@@ -37,6 +37,7 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
             returnSymbol=symbolTable.getParameter(methodName, name);
         }
         return returnSymbol;
+        
     }
 
     private void checkReturnType(JmmNode node, String methodName){
@@ -64,7 +65,7 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                     }
                     visitScope(child, methodName);
                     break;    
-                case "Return":
+                case "ReturnRule":
                     visitScope(child, methodName);
                     checkReturnType(child, methodName);
                     break;
@@ -350,7 +351,7 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
             if(child.getKind().equals("MethodBody")){
                 methodBodyNode=child;
             }
-            else if(child.getKind().equals("Return")){
+            else if(child.getKind().equals("ReturnRule")){
                 visitScope(child, methodName);
                 checkReturnType(child, methodName);
             }
