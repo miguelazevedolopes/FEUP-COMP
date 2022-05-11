@@ -84,7 +84,7 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
         String name = node.get("name");
         Type type = null;
         if(symbolTable.hasMethod(name)){
-            reports.add(new Report(ReportType.ERROR, Stage.SEMANTIC, -1,"Found duplicate method with signature "+name));
+            reports.add(new Report(ReportType.ERROR, Stage.SEMANTIC, Integer.parseInt(node.get("line")),Integer.parseInt(node.get("col")),"Found duplicate method with signature "+name));
             return false;
         }
         if(name.equals("main")){
@@ -92,6 +92,9 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
         }
         else{
             String typeName = node.getChildren().get(0).getKind();
+            if(typeName.equals("Id")){
+                typeName = node.getChildren().get(0).get("name");
+            }
             if(node.getChildren().get(0).getChildren().size()>0){
                 type = new Type(typeName, true);
             }
@@ -105,10 +108,11 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
         for (int i = 0; i < children.size(); i++){
             JmmNode child = children.get(i);
             
-            if(child.getKind().contains("Param")){
+            if(child.getKind().equals("Param")){
                 boolean isArray = false;
-                if(child.getJmmChild(0).getNumChildren() > 0 && child.getJmmChild(0).getJmmChild(0).getKind().contains("TypeArray")){
-                    isArray=true;
+                if(child.getJmmChild(0).getChildren().size()>0){
+                    if(child.getJmmChild(0).getJmmChild(0).getKind().equals("TypeArray"))
+                        isArray=true;
                 }
                 Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));
                 parameters.add(symbol);
@@ -131,6 +135,11 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
             if(child.getKind().contains("Var")){
                 boolean isArray = false;
                 JmmNode varType=child.getJmmChild(0);
+                if(varType.getChildren().size()>0){
+                    if(varType.getJmmChild(0).getKind().equals("TypeArray")){
+                        isArray=true;
+                    }
+                }
                 Symbol symbol;
                 if(varType.getKind().equals("Id")){
                     symbol = new Symbol(new Type(varType.get("name"),isArray), child.get("name"));

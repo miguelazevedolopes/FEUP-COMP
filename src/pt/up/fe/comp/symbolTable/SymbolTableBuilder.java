@@ -102,6 +102,19 @@ public class SymbolTableBuilder implements SymbolTable{
 
 
     @Override
+    public Symbol getParameter(String methodSignature, String varName){
+        for (Method method : methods) {
+            if(method.getMethodSignature().equals(methodSignature))
+                for (Symbol param : method.getParameters()) {
+                    if(param.getName().equals(varName)){
+                        return param;
+                    }
+                }
+        }
+        return null;
+    }
+
+    @Override
     public List<Symbol> getLocalVariables(String methodSignature) {
         for (Method method : methods) {
             if(method.getMethodSignature().equals(methodSignature))
@@ -155,6 +168,16 @@ public class SymbolTableBuilder implements SymbolTable{
     }
 
     @Override
+    public Boolean methodExists(String methodSignature) {
+        for (Method method : methods) {
+            if(method.getMethodSignature().equals(methodSignature))
+                return true;
+
+        }
+        return false;
+    }
+
+    @Override
     public String getVariableType(String methodSignature, String name) {
         Symbol s = getLocalVariable(methodSignature, name);
         if(s == null){
@@ -163,7 +186,6 @@ public class SymbolTableBuilder implements SymbolTable{
         if(s==null){
             s=getField(methodSignature, name);
         }
-        // TODO Auto-generated method stub
         return s.getType().getName();
     }
     
