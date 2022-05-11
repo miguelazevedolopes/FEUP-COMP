@@ -37,6 +37,10 @@ public class JasminMethod {
         return superName;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
     /**
      * Increment stack and update stackMax in case it's value is exceeded
      */
@@ -113,146 +117,24 @@ public class JasminMethod {
 
     }
 
-    public String getJasminType(ElementType type) {
-        String res = "";
-        //switch (method.getReturnType().getTypeOfElement()) {
-        switch (type) {
-            case INT32:
-                res = "I";
-                break;
-            case BOOLEAN:
-                res = "Z";
-                break;
-            case ARRAYREF:
-                res = "[I";
-                break;
-            case OBJECTREF:
-                res = this.className;
-                break;
-            case VOID:
-                res = "V";
-                break;
-            default:
-                break;
-        }
-        return res;
-    }
-
+    
     public String getCode(){
 
         generateDeclaration();
 
-        jasminCode.append(getJasminType(method.getReturnType().getTypeOfElement()));
+        jasminCode.append(JasminUtils.getJasminType(method.getReturnType().getTypeOfElement(), className));
         
         jasminCode.append("\n\t.limit stack 99\n");
         jasminCode.append("\t.limit locals 99\n");
 
+        // Get code for each instruction in method
         for(var inst: method.getInstructions()){
-           jasminCode.append(getCode(inst));
+           jasminCode.append(new JasminInstruction(inst, this).getCode());
         }
         
         jasminCode.append("\n.end method");
 
         return jasminCode.toString();
-    }
-
-    private String getCode(Instruction instruction) {
-
-        StringBuilder code = new StringBuilder();
-        switch (instruction.getInstType()) {
-            case CALL:
-                code.append(getCode((CallInstruction) instruction));
-                break;
-            case RETURN:
-                code.append(getCode((ReturnInstruction) instruction));
-                break;
-            // case ASSIGN:
-            //     getCode((CallInstruction) instruction, false);
-            //     break;
-            // case PUTFIELD:
-            //     getCode((PutFieldInstruction) instruction);
-            //     break;
-            // case BRANCH:
-            //     getCode((CondBranchInstruction) instruction);
-            //     break;
-            // case GOTO:
-            //     getCode((GotoInstruction) instruction);
-            //     break;
-
-            default:
-                throw new NotImplementedException("Intruction Type not implemented: " + instruction.getInstType().toString());
-        }
-
-        return code.toString();
-    } 
-
-
-    //TODO Incomplete
-    private String getCode(ReturnInstruction instruction){
-        var code = new StringBuilder();
-
-        Element op = instruction.getOperand();
-        
-
-        code.append("\n\treturn");
-
-        return code.toString();
-
-    }
-
-    private String getCode(CallInstruction instruction){
-
-        var code = new StringBuilder();
-        /*TODO
-        invokevirtual,
-        invokeinterface,
-        invokespecial,
-        invokestatic,
-        NEW,
-        arraylength,
-        ldc
-         */
-        switch(instruction.getInvocationType()){
-            case invokestatic:
-                code.append(getInvokeSataticCode(instruction));
-                break;
-            default:
-                throw new NotImplementedException(instruction.getInvocationType());
-        }
-
-
-        return code.toString();
-
-    }
-
-    private String getInvokeSataticCode(CallInstruction instruction) {
-        StringBuilder code = new StringBuilder();
-
-        code.append("\tinvokestatic ");
-
-        var methodClass = ((Operand)instruction.getFirstArg()).getName();
-        Element secondArg = instruction.getSecondArg();
-
-        code.append(methodClass).append("/"); //TODO fully classified name
-        code.append(((LiteralElement) secondArg).getLiteral().replace("\"", ""));
-
-        code.append("(");
-        
-        //Operands
-        for(var operand: instruction.getListOfOperands()){
-            getArgumentsCode(operand);
-        }
-        code.append(")");
-
-        code.append(getJasminType(instruction.getReturnType().getTypeOfElement()));
-        return code.toString();
-
-
-    }
-
-    //TODO operands
-    private void getArgumentsCode(Element operand) {
-        throw new NotImplementedException(operand.toString());
     }
     
 }
