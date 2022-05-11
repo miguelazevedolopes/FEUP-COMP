@@ -29,6 +29,7 @@ public class OllirUtils {
             case "TypeInt": return "i32";
             case "IntegerLiteral": return "i32";
             case "TypeString": return "String";
+            case "TypeBoolean": return "bool";
             case "void": return "V";
             case "TypeIntArray": return "array.i32";
             case "ANDD": return "&&";

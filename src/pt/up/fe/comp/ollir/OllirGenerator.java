@@ -64,7 +64,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private Integer classDeclVisit(JmmNode classDecl, Integer dummy){
         code.append("public ").append(symbolTable.getClassName());
         var superClass = symbolTable.getSuper();
-        if (superClass != null) code.append(" extends ").append(superClass);
+        if (!superClass.isEmpty()) code.append(" extends ").append(superClass);
         code.append("{\n");
 
         for (var child : classDecl.getChildren()){
@@ -191,8 +191,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             return counter +1;
         }
 
-        tempCount++;
         code.append("t").append(tempCount).append(".i32 :=.i32 ");
+        tempCount++;
         code.append("t").append(tempCount-1).append(".i32 ");
         code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
             .append(".").append(OllirUtils.getOllirType(binOp.getJmmChild(1).getKind())).append(" ");

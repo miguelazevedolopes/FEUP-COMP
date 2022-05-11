@@ -1,21 +1,13 @@
 import ioPlus;
-class HelloWorld extends Hello {
+class HelloWorld {
 
 	public static void main(String[] args) {
 		int[] test_arr;
 		int a;
 		int b;
-		b = 10 * 5 + 4 + 7;
-		//ioPlus.printHelloWorld();
-
-		//test_arr = new int[5];
-		//test_arr[0] = 14+5;
-		//test_arr[1] = 14-6;
-		//test_arr[2] = 14<7;
-		//test_arr[3] = 14/8;
-		//test_arr[4] = 14*9;
-		//a = test_arr[0];
+		b = 10 * 5 + a + 7;
 	}
+
 
 }
 
