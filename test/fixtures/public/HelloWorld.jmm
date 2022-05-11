@@ -8,6 +8,12 @@ class HelloWorld {
 		b = 10 * 5 + a + 7;
 	}
 
+	public int hello(int[] x){
+		int a;
+		a = 2;
+		return a + 5;
+	}
+
 
 }
 

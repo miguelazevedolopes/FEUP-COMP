@@ -37,13 +37,14 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("MethodBody", this::methodBodyVisit);
         addVisit("Equality", this::stmtVisit);
         addVisit("DotExpression", this::stmtVisit);
+        addVisit("ReturnRule", this::returnVisit); 
         /*
         addVisit("SUM", this::twoWayVisit);
         addVisit("SUB", this::twoWayVisit);
         addVisit("MUL", this::twoWayVisit);
         addVisit("DIV", this::twoWayVisit);
         addVisit("NewObject", this::newVisit);
-        addVisit("ReturnRule", this::returnVisit); */
+        */
     }
 
     public String getCode(){
@@ -104,9 +105,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         code.append(" {\n");
 
         for (var child : methodDecl.getChildren()){
-            if(child.getKind().equals("MethodBody")){
+            if(child.getKind().equals("MethodBody") || child.getKind().equals("ReturnRule")){
                 visit(child);
             }
+            
         }
 
         code.append("}\n");
@@ -122,6 +124,34 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             visit(stmt);
         }
 
+        return 0;
+    }
+
+    private String getType(JmmNode node){
+        if(node.getKind().equals("IntegerLiteral"))
+            return "i32";
+        if(node.getKind().equals("Id"))
+            return OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, node.get("name")));
+        return OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, node.get("name")));
+    }
+
+    private Integer returnVisit(JmmNode returnStmt, Integer dummy){
+        String type = "";
+        if(isBinOp(returnStmt.getJmmChild(0))){
+            type = OllirUtils.getOllirType(getType(returnStmt.getJmmChild(0).getJmmChild(1)));
+            code.append("t" + tempCount +".").append(type)
+                .append(" :=.").append(type).append(" ");
+            binOpVisit(returnStmt.getJmmChild(0), 0);
+            code.append(";\n");
+        }
+        code.append("ret.").append(OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName()))
+            .append(" ");
+        if(isBinOp(returnStmt.getJmmChild(0))){
+            code.append("t" + tempCount +"." + type);
+        }
+        else
+            expressionVisit(returnStmt.getJmmChild(0), dummy);
+        code.append(";\n");
         return 0;
     }
 
@@ -146,9 +176,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         }
         idVisit(assignStmt.getJmmChild(0));
 
-        String type = symbolTable.getVariableType(methodSignature, assignStmt.getJmmChild(0).get("name"));
-
-        code.append(" :=.").append(OllirUtils.getOllirType(type)).append(" ");
+        code.append(" :=.").append(getType(assignStmt.getJmmChild(0))).append(" ");
 
         int i = 1;
         if(assignStmt.getJmmChild(1).getKind().equals("AccessToArray"))
@@ -157,7 +185,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         if(counter == 0)
             expressionVisit(assignStmt.getJmmChild(i),0);
         else
-            code.append("t").append(tempCount + ".i32 ").append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getKind()))
+            code.append("t").append(tempCount-1 + ".i32 ").append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getKind()))
                 .append(".").append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getJmmChild(1).getKind())).append(" ")
                 .append(expressionVisit(assignStmt.getJmmChild(1).getJmmChild(1), 0));
 
@@ -174,30 +202,30 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         }
         if(!isBinOp(binOp.getJmmChild(0)) && !isBinOp(binOp.getJmmChild(1))){
             if(counter != 0){
-                tempCount++;
                 code.append("t").append(tempCount).append(".i32 :=.i32 ");
+                tempCount++;
                 expressionVisit(binOp.getJmmChild(0), 0);
                 code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
-                    .append(".").append(OllirUtils.getOllirType(binOp.getJmmChild(0).getKind())).append(" ");
+                    .append(".").append(getType(binOp.getJmmChild(0))).append(" ");
                 expressionVisit(binOp.getJmmChild(1), 0);
                 code.append(";\n");
             }
             else{
                 expressionVisit(binOp.getJmmChild(0), 0);
                 code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
-                    .append(".").append(OllirUtils.getOllirType(binOp.getJmmChild(0).getKind())).append(" ");
+                    .append(".").append(getType(binOp.getJmmChild(0))).append(" ");
                 expressionVisit(binOp.getJmmChild(1), 0);
             }
             return counter +1;
         }
 
         code.append("t").append(tempCount).append(".i32 :=.i32 ");
-        tempCount++;
         code.append("t").append(tempCount-1).append(".i32 ");
         code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
             .append(".").append(OllirUtils.getOllirType(binOp.getJmmChild(1).getKind())).append(" ");
         expressionVisit(binOp.getJmmChild(1), 0);
         code.append(";\n");
+        tempCount++;
         return counter;
     }
 
