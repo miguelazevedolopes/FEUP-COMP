@@ -2,13 +2,7 @@ package pt.up.fe.comp.jasmin;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.javacc.parser.tree.Literal;
-
 import org.specs.comp.ollir.*;
-
-import freemarker.core.builtins.sourceBI;
-import pt.up.fe.specs.util.classmap.FunctionClassMap;
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
 
 

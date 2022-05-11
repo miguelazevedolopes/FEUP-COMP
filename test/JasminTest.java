@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import org.junit.Test;
 import pt.up.fe.comp.TestUtils;
 import pt.up.fe.comp.jasmin.JasminEmitter;
-import pt.up.fe.comp.jasmin.OllirToJasmin;
 import pt.up.fe.comp.jmm.jasmin.JasminResult;
 import pt.up.fe.comp.jmm.ollir.OllirResult;
 import pt.up.fe.specs.util.SpecsIo;
@@ -32,7 +31,6 @@ public class JasminTest {
     @Test
     public void testRunHelloWorld() throws IOException{
         Path path = Paths.get("test/fixtures/public/jasmin/HelloWorld2.j");
-
         
         String ollirCode =  SpecsIo.getResource("fixtures/public/ollir/HelloWorld.ollir");
 
