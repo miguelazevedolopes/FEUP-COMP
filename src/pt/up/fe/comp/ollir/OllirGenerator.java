@@ -9,7 +9,8 @@ import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
 import pt.up.fe.comp.jmm.analysis.table.Method;
 import pt.up.fe.comp.jmm.ast.AJmmVisitor;
-import pt.up.fe.comp.jmm.ast.JmmNode; 
+import pt.up.fe.comp.jmm.ast.JmmNode;
+import pt.up.fe.specs.util.exceptions.NotImplementedException; 
 
 public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private final StringBuilder code;
@@ -18,6 +19,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     public String curMethRetType;
     public String methodSignature;
     public Integer varcount = 0;
+    public Integer tempCount = 0;
 
     public Symbol twoWaySymbol1 = null;
     public Method twoWayMethod1 = null;
@@ -138,32 +140,76 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private void assignStmtVisit(JmmNode assignStmt){
-
+        int counter = 0;
+        if(isBinOp(assignStmt.getJmmChild(1)) && isBinOp(assignStmt.getJmmChild(1).getJmmChild(0))){
+            counter = binOpVisit(assignStmt.getJmmChild(1), 0);
+        }
         idVisit(assignStmt.getJmmChild(0));
 
         String type = symbolTable.getVariableType(methodSignature, assignStmt.getJmmChild(0).get("name"));
 
-        code.append(" :=.").append(OllirUtils.getOllirType(type)).append(" "); //TODO: not sure if the type here is from left node
+        code.append(" :=.").append(OllirUtils.getOllirType(type)).append(" ");
 
         int i = 1;
         if(assignStmt.getJmmChild(1).getKind().equals("AccessToArray"))
-        {
             i = 2;
-        }
-        expressionVisit(assignStmt.getJmmChild(i),0);
 
+        if(counter == 0)
+            expressionVisit(assignStmt.getJmmChild(i),0);
+        else
+            code.append("t").append(tempCount + ".i32 ").append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getKind()))
+                .append(".").append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getJmmChild(1).getKind())).append(" ")
+                .append(expressionVisit(assignStmt.getJmmChild(1).getJmmChild(1), 0));
+
+    }
+
+    Boolean isBinOp(JmmNode op){
+        String kind = op.getKind();
+        return kind.equals("ANDD") || kind.equals("SUM") || kind.equals("SUB") || kind.equals("LESSTHAN") || kind.equals("MUL") || kind.equals("DIV");
+    }
+
+    private Integer binOpVisit(JmmNode binOp, Integer counter){
+        if(isBinOp(binOp.getJmmChild(0))){
+            counter = binOpVisit(binOp.getJmmChild(0), counter+1);
+        }
+        if(!isBinOp(binOp.getJmmChild(0)) && !isBinOp(binOp.getJmmChild(1))){
+            if(counter != 0){
+                tempCount++;
+                code.append("t").append(tempCount).append(".i32 :=.i32 ");
+                expressionVisit(binOp.getJmmChild(0), 0);
+                code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
+                    .append(".").append(OllirUtils.getOllirType(binOp.getJmmChild(0).getKind())).append(" ");
+                expressionVisit(binOp.getJmmChild(1), 0);
+                code.append(";\n");
+            }
+            else{
+                expressionVisit(binOp.getJmmChild(0), 0);
+                code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
+                    .append(".").append(OllirUtils.getOllirType(binOp.getJmmChild(0).getKind())).append(" ");
+                expressionVisit(binOp.getJmmChild(1), 0);
+            }
+            return counter +1;
+        }
+
+        tempCount++;
+        code.append("t").append(tempCount).append(".i32 :=.i32 ");
+        code.append("t").append(tempCount-1).append(".i32 ");
+        code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
+            .append(".").append(OllirUtils.getOllirType(binOp.getJmmChild(1).getKind())).append(" ");
+        expressionVisit(binOp.getJmmChild(1), 0);
+        code.append(";\n");
+        return counter;
     }
 
 
     private Integer expressionVisit(JmmNode expression, Integer dummy){
         String kind = expression.getKind();
 
-        if(kind.equals("ANDD") || kind.equals("SUM") || kind.equals("SUB") || kind.equals("LESSTHAN") || kind.equals("MUL") || kind.equals("DIV")){
-            expressionVisit(expression.getJmmChild(0),0);
-            code.append(" ").append(OllirUtils.getOllirType(kind)).append(".").append(OllirUtils.getOllirType(expression.getJmmChild(0).getKind())).append(" ");
-            expressionVisit(expression.getJmmChild(1),0);
+        if(isBinOp(expression)){
+            binOpVisit(expression, 0);
+            return 0;
         }
-        switch(expression.getKind()){
+        switch(kind){
             case "Id": idVisit(expression); break;
             case "DotExpression": memberCallVisit(expression); break;
             case "This": break;
@@ -174,7 +220,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                                         .append(".").append(OllirUtils.getOllirType("TypeInt")).append(").array.i32"); break;
             case "NewObject": code.append("new").append(expression.getJmmChild(0).get("name"));
             // case "AccessToArray": code.append(arg0)
-            default: break;
+            default: 
+            throw new NotImplementedException("OLLIR: Expression kind not implemented: " + expression.getKind());
         }
         return 0;
     }
@@ -183,11 +230,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private Integer stmtVisit(JmmNode stmt, Integer dummy){
         String stmtType = stmt.getKind().toString();
         switch(stmtType){
-            case "StatementBlock": break;
-            case "IfStatement": break;
-            case "WhileStatement": break;
+            // case "StatementBlock": break;
+            // case "IfStatement": break;
+            // case "WhileStatement": break;
             case "Equality": assignStmtVisit(stmt); code.append(";\n"); break; //Assignment
             case "DotExpression": expressionVisit(stmt, dummy); code.append(";\n"); break; 
+            default: 
+            throw new NotImplementedException("OLLIR: Statement kind not implemented: " + stmt.getKind());
         }
         return 0;
     }
