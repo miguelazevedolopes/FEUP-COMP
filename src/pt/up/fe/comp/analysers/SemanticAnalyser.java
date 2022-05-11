@@ -332,7 +332,7 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                 Type secondChildType=resolveType(secondChild, methodName);
                 if(!firstChildType.getName().equals(secondChildType.getName())){
                     if(!(symbolTable.getImports().contains(firstChildType.getName()) &&symbolTable.getImports().contains(secondChildType.getName()))){
-                        if(!symbolTable.getClass().getName().contains(firstChildType.getName()) && ! symbolTable.getSuper().contains(secondChildType.getName())){
+                        if(!(symbolTable.getClassName().equals(secondChildType.getName()) && symbolTable.getSuper().equals(firstChildType.getName()))){
                             reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Can't assign variable of type '" + secondChildType.getName()+ "' to variable of type '"+ firstChildType.getName() + "'"));
                         }
                     }
