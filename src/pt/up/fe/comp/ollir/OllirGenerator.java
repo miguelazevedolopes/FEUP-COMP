@@ -128,6 +128,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private String getType(JmmNode node){
+        System.out.println("NODE: " + node.getKind());
         if(node.getKind().equals("IntegerLiteral"))
             return "i32";
         if(node.getKind().equals("Id"))
@@ -138,9 +139,14 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private Integer returnVisit(JmmNode returnStmt, Integer dummy){
         String type = "";
         if(isBinOp(returnStmt.getJmmChild(0))){
-            type = OllirUtils.getOllirType(getType(returnStmt.getJmmChild(0).getJmmChild(1)));
+            int i = 1;
+            if(returnStmt.getJmmChild(0).getJmmChild(0).getKind().equals("Id"))
+                i = 0;
+
+            type = OllirUtils.getOllirType(getType(returnStmt.getJmmChild(0).getJmmChild(i)));
+
             code.append("t" + tempCount +".").append(type)
-                .append(" :=.").append(type).append(" ");
+            .append(" :=.").append(type).append(" ");
             binOpVisit(returnStmt.getJmmChild(0), 0);
             code.append(";\n");
         }
@@ -152,6 +158,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         else
             expressionVisit(returnStmt.getJmmChild(0), dummy);
         code.append(";\n");
+
         return 0;
     }
 
@@ -197,8 +204,14 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private Integer binOpVisit(JmmNode binOp, Integer counter){
+        int i = 0;
         if(isBinOp(binOp.getJmmChild(0))){
             counter = binOpVisit(binOp.getJmmChild(0), counter+1);
+            i = 1;
+        }
+        else if(isBinOp(binOp.getJmmChild(1))){
+            counter = binOpVisit(binOp.getJmmChild(1), counter+1);
+            i = 0;
         }
         if(!isBinOp(binOp.getJmmChild(0)) && !isBinOp(binOp.getJmmChild(1))){
             if(counter != 0){
@@ -222,8 +235,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         code.append("t").append(tempCount).append(".i32 :=.i32 ");
         code.append("t").append(tempCount-1).append(".i32 ");
         code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
-            .append(".").append(getType(binOp.getJmmChild(1))).append(" ");
-        expressionVisit(binOp.getJmmChild(1), 0);
+            .append(".").append(getType(binOp.getJmmChild(i))).append(" ");
+        expressionVisit(binOp.getJmmChild((i+1)%2), 0);
         code.append(";\n");
         tempCount++;
         return counter;
