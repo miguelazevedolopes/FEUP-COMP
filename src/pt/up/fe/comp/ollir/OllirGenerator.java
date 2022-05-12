@@ -244,10 +244,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "Boolean": break;
             case "Negation": break;
             case "IntegerLiteral": code.append(expression.get("value")).append(".").append(OllirUtils.getOllirType("TypeInt")); break;
-            case "InitializeArray": code.append("new(array, ").append(expression.getJmmChild(0).getJmmChild(0).get("value"))
-                                        .append(".").append(OllirUtils.getOllirType("TypeInt")).append(").array.i32"); break;
-            case "NewObject": code.append("new").append(expression.getJmmChild(0).get("name"));
-            // case "AccessToArray": code.append(arg0)
+            case "InitializeArray": code.append("new(array, ");
+                                    expressionVisit(expression.getJmmChild(0),0);
+                                    code.append(").array.i32"); break;
+            case "NewObject": code.append("new(").append(expression.getJmmChild(0).get("name"))
+                                .append(").")
+                                .append(OllirUtils.getOllirType(expression.getJmmChild(0).get("name"))); break;
+            case "AccessToArray": expressionVisit(expression.getJmmChild(0), 0); break;
             default: 
             throw new NotImplementedException("OLLIR: Expression kind not implemented: " + expression.getKind());
         }
@@ -272,39 +275,21 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private void memberCallVisit(JmmNode memberCall){
         visit(memberCall.getJmmChild(0));
         //type missing
-        System.out.println("No error1");
         if(memberCall.getJmmChild(0).getKind().equals("This")){
             code.append("invokespecial(").append("this, \"<init>");
         } else {
             code.append("invokestatic(");
 
             code.append(memberCall.getJmmChild(0).get("name")).append(",\"");
-            code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+            if(memberCall.getJmmChild(1).getJmmChild(0).getKind().contains("Id"))
+                code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+            else
+                code.append(memberCall.getJmmChild(1).getJmmChild(0).getKind());
         }
 
-        System.out.println("No error3");
-        // for(int i = 1; i < memberCall.getJmmChild(1).getNumChildren(); i++){
-        //     code.append("");
-        // } 
-
-        Method met1 = null;
-        for (var s : symbolTable.getMethodList()){
-            //System.out.println("in for");
-            System.out.println(memberCall.getKind() + "-> " + memberCall.getNumChildren());
-            System.out.println(memberCall.getJmmChild(1));
-            System.out.println(memberCall.getJmmChild(1).getJmmChild(0));
-            System.out.println("");
-            if (s.getMethodSignature().equals(memberCall.getJmmChild(1).getJmmChild(0).get("name"))){
-                //System.out.println("in if: "+ s.getMethodSignature());
-                met1 = s;
-                break;
-            }
-        }
-
-        //TODO: Check Type depending on variable assigned (void if none);
-        //kind of solved, added every function from the imports as V, don't know if that is correct
-        if(met1 != null) code.append("\").").append(OllirUtils.getOllirType(met1.getType().getName()));
-        else  code.append("\").V");
+        String type = symbolTable.getReturnType(methodSignature).getName();
+        
+        code.append("\").").append(OllirUtils.getOllirType(type));
 
     }
 

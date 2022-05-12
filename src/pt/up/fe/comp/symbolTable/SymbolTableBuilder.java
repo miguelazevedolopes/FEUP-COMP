@@ -186,6 +186,9 @@ public class SymbolTableBuilder implements SymbolTable{
         if(s==null){
             s=getField(methodSignature, name);
         }
+        if(s==null){
+            return "";
+        }
         return s.getType().getName();
     }
     
