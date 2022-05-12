@@ -20,6 +20,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     public String methodSignature;
     public Integer varcount = 0;
     public Integer tempCount = 0;
+    public Integer loopCount = 0;
 
     public Symbol twoWaySymbol1 = null;
     public Method twoWayMethod1 = null;
@@ -37,6 +38,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("MethodBody", this::methodBodyVisit);
         addVisit("Equality", this::stmtVisit);
         addVisit("DotExpression", this::stmtVisit);
+        //addVisit("IfStatement", this::stmtVisit);
+        //addVisit("WhileStatement", this::stmtVisit);
         addVisit("ReturnRule", this::returnVisit); 
         /*
         addVisit("SUM", this::twoWayVisit);
@@ -248,6 +251,70 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return counter;
     }
 
+    private void binOpNoAssign(JmmNode binOp){
+        code.append("t").append(tempCount).append(".i32 :=.i32 ");
+                tempCount++;
+                expressionVisit(binOp.getJmmChild(0), 0);
+                code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
+                    .append(".").append(getType(binOp.getJmmChild(0))).append(" ");
+                expressionVisit(binOp.getJmmChild(1), 0);
+                code.append(";\n");
+    }
+
+    private void ifVisit(JmmNode ifStmt){
+        int elseCount = 0;
+        if (isBinOp(ifStmt.getJmmChild(0).getJmmChild(0))){
+            binOpNoAssign(ifStmt.getJmmChild(0).getJmmChild(0));
+        }
+        if (isBinOp(ifStmt.getJmmChild(0).getJmmChild(1))){
+            binOpNoAssign(ifStmt.getJmmChild(0).getJmmChild(1));
+        }
+        code.append("if (");
+        //missing the (op), didn't have time to fix it
+        //visit here so it does installDist, but can (and should) be removed later
+        visit(ifStmt.getJmmChild(0));
+        code.append(") goto then;\n");
+        code.append("goto else;\n");
+        code.append("then:\n");
+        int numChildren = ifStmt.getNumChildren();
+        for (int i = 1; i < numChildren; i++){
+            if(ifStmt.getJmmChild(i).getKind().equals("StatementBlock")){
+                ++elseCount;
+                if (elseCount == 2){
+                    if(i == numChildren - 1) code.append("endIf:\n");
+                    else code.append("endElse:\n");
+                    elseCount = 0;
+                } else {
+                    code.append("else:\n");
+                }
+            }
+            visit(ifStmt.getJmmChild(i));
+        }
+    }
+
+    private void whileVisit(JmmNode whileStmt){
+        ++loopCount;
+        code.append("Loop").append(loopCount).append(":\n");
+        if (isBinOp(whileStmt.getJmmChild(0).getJmmChild(0))){
+            binOpNoAssign(whileStmt.getJmmChild(0).getJmmChild(0));
+        }
+        if (isBinOp(whileStmt.getJmmChild(0).getJmmChild(1))){
+            binOpNoAssign(whileStmt.getJmmChild(0).getJmmChild(1));
+        }
+        code.append("if(");
+        //missing the (op), didn't have time to fix it
+        //visit here so it does installDist, but can (and should) be removed later
+        //also needs the op to be inverted in order to work this way
+        visit(whileStmt.getJmmChild(0));
+        code.append(") goto end;\n");
+        int whileChildren = whileStmt.getNumChildren();
+        for (int i = 1; i < whileChildren; i++){
+            visit(whileStmt.getJmmChild(i));
+        }
+        code.append("goto Loop").append(loopCount).append(";\n");
+        code.append("end:\n");
+    }
+
 
     private Integer expressionVisit(JmmNode expression, Integer dummy){
         String kind = expression.getKind();
@@ -279,10 +346,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private Integer stmtVisit(JmmNode stmt, Integer dummy){
         String stmtType = stmt.getKind().toString();
+        System.out.println(stmtType + "\n");
         switch(stmtType){
             // case "StatementBlock": break;
-            // case "IfStatement": break;
-            // case "WhileStatement": break;
+            case "IfStatement": ifVisit(stmt); break;
+            case "WhileStatement": whileVisit(stmt); break;
             case "Equality": assignStmtVisit(stmt); code.append(";\n"); break; //Assignment
             case "DotExpression": expressionVisit(stmt, dummy); code.append(";\n"); break; 
             default: 
@@ -294,11 +362,29 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private void memberCallVisit(JmmNode memberCall){
         visit(memberCall.getJmmChild(0));
         //type missing
-        if(memberCall.getJmmChild(0).getKind().equals("This")){
-            code.append("invokespecial(").append("this, \"<init>");
-        } else {
+        var childType = memberCall.getJmmChild(1).getJmmChild(0).getKind();
+        //Method met1 = null;
+        
+        for (var s : symbolTable.getMethodList()){
+            if (s.getMethodSignature().equals(memberCall.getJmmChild(1).getJmmChild(0).get("name"))){
+                //met1 = s;
+                if (memberCall.getJmmChild(1).getJmmChild(0).get("name").equals("main")) childType = "MainMethod";
+                else childType = "NormalMethod";
+                break;
+            }
+        }
+        
+        if(childType.equals("NormalMethod")){
+            code.append("invokevirtual(");
+        } else if(childType.equals("MainMethod")){
             code.append("invokestatic(");
+        } else code.append("invokespecial(");
 
+        if(memberCall.getJmmChild(0).getKind().equals("This") && childType.equals("NormalMethod")){
+            code.append("this, \"").append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+        } else if (memberCall.getJmmChild(0).getKind().equals("This") && !childType.equals("NormalMethod")) {
+            code.append("this, \"<init>");
+        } else {
             code.append(memberCall.getJmmChild(0).get("name")).append(",\"");
             if(memberCall.getJmmChild(1).getJmmChild(0).getKind().contains("Id"))
                 code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
