@@ -128,10 +128,15 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private String getType(JmmNode node){
-        System.out.println("NODE: " + node.getKind());
         if(node.getKind().equals("IntegerLiteral"))
             return "i32";
-        if(node.getKind().equals("Id"))
+        if(node.getKind().equals("Negation"))
+            return getType(node.getJmmChild(0));
+        if(node.getKind().equals("DotExpression"))
+            return getType(node.getJmmChild(1));
+        if(node.getKind().equals("Identifier"))
+            return symbolTable.getReturnType(methodSignature).getName();
+        if(node.getKind().equals("Id") )
             return OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, node.get("name")));
         return OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, node.get("name")));
     }
@@ -148,7 +153,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             code.append("t" + tempCount +".").append(type)
             .append(" :=.").append(type).append(" ");
             binOpVisit(returnStmt.getJmmChild(0), 0);
-            System.out.println("aaaaaaa");
             code.append(";\n");
         }
         code.append("ret.").append(OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName()))
