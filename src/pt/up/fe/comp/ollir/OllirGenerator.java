@@ -130,7 +130,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private String getType(JmmNode node){
         if(node.getKind().equals("IntegerLiteral"))
             return "i32";
-        if(node.getKind().equals("Id"))
+        if(node.getKind().equals("Negation"))
+            return getType(node.getJmmChild(0));
+        if(node.getKind().equals("DotExpression"))
+            return getType(node.getJmmChild(1));
+        if(node.getKind().equals("Identifier"))
+            return symbolTable.getReturnType(methodSignature).getName();
+        if(node.getKind().equals("Id") )
             return OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, node.get("name")));
         return OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, node.get("name")));
     }
@@ -138,9 +144,14 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private Integer returnVisit(JmmNode returnStmt, Integer dummy){
         String type = "";
         if(isBinOp(returnStmt.getJmmChild(0))){
-            type = OllirUtils.getOllirType(getType(returnStmt.getJmmChild(0).getJmmChild(1)));
+            int i = 1;
+            if(returnStmt.getJmmChild(0).getJmmChild(0).getKind().equals("Id"))
+                i = 0;
+
+            type = OllirUtils.getOllirType(getType(returnStmt.getJmmChild(0).getJmmChild(i)));
+
             code.append("t" + tempCount +".").append(type)
-                .append(" :=.").append(type).append(" ");
+            .append(" :=.").append(type).append(" ");
             binOpVisit(returnStmt.getJmmChild(0), 0);
             code.append(";\n");
         }
@@ -152,6 +163,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         else
             expressionVisit(returnStmt.getJmmChild(0), dummy);
         code.append(";\n");
+
         return 0;
     }
 
@@ -197,8 +209,14 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private Integer binOpVisit(JmmNode binOp, Integer counter){
+        int i = 0;
         if(isBinOp(binOp.getJmmChild(0))){
             counter = binOpVisit(binOp.getJmmChild(0), counter+1);
+            i = 1;
+        }
+        else if(isBinOp(binOp.getJmmChild(1))){
+            counter = binOpVisit(binOp.getJmmChild(1), counter+1);
+            i = 0;
         }
         if(!isBinOp(binOp.getJmmChild(0)) && !isBinOp(binOp.getJmmChild(1))){
             if(counter != 0){
@@ -222,8 +240,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         code.append("t").append(tempCount).append(".i32 :=.i32 ");
         code.append("t").append(tempCount-1).append(".i32 ");
         code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
-            .append(".").append(getType(binOp.getJmmChild(1))).append(" ");
-        expressionVisit(binOp.getJmmChild(1), 0);
+            .append(".").append(getType(binOp.getJmmChild(i))).append(" ");
+            
+        expressionVisit(binOp.getJmmChild(i), 0);
         code.append(";\n");
         tempCount++;
         return counter;
@@ -244,10 +263,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "Boolean": break;
             case "Negation": break;
             case "IntegerLiteral": code.append(expression.get("value")).append(".").append(OllirUtils.getOllirType("TypeInt")); break;
-            case "InitializeArray": code.append("new(array, ").append(expression.getJmmChild(0).getJmmChild(0).get("value"))
-                                        .append(".").append(OllirUtils.getOllirType("TypeInt")).append(").array.i32"); break;
-            case "NewObject": code.append("new").append(expression.getJmmChild(0).get("name"));
-            // case "AccessToArray": code.append(arg0)
+            case "InitializeArray": code.append("new(array, ");
+                                    expressionVisit(expression.getJmmChild(0),0);
+                                    code.append(").array.i32"); break;
+            case "NewObject": code.append("new(").append(expression.getJmmChild(0).get("name"))
+                                .append(").")
+                                .append(OllirUtils.getOllirType(expression.getJmmChild(0).get("name"))); break;
+            case "AccessToArray": expressionVisit(expression.getJmmChild(0), 0); break;
             default: 
             throw new NotImplementedException("OLLIR: Expression kind not implemented: " + expression.getKind());
         }
@@ -272,39 +294,21 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private void memberCallVisit(JmmNode memberCall){
         visit(memberCall.getJmmChild(0));
         //type missing
-        System.out.println("No error1");
         if(memberCall.getJmmChild(0).getKind().equals("This")){
             code.append("invokespecial(").append("this, \"<init>");
         } else {
             code.append("invokestatic(");
 
             code.append(memberCall.getJmmChild(0).get("name")).append(",\"");
-            code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+            if(memberCall.getJmmChild(1).getJmmChild(0).getKind().contains("Id"))
+                code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+            else
+                code.append(memberCall.getJmmChild(1).getJmmChild(0).getKind());
         }
 
-        System.out.println("No error3");
-        // for(int i = 1; i < memberCall.getJmmChild(1).getNumChildren(); i++){
-        //     code.append("");
-        // } 
-
-        Method met1 = null;
-        for (var s : symbolTable.getMethodList()){
-            //System.out.println("in for");
-            System.out.println(memberCall.getKind() + "-> " + memberCall.getNumChildren());
-            System.out.println(memberCall.getJmmChild(1));
-            System.out.println(memberCall.getJmmChild(1).getJmmChild(0));
-            System.out.println("");
-            if (s.getMethodSignature().equals(memberCall.getJmmChild(1).getJmmChild(0).get("name"))){
-                //System.out.println("in if: "+ s.getMethodSignature());
-                met1 = s;
-                break;
-            }
-        }
-
-        //TODO: Check Type depending on variable assigned (void if none);
-        //kind of solved, added every function from the imports as V, don't know if that is correct
-        if(met1 != null) code.append("\").").append(OllirUtils.getOllirType(met1.getType().getName()));
-        else  code.append("\").V");
+        String type = symbolTable.getReturnType(methodSignature).getName();
+        
+        code.append("\").").append(OllirUtils.getOllirType(type));
 
     }
 

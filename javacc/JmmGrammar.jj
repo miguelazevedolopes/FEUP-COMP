@@ -177,7 +177,7 @@ Sum #void:
 ;
 
 Sub #void:
-	Mul (LOOKAHEAD(2) <MINUS> Sub # SUB(2))*
+	Mul (LOOKAHEAD(2) <MINUS> Sub #SUB(2))*
 ;
 
 Mul #void:
