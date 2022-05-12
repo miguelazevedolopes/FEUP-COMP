@@ -6,6 +6,7 @@ class HelloWorld {
 		int a;
 		int b;
 		b = 10 * 5 + a + 7;
+
 	}
 
 	public int hello(int[] x){

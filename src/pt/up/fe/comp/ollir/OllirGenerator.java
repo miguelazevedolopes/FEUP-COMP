@@ -349,8 +349,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         System.out.println(stmtType + "\n");
         switch(stmtType){
             // case "StatementBlock": break;
-            case "IfStatement": ifVisit(stmt); break;
-            case "WhileStatement": whileVisit(stmt); break;
+            // case "IfStatement": ifVisit(stmt); break;
+            // case "WhileStatement": whileVisit(stmt); break;
             case "Equality": assignStmtVisit(stmt); code.append(";\n"); break; //Assignment
             case "DotExpression": expressionVisit(stmt, dummy); code.append(";\n"); break; 
             default: 
@@ -385,7 +385,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         } else if (memberCall.getJmmChild(0).getKind().equals("This") && !childType.equals("NormalMethod")) {
             code.append("this, \"<init>");
         } else {
-            code.append(memberCall.getJmmChild(0).get("name")).append(",\"");
+            code.append(memberCall.getJmmChild(0).get("name")).append(".")
+                .append(getType(memberCall.getJmmChild(0))).append(", \"");
             if(memberCall.getJmmChild(1).getJmmChild(0).getKind().contains("Id"))
                 code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
             else
