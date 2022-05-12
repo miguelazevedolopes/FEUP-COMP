@@ -32,7 +32,7 @@ TOKEN :
 	< PERIOD : "."> |
 	< UNDERSCORE : "_" > |
 
-	< LENGTH : "length" > |
+	< LENGTH_TOKEN : "length" > |
 	< IF : "if" > |
 	< ELSE : "else" > |
 	< THEN : "then" > |
@@ -62,8 +62,8 @@ IdentifierRule #Id:
 	(<IDENTIFIER_TOKEN> {jjtThis.put("name", lastConsumedToken.getImage()); }) (AccessToArray)?
 ;
 
-Length #Length:
-	<LENGTH>
+LengthRule #Length:
+	<LENGTH_TOKEN>
 ;
 
 Type #void: 
@@ -189,7 +189,7 @@ Div #void:
 ;
 
 DotExpression #void:
-	Expression2  (LOOKAHEAD(2) ((<PERIOD> (Length|IdentifierRule)	(<OPEN_PAREN>
+	Expression2  (LOOKAHEAD(2) ((<PERIOD> (LengthRule|IdentifierRule)	(<OPEN_PAREN>
 											(Expression() 
 												(<COMMA> Expression())*
 											)?
