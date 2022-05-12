@@ -3,6 +3,8 @@ package pt.up.fe.comp.jasmin;
 import java.util.HashMap;
 import java.util.Map;
 import org.specs.comp.ollir.*;
+
+import pt.up.fe.comp.jasmin.Instructions.JasminInstruction;
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
 
 
@@ -44,11 +46,11 @@ public class JasminMethod {
     /**
      * Increment stack and update stackMax in case it's value is exceeded
      */
-    public void incrementStack(){
-        currStack++;
-        if(currStack > stackMax) stackMax = currStack;
+    public void updateMaxStack(int popSize, int pushSize) {
+        currStack -= popSize;
+        currStack += pushSize;
+        stackMax = Math.max(stackMax, currStack);
     }
-
     public void decrementStack(){
         currStack--;
     }
@@ -119,17 +121,19 @@ public class JasminMethod {
 
     
     public String getCode(){
+        var varTable = method.getVarTable();
 
+        
+        System.out.println(method);
         generateDeclaration();
 
         jasminCode.append(JasminUtils.getJasminType(method.getReturnType().getTypeOfElement(), className));
-        
         jasminCode.append("\n\t.limit stack 99\n");
-        jasminCode.append("\t.limit locals 99\n");
+        jasminCode.append("\t.limit locals 99\n");//TODO 
 
         // Get code for each instruction in method
         for(var inst: method.getInstructions()){
-           jasminCode.append(new JasminInstruction(inst, this).getCode());
+           jasminCode.append(new JasminInstruction(inst, this,  varTable).getCode());
         }
         
         jasminCode.append("\n.end method");

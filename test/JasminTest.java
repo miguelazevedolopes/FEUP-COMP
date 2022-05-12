@@ -44,6 +44,38 @@ public class JasminTest {
         //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
     }
 
+    @Test
+    public void testRunFac() throws IOException{
+        Path path = Paths.get("test/fixtures/public/jasmin/Fac.j");
+        
+        String ollirCode =  SpecsIo.getResource("fixtures/public/ollir/Fac.ollir");
+
+        OllirResult ollirResult = new OllirResult(ollirCode, null);
+        JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
+
+        Files.writeString(path, jasminResult.getJasminCode());
+        
+        new JasminResult(SpecsIo.getResource("fixtures/public/jasmin/Fac.j")).run();
+
+        //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
+    }
+
+
+    @Test
+    public void testRunClass1() throws IOException{
+        Path path = Paths.get("test/fixtures/public/jasmin/myclass1.j");
+        
+        String ollirCode =  SpecsIo.getResource("fixtures/public/ollir/myclass1.ollir");
+
+        OllirResult ollirResult = new OllirResult(ollirCode, null);
+        JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
+
+        Files.writeString(path, jasminResult.getJasminCode());
+        
+        new JasminResult(SpecsIo.getResource("fixtures/public/jasmin/myclass1.j")).run();
+
+        //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
+    }
 
     @Test
     public void testRunJasmin() {

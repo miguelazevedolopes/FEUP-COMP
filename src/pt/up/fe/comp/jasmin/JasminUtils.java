@@ -1,4 +1,6 @@
 package pt.up.fe.comp.jasmin;
+import java.util.Map;
+
 import org.specs.comp.ollir.*;
 
 public class JasminUtils {
@@ -38,6 +40,14 @@ public class JasminUtils {
             }
         }
         return res.toString();
+    }
+
+    public static Descriptor getDescriptor(Element element, Map<String, Descriptor> table){
+        return table.get(((Operand) element).getName());
+    }
+
+    public static int getVirtualReg(Element element, Map<String, Descriptor> table){
+        return getDescriptor(element, table).getVirtualReg();
     }
 
    
