@@ -148,6 +148,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             code.append("t" + tempCount +".").append(type)
             .append(" :=.").append(type).append(" ");
             binOpVisit(returnStmt.getJmmChild(0), 0);
+            System.out.println("aaaaaaa");
             code.append(";\n");
         }
         code.append("ret.").append(OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName()))
