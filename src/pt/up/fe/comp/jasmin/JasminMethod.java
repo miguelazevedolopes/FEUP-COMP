@@ -30,7 +30,6 @@ public class JasminMethod {
         this.stackMax = 0;
         this.currStack = 0;
         this.ollir = ollir;
-
         
         addLocalVariable("this", VarScope.FIELD, new Type(ElementType.CLASS));
     }
@@ -42,6 +41,7 @@ public class JasminMethod {
     public String getClassName() {
         return className;
     }
+
 
     /**
      * Increment stack and update stackMax in case it's value is exceeded
@@ -121,7 +121,7 @@ public class JasminMethod {
 
     
     public String getCode(){
-        var varTable = method.getVarTable();
+        //var varTable = method.getVarTable();
 
         
         System.out.println(method);
@@ -133,7 +133,7 @@ public class JasminMethod {
 
         // Get code for each instruction in method
         for(var inst: method.getInstructions()){
-           jasminCode.append(new JasminInstruction(inst, this,  varTable).getCode());
+           jasminCode.append(new JasminInstruction(inst, this,  localVars).getCode());
         }
         
         jasminCode.append("\n.end method");

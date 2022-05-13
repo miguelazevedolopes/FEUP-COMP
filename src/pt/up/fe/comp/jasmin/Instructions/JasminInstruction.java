@@ -6,6 +6,8 @@ import org.specs.comp.ollir.*;
 
 import freemarker.core.builtins.sourceBI;
 import pt.up.fe.comp.jasmin.JasminMethod;
+import pt.up.fe.comp.jasmin.JasminOperand;
+import pt.up.fe.comp.jasmin.JasminType;
 import pt.up.fe.comp.jasmin.JasminUtils;
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
 
@@ -32,14 +34,14 @@ public class JasminInstruction {
         StringBuilder code = new StringBuilder();
         switch (instruction.getInstType()) {
             case CALL:
-                code.append(getCode((CallInstruction) instruction));
+                code.append(getCode((CallInstruction) instruction, false));
                 break;
             case RETURN:
                 code.append(getCode((ReturnInstruction) instruction));
                 break;
-            // case ASSIGN:
-            //     code.append(getCode((CallInstruction) instruction, false));
-            //     break;
+            case ASSIGN:
+                code.append(getCode((AssignInstruction) instruction));
+                break;
             // case PUTFIELD:
             //     getCode((PutFieldInstruction) instruction);
             //     break;
@@ -58,8 +60,24 @@ public class JasminInstruction {
 
     }
 
-    // private void generateInstruction(AssignInstruction inst) {
-    // }
+    private String getCode(AssignInstruction inst) {
+
+        StringBuilder code = new StringBuilder();
+
+        Instruction rhs = inst.getRhs();
+        Element lhs = inst.getDest();
+       
+
+        String rhsString = new JasminOperand(this, varTable, lhs).getOperand(rhs);
+
+
+        code.append(new JasminLoadStore(lhs, varTable, this).getStoreCode(rhsString));
+        
+
+        return code.toString();
+
+
+    }
 
     // private void generateInstruction(GotoInstruction inst) {
     // }
@@ -89,8 +107,8 @@ public class JasminInstruction {
         Element leftElement = instruction.getOperands().get(0);
         Element rightElement = instruction.getOperands().get(0);
 
-        String leftInst = new JasminLoadStore(leftElement, varTable).getLoadCode(this);
-        String rightInst = new JasminLoadStore(rightElement, varTable).getLoadCode(this);
+        String leftInst = new JasminLoadStore(leftElement, varTable, this).getLoadCode();
+        String rightInst = new JasminLoadStore(rightElement, varTable, this).getLoadCode();
 
         System.out.println("leftInst");
 
@@ -107,7 +125,7 @@ public class JasminInstruction {
     }
 
 
-    private String getCode(CallInstruction instruction){
+    public String getCode(CallInstruction instruction, boolean isAssign){
 
         var code = new StringBuilder();
         /*TODO
@@ -156,7 +174,28 @@ public class JasminInstruction {
 
 
     }
-                                    
+        
+    
+
+    public  String getCode(GetFieldInstruction getFieldInstruction) {
+        StringBuilder code = new StringBuilder();
+        Element classElement = getFieldInstruction.getFirstOperand();
+        Element fieldElement = getFieldInstruction.getSecondOperand();
+
+        String className =  JasminType.getJasminType(classElement.getType(), method.getClassName());
+
+
+        String fieldName = ((Operand)fieldElement).getName();
+        String type = JasminType.getJasminType(fieldElement.getType(), method.getClassName());
+
+        code.append(new JasminLoadStore(classElement, varTable,this).getLoadCode());
+        code.append("getfield " + className + "/" + fieldName + " " + type + "\n");
+
+        return code.toString();
+    }
+
+
+
 
 
     //TODO operands

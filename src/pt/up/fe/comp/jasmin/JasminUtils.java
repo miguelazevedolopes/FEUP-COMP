@@ -3,6 +3,8 @@ import java.util.Map;
 
 import org.specs.comp.ollir.*;
 
+import pt.up.fe.comp.jasmin.Instructions.JasminInstruction;
+
 public class JasminUtils {
 
     /**
@@ -50,7 +52,21 @@ public class JasminUtils {
         return getDescriptor(element, table).getVirtualReg();
     }
 
-   
+    public static String getOp(OperationType opType, JasminInstruction jasminInstruction){
+        jasminInstruction.getMethod().updateMaxStack(2,1);
+        switch (opType) {
+            case MUL:
+                return "imul \n";
+            case ADD:
+                return "iadd \n";
+            case SUB:
+                return "isub \n";
+            case DIV:
+                return "idiv \n";
+            default:
+                return opType.name();
+        }
+    }
 
     
     public static String getJasminType(ElementType type, String className) {
@@ -78,5 +94,7 @@ public class JasminUtils {
         return res;
     }
 
+
+    
 
 }

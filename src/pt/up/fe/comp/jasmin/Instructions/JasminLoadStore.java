@@ -7,52 +7,56 @@ import org.specs.comp.ollir.ElementType;
 import org.specs.comp.ollir.LiteralElement;
 import org.specs.comp.ollir.Operand;
 
+import pt.up.fe.comp.jasmin.JasminMethod;
 import pt.up.fe.comp.jasmin.JasminUtils;
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
 
 public class JasminLoadStore{
     private final Element element;
     private final Map<String, Descriptor> table;
+    private JasminInstruction jasminInstruction;
 
     
-    public JasminLoadStore(Element element, Map<String,Descriptor> table) {
+    public JasminLoadStore(Element element, Map<String,Descriptor> table, JasminInstruction jasminInstruction) {
         this.element = element;
         this.table = table;
+        this.jasminInstruction = jasminInstruction;
     }
 
-    // public  String getStoreCode(String rhs) {
-    //     ElementType elementType = element.getType().getTypeOfElement();
+    public  String getStoreCode(String rhs) {
+        ElementType elementType = element.getType().getTypeOfElement();
 
-    //    if (elementType == ElementType.INT32 || elementType == ElementType.STRING || elementType == ElementType.BOOLEAN) {
-    //         var operand = (Operand) element;
-    //         ElementType typeVar = table.get(operand.getName()).getVarType().getTypeOfElement();
+       if (elementType == ElementType.INT32 || elementType == ElementType.STRING || elementType == ElementType.BOOLEAN) {
+            var operand = (Operand) element;
+
+            ElementType typeVar = table.get(operand.getName()).getVarType().getTypeOfElement();
 
 
-    //         if (typeVar == ElementType.ARRAYREF)
-    //             return getStoreArrayAccess(rhs);
-    //         else {
-    //             int register = UtilsJasmin.getVirtualReg(element, table);
-    //             return rhs + InstSingleton.istore(register);
-    //         }
-    //     } else if (elementType == ElementType.OBJECTREF || elementType == ElementType.THIS || elementType == ElementType.ARRAYREF) {
-    //         int register = UtilsJasmin.getVirtualReg(element, table);
-    //         return rhs + InstSingleton.astore(register);
-    //     }
-    //     return
+            if (typeVar == ElementType.ARRAYREF)
+                return getStoreArrayAccess(rhs);
+            else {
+                int register = JasminUtils.getVirtualReg(element, table);
+                return rhs + istore(register);
+            }
+        } else if (elementType == ElementType.OBJECTREF || elementType == ElementType.THIS || elementType == ElementType.ARRAYREF) {
+            int register = JasminUtils.getVirtualReg(element, table);
+            return rhs + astore(register);
+        }
+        return
         
         
         
-    //     element.toString();
-    // }
+        element.toString();
+    }
 
 
-    public String getLoadCode(JasminInstruction jasminInstruction){
+    public String getLoadCode(){
         ElementType elementType = element.getType().getTypeOfElement();
 
         //  iconst_
         if (element.isLiteral()) {
             var litElem = (LiteralElement) element;
-            return iconst(litElem.getLiteral(), jasminInstruction);
+            return iconst(litElem.getLiteral());
         }
         //  iload
         else if (elementType == ElementType.INT32 || elementType == ElementType.STRING || elementType == ElementType.BOOLEAN) {
@@ -64,18 +68,18 @@ public class JasminLoadStore{
                 //return getLoadArrayAccess(element, table);
             else {
                 int register = JasminUtils.getVirtualReg(element, table);
-                return iload(register, jasminInstruction);
+                return iload(register);
             }
         }
         //aload
         else if (elementType == ElementType.OBJECTREF || elementType == ElementType.THIS || elementType == ElementType.ARRAYREF) {
             int register = JasminUtils.getVirtualReg(element, table);
-            return aload(register, jasminInstruction);
+            return aload(register);
         }
         return "";
     }
 
-    private String aload(int register, JasminInstruction jasminInstruction) {
+    private String aload(int register) {
         jasminInstruction.getMethod().updateMaxStack(0,1);
         if (register > 3 || register < 0)
             return "aload " + register + "\n";
@@ -83,7 +87,7 @@ public class JasminLoadStore{
 
     }
 
-    public static String iconst(String number, JasminInstruction jasminInstruction){
+    public  String iconst(String number){
 
         jasminInstruction.getMethod().updateMaxStack(0,1);
         int constant = Integer.parseInt(number);
@@ -98,12 +102,27 @@ public class JasminLoadStore{
         return "ldc " + number + "\n";
     }
 
-    public static String iload(int reg, JasminInstruction jasminInstruction){
+    public  String iload(int reg){
         jasminInstruction.getMethod().updateMaxStack(0,1);
         if (reg > 3 || reg < 0)
             return "iload " + reg + "\n";
         return "iload_" + reg + "\n";
     }
+
+    public  String istore(int reg){
+        jasminInstruction.getMethod().updateMaxStack(1,1);
+        if (reg > 3 || reg < 0)
+            return "istore " + reg + "\n";
+        return "istore_" + reg + "\n";
+    }
+
+    public  String astore(int reg){
+        jasminInstruction.getMethod().updateMaxStack(2,1);
+        if (reg > 3 || reg < 0)
+            return "astore " + reg + "\n";
+        return "astore_" + reg + "\n";
+    }
+
 
     private String getStoreArrayAccess(String rhs) {
         return null;
