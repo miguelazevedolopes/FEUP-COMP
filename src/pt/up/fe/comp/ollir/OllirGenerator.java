@@ -346,7 +346,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "Id": idVisit(expression); break;
             case "DotExpression": memberCallVisit(expression); break;
             case "This": break;
-            case "Boolean": break;
+            case "Boolean": code.append(expression.get("value")); break;
             case "Negation": break;
             case "IntegerLiteral": code.append(expression.get("value")).append(".").append(OllirUtils.getOllirType("TypeInt")); break;
             case "InitializeArray": code.append("new(array, ");
