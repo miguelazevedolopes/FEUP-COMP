@@ -27,6 +27,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     public Symbol twoWaySymbol2 = null;
     public Method twoWayMethod2 = null;
 
+    public String returnType = "";
+
     public OllirGenerator(SymbolTable symbolTable){
         this.code = new StringBuilder();
         this.symbolTable = symbolTable;
@@ -58,6 +60,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         for (var importString : symbolTable.getImports()){
             code.append("import ").append(importString).append(";\n");
         }
+        code.append("\n");
 
         for (var child : program.getChildren()){
             visit(child);
@@ -114,7 +117,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             
         }
 
-        code.append("}\n");
+        code.append("}\n\n");
 
         return 0;
     }
@@ -130,9 +133,24 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return 0;
     }
 
+    private String getCode(JmmNode node){
+        StringBuilder code = new StringBuilder();
+        if(node.getKind().equals("Id"))
+            code.append(node.get("name"));
+        else if(node.getKind().equals("IntegerLiteral"))
+            code.append(node.get("value"));
+        else
+            code.append(node.getKind());
+        code.append(".").append(getType(node));
+
+        return code.toString();
+    }
+
     private String getType(JmmNode node){
         if(node.getKind().equals("IntegerLiteral"))
             return "i32";
+        if(node.getKind().equals("This"))
+            return "this";
         if(node.getKind().equals("Negation"))
             return getType(node.getJmmChild(0));
         if(node.getKind().equals("DotExpression"))
@@ -186,6 +204,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private void assignStmtVisit(JmmNode assignStmt){
         int counter = 0;
+        returnType = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, assignStmt.getJmmChild(0).get("name")));
         if(isBinOp(assignStmt.getJmmChild(1)) && isBinOp(assignStmt.getJmmChild(1).getJmmChild(0))){
             counter = binOpVisit(assignStmt.getJmmChild(1), 0);
         }
@@ -360,42 +379,42 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private void memberCallVisit(JmmNode memberCall){
-        visit(memberCall.getJmmChild(0));
         //type missing
         var childType = memberCall.getJmmChild(1).getJmmChild(0).getKind();
-        //Method met1 = null;
+        if(childType.equals("Length"))
+        {
+            code.append("arraylength(").append(getCode(memberCall.getJmmChild(0)))
+                .append(").i32");
+            return;
+        }
+        visit(memberCall.getJmmChild(0));
         
-        for (var s : symbolTable.getMethodList()){
-            if (s.getMethodSignature().equals(memberCall.getJmmChild(1).getJmmChild(0).get("name"))){
-                //met1 = s;
-                if (memberCall.getJmmChild(1).getJmmChild(0).get("name").equals("main")) childType = "MainMethod";
-                else childType = "NormalMethod";
-                break;
+        if(childType.equals("main")){
+            code.append("invokestatic(");
+        }
+        else{
+            code.append("invokevirtual(");
+        }
+        code.append(memberCall.getJmmChild(0).get("name"));
+
+        if(!symbolTable.getImports().contains(memberCall.getJmmChild(0).get("name"))){
+            code.append(".").append(getType(memberCall.getJmmChild(0)));
+
+        }
+        else
+            code.append(".").append(memberCall.getJmmChild(0).get("name"));
+        code.append(", \"").append(memberCall.getJmmChild(1).getJmmChild(0).get("name"))
+            .append("\"");
+
+        
+        if(memberCall.getJmmChild(1).getNumChildren()>1){ //Has params
+            var children = memberCall.getJmmChild(1).getChildren();
+            for( var child : children.subList(1, children.size()-1)){
+                code.append(", ").append(getCode(child));
             }
         }
-        
-        if(childType.equals("NormalMethod")){
-            code.append("invokevirtual(");
-        } else if(childType.equals("MainMethod")){
-            code.append("invokestatic(");
-        } else code.append("invokespecial(");
 
-        if(memberCall.getJmmChild(0).getKind().equals("This") && childType.equals("NormalMethod")){
-            code.append("this, \"").append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
-        } else if (memberCall.getJmmChild(0).getKind().equals("This") && !childType.equals("NormalMethod")) {
-            code.append("this, \"<init>");
-        } else {
-            code.append(memberCall.getJmmChild(0).get("name")).append(".")
-                .append(getType(memberCall.getJmmChild(0))).append(", \"");
-            if(memberCall.getJmmChild(1).getJmmChild(0).getKind().contains("Id"))
-                code.append(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
-            else
-                code.append(memberCall.getJmmChild(1).getJmmChild(0).getKind());
-        }
-
-        String type = symbolTable.getReturnType(methodSignature).getName();
-        
-        code.append("\").").append(OllirUtils.getOllirType(type));
+        code.append(").").append(returnType);
 
     }
 

@@ -23,6 +23,8 @@ public class OllirUtils {
         return code.toString();
     }
 
+
+
     public static String getOllirType(String jmmType){
 
         switch(jmmType){
