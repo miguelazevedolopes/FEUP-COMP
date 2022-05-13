@@ -345,8 +345,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         switch(kind){
             case "Id": idVisit(expression); break;
             case "DotExpression": memberCallVisit(expression); break;
-            case "This": break;
-            case "Boolean": code.append(expression.get("value")); break;
+            case "Boolean": code.append(expression.get("value")).append(".bool"); break;
             case "Negation": break;
             case "IntegerLiteral": code.append(expression.get("value")).append(".").append(OllirUtils.getOllirType("TypeInt")); break;
             case "InitializeArray": code.append("new(array, ");
@@ -365,7 +364,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private Integer stmtVisit(JmmNode stmt, Integer dummy){
         String stmtType = stmt.getKind().toString();
-        System.out.println(stmtType + "\n");
         switch(stmtType){
             // case "StatementBlock": break;
             // case "IfStatement": ifVisit(stmt); break;
@@ -396,13 +394,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             code.append("invokevirtual(");
         }
         code.append(memberCall.getJmmChild(0).get("name"));
-
-        if(!symbolTable.getImports().contains(memberCall.getJmmChild(0).get("name"))){
-            code.append(".").append(getType(memberCall.getJmmChild(0)));
-
+        if(!memberCall.getJmmChild(0).get("name").equals("this")){
+            if(!symbolTable.getImports().contains(memberCall.getJmmChild(0).get("name"))){
+                code.append(".").append(getType(memberCall.getJmmChild(0)));
+            }
+            else
+                code.append(".").append(memberCall.getJmmChild(0).get("name"));
         }
-        else
-            code.append(".").append(memberCall.getJmmChild(0).get("name"));
         code.append(", \"").append(memberCall.getJmmChild(1).getJmmChild(0).get("name"))
             .append("\"");
 

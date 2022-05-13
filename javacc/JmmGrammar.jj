@@ -205,7 +205,7 @@ IntegerLiteral:
 Expression2 #void:
 	New
 	| IdentifierRule
-	| (<THIS_TOKEN> #This)
+	| ((<THIS_TOKEN> {jjtThis.put("name", lastConsumedToken.getImage()); }) #This)
 	| ((<TRUE> {jjtThis.put("value", lastConsumedToken.getImage()); } | <FALSE> {jjtThis.put("value", lastConsumedToken.getImage()); })  #Boolean )
 	| IntegerLiteral
 	| ( <NOT> DotExpression) #Negation
