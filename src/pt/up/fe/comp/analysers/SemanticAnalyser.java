@@ -163,9 +163,6 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                                                 if(!params.get(i-1).getType().equals(paramType)){
                                                     if(!(params.get(i-1).getType().getName().equals("TypeInt") && args.get(i).getKind().equals("IntegerLiteral"))){
                                                         reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. The param types don't match the ones being passed as argument."));
-            
-                                                        System.out.println("Got: "+paramType);
-                                                        System.out.println("Expected: "+params.get(i-1).getType());
                                                     }
                                                 }
                                             }
