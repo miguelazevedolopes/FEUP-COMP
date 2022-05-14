@@ -408,21 +408,6 @@ public class JasminInstruction {
 
         
 
-
-
-
-    //TODO operands
-    private void getArgumentsCode(Element operand) {
-        throw new NotImplementedException(operand.toString());
-    }
-
-
-    private void popStack(){
-        jasminCode.append("\n\t\tpop");
-        method.decrementStack();
-    }
-
-
     // -------------- Auxiliary Functions --------------
 
 
@@ -430,8 +415,6 @@ public class JasminInstruction {
         addCode("\n\t\tgoto " + instruction.getLabel() + "\n");
     }
 
-
-    // -------------- Auxiliary Functions --------------
     private boolean decideType(Element element) {
         switch (element.getType().getTypeOfElement()) {
             case INT32:

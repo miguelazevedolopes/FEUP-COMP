@@ -47,13 +47,10 @@ public class OllirToJasmin{
 
             
 
-        //TODO: Generate fields
-
         for (var field : ollir.getFields()) {
             jasminCode.append(getFields(field));
         }
 
-        //TODO: Generate the rest of the methods
         ArrayList<Method> methods = ollir.getMethods();
         for(var method: methods.subList(1, methods.size())){
             JasminMethod jasminMethod = new JasminMethod(method, ollir.getClassName(), ollir.getSuperClass());           
