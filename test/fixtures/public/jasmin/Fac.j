@@ -53,6 +53,6 @@
 		invokevirtual Fac.compFac(I)I
 		istore_3
 
-		aload_3
-		invokestatic io.println(Fac)V
+		iload_3
+		invokestatic io.println(I)V
 .end method
