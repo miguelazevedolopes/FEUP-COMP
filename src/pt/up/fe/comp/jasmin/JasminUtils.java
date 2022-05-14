@@ -68,6 +68,18 @@ public class JasminUtils {
         }
     }
 
+    public static String getConstSize(JasminMethod method, String value) {
+        int val = Integer.parseInt(value);
+        String res, aux;
+        if (val >= 0 && val <= 5) aux = "iconst_";
+        else if (val > 5 && val <= 128) aux = "bipush ";
+        else if (val > 128 && val <= 32768) aux = "sipush ";
+        else aux = "ldc ";
+        res = "\n\t\t" + aux + val;
+        method.incrementStack();
+        return res;
+    }
+
     
     public static String getJasminType(ElementType type, String className) {
         String res = "";
@@ -94,7 +106,23 @@ public class JasminUtils {
         return res;
     }
 
+    public static String getLoadSize(JasminMethod method, Element element, VarScope varScope) {
+        String aux;
+        int num = method.getLocalVariableByKey(element, varScope).getVirtualReg();
+        if (num >= 0 && num <= 3) aux = "load_";
+        else aux = "load ";
+        method.incrementStack();
+        return aux + num;
+    }
 
+    public static String getStoreSize(JasminMethod method, Element element, VarScope varScope) {
+        String aux;
+        int num = method.getLocalVariableByKey(element, varScope).getVirtualReg();
+        if (num >= 0 && num <= 3) aux = "store_";
+        else aux = "store ";
+        method.decrementStack();
+        return aux + num;
+    }
     
 
 }

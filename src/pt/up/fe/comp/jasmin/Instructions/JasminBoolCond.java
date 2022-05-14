@@ -43,7 +43,7 @@ public class JasminBoolCond {
                 code.append(getGTECode());
                 break;
             default:
-                throw new NotImplementedException("[JasminBoolCond] OperationType " + opType.toString())
+                throw new NotImplementedException("[JasminBoolCond] OperationType " + opType.toString());
         }
 
         // if (opType == OperationType.LTH) code.append(lthInst(leftInst, rightInst, label));

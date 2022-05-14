@@ -55,7 +55,8 @@ public class JasminTest {
 
         Files.writeString(path, jasminResult.getJasminCode());
         
-        new JasminResult(SpecsIo.getResource("fixtures/public/jasmin/Fac.j")).run();
+
+        jasminResult.run();
 
         //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
     }
@@ -72,7 +73,8 @@ public class JasminTest {
 
         Files.writeString(path, jasminResult.getJasminCode());
         
-        new JasminResult(SpecsIo.getResource("fixtures/public/jasmin/myclass1.j")).run();
+        TestUtils.noErrors(jasminResult);
+        jasminResult.run();
 
         //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
     }

@@ -1,7 +1,10 @@
 package pt.up.fe.comp.jasmin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import pt.up.fe.comp.jmm.report.Report;
 import org.specs.comp.ollir.*;
 
 import pt.up.fe.comp.jasmin.Instructions.JasminInstruction;
@@ -18,6 +21,8 @@ public class JasminMethod {
     private int n_locals = 0;
     private int stackMax;
     private int currStack;
+    private List<Report> reports;
+    private int nNranches;
 
 
     public JasminMethod(Method method, String className, String superName, ClassUnit ollir) {
@@ -30,6 +35,8 @@ public class JasminMethod {
         this.stackMax = 0;
         this.currStack = 0;
         this.ollir = ollir;
+        this.reports = new ArrayList<>();
+        this.nNranches = 0;
         
         addLocalVariable("this", VarScope.FIELD, new Type(ElementType.CLASS));
     }
@@ -42,6 +49,13 @@ public class JasminMethod {
         return className;
     }
 
+    public int getNBranches() {
+        return nNranches;
+    }
+
+    public void incrementBranches(){
+        this.nNranches++;
+    }
 
     /**
      * Increment stack and update stackMax in case it's value is exceeded
@@ -51,8 +65,16 @@ public class JasminMethod {
         currStack += pushSize;
         stackMax = Math.max(stackMax, currStack);
     }
+
+
     public void decrementStack(){
         currStack--;
+    }
+
+    public void incrementStack() {
+        currStack++;
+        if (currStack > stackMax)
+            stackMax = currStack;
     }
 
     public Method getMethod() {
@@ -101,6 +123,14 @@ public class JasminMethod {
         }
     }
 
+    public Descriptor getLocalVariableByKey(Element dest, VarScope type) {
+        String key = ((Operand) dest).getName();
+        if (localVars.get(key) == null) {
+            addLocalVariable(key, type, dest.getType());
+        }
+        return localVars.get(key);
+    }
+
     private void generateDeclaration(){
         jasminCode.append("\n\n.method ");
 
@@ -123,8 +153,6 @@ public class JasminMethod {
     public String getCode(){
         //var varTable = method.getVarTable();
 
-        
-        System.out.println(method);
         generateDeclaration();
 
         jasminCode.append(JasminUtils.getJasminType(method.getReturnType().getTypeOfElement(), className));
@@ -132,11 +160,30 @@ public class JasminMethod {
         jasminCode.append("\t.limit locals 99\n");//TODO 
 
         // Get code for each instruction in method
+        StringBuilder code = new StringBuilder();
         for(var inst: method.getInstructions()){
-           jasminCode.append(new JasminInstruction(inst, this,  localVars).getCode());
+            String currentlabel = "";
+            if (!method.getLabels(inst).isEmpty())
+                if (!currentlabel.equals(method.getLabels(inst).get(0))) {
+                    currentlabel = method.getLabels(inst).get(0);
+                    for (String label : method.getLabels(inst)) {
+                        code.append("\n\t").append(label).append(":");
+                    }
+                }   
+           
+            JasminInstruction jasminInstruction = new JasminInstruction(inst, this);
+            jasminCode.append(jasminInstruction.getCode());
+            this.reports.addAll(jasminInstruction.getReports());
         }
         
+
+        if (!this.method.isConstructMethod()) {
+            this.jasminCode.append("\n\t\t.limit locals ").append(n_locals);
+            this.jasminCode.append("\n\t\t.limit stack ").append(stackMax).append("\n");
+        }
+        this.jasminCode.append(code);
         jasminCode.append("\n.end method");
+
 
         return jasminCode.toString();
     }
