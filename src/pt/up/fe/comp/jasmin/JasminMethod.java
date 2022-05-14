@@ -39,6 +39,10 @@ public class JasminMethod {
         addLocalVariable("this", VarScope.FIELD, new Type(ElementType.CLASS));
     }
 
+    public List<Report> getReports(){
+        return this.reports;
+    }
+
     public String getSuperName() {
         return superName;
     }
@@ -130,10 +134,7 @@ public class JasminMethod {
     }
 
     private void generateDeclaration(){
-        jasminCode.append("\n\n.method ");
-
-        String accessModifiers = getAccessModifiers(method.getMethodAccessModifier(), method.isConstructMethod());
-        jasminCode.append(accessModifiers);
+        jasminCode.append("\n\n.method public");
 
         if (method.isConstructMethod())
             jasminCode.append(" <init>");
@@ -141,9 +142,14 @@ public class JasminMethod {
             if (method.isStaticMethod()) jasminCode.append(" static");
             if (method.isFinalMethod()) jasminCode.append(" final");
 
-            jasminCode.append(" ").append(method.getMethodName());
+            jasminCode.append(" ");
+            jasminCode.append(method.getMethodName());
         }
-        jasminCode.append("(").append(JasminUtils.getParametersFromMethod(this)).append(")");
+        jasminCode.append("(");
+
+        jasminCode.append(JasminUtils.getParametersFromMethod(this));
+
+        jasminCode.append(")");
 
     }
 
