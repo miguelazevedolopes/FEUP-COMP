@@ -14,7 +14,6 @@ import pt.up.fe.specs.util.exceptions.NotImplementedException;
 public class JasminMethod {
     private final Method method;
     private final StringBuilder jasminCode;
-    private final ClassUnit ollir;
     private final String superName;
     private final String className;
     private final Map<String, Descriptor> localVars;
@@ -25,7 +24,7 @@ public class JasminMethod {
     private int nNranches;
 
 
-    public JasminMethod(Method method, String className, String superName, ClassUnit ollir) {
+    public JasminMethod(Method method, String className, String superName) {
         this.method = method;
         this.jasminCode = new StringBuilder();
         this.superName = superName;
@@ -34,7 +33,6 @@ public class JasminMethod {
         this.n_locals = 0;
         this.stackMax = 0;
         this.currStack = 0;
-        this.ollir = ollir;
         this.reports = new ArrayList<>();
         this.nNranches = 0;
         
@@ -149,43 +147,37 @@ public class JasminMethod {
 
     }
 
-    
-    public String getCode(){
-        //var varTable = method.getVarTable();
+
+
+    public String generateJasminCode() {
 
         generateDeclaration();
 
         jasminCode.append(JasminUtils.getJasminType(method.getReturnType().getTypeOfElement(), className));
-        jasminCode.append("\n\t.limit stack 99\n");
-        jasminCode.append("\t.limit locals 99\n");//TODO 
 
-        // Get code for each instruction in method
         StringBuilder code = new StringBuilder();
-        for(var inst: method.getInstructions()){
-            String currentlabel = "";
+        String currentlabel = "";
+        for (var inst : method.getInstructions()) {
             if (!method.getLabels(inst).isEmpty())
                 if (!currentlabel.equals(method.getLabels(inst).get(0))) {
                     currentlabel = method.getLabels(inst).get(0);
                     for (String label : method.getLabels(inst)) {
                         code.append("\n\t").append(label).append(":");
                     }
-                }   
-           
+                }
             JasminInstruction jasminInstruction = new JasminInstruction(inst, this);
-            jasminCode.append(jasminInstruction.getCode());
+            code.append(jasminInstruction.getCode());
             this.reports.addAll(jasminInstruction.getReports());
         }
-        
-
         if (!this.method.isConstructMethod()) {
             this.jasminCode.append("\n\t\t.limit locals ").append(n_locals);
             this.jasminCode.append("\n\t\t.limit stack ").append(stackMax).append("\n");
         }
         this.jasminCode.append(code);
         jasminCode.append("\n.end method");
-
-
         return jasminCode.toString();
     }
+
+    
     
 }

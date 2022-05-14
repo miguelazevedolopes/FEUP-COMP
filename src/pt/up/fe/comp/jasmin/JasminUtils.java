@@ -83,7 +83,6 @@ public class JasminUtils {
     
     public static String getJasminType(ElementType type, String className) {
         String res = "";
-        //switch (method.getReturnType().getTypeOfElement()) {
         switch (type) {
             case INT32:
                 res = "I";

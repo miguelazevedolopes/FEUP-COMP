@@ -1,12 +1,15 @@
 .class public HelloWorld
-.super java/lang/Object
+.super java/lang/Object.method public <init>()V
+	aload_0
+	invokenonvirtual null/<init>()V
+	return
+.end method
+
 
 .method public static main([Ljava/lang/String;)V
-	.limit stack 99
-	.limit locals 99
-
 		.limit locals 2
 		.limit stack 0
 
-.end method
+		invokestatic ioPlus.printHelloWorld()V
+		return
 .end method

@@ -3,14 +3,9 @@ package pt.up.fe.comp.jasmin.Instructions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.specs.comp.ollir.*;
-
-import freemarker.core.builtins.sourceBI;
 import pt.up.fe.comp.jasmin.JasminMethod;
-import pt.up.fe.comp.jasmin.JasminOperand;
-import pt.up.fe.comp.jasmin.JasminType;
 import pt.up.fe.comp.jasmin.JasminUtils;
 import pt.up.fe.comp.jmm.report.Report;
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
@@ -43,7 +38,6 @@ public class JasminInstruction {
 
     public String getCode(){
 
-        StringBuilder code = new StringBuilder();
         switch (instruction.getInstType()) {
             case CALL:
                 generateCall((CallInstruction)instruction, false);
@@ -67,7 +61,9 @@ public class JasminInstruction {
                 throw new NotImplementedException("Intruction Type not implemented: " + instruction.getInstType().toString());
         }
 
-        return code.toString();
+
+
+        return jasminCode.toString();
 
     }
 
