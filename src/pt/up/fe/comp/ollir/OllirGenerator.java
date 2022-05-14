@@ -21,6 +21,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     public Integer varcount = 0;
     public Integer tempCount = 0;
     public Integer loopCount = 0;
+    public Boolean visitingIf = false;
 
     public Symbol twoWaySymbol1 = null;
     public Method twoWayMethod1 = null;
@@ -33,15 +34,15 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         this.code = new StringBuilder();
         this.symbolTable = symbolTable;
 
-        addVisit("Start", this::programVisit);
+        addVisit("Start", this::programVisit); 
         addVisit("ClassDeclaration", this::classDeclVisit);
         addVisit("MainMethod", this::methodDeclVisit);
         addVisit("NormalMethod", this::methodDeclVisit);
         addVisit("MethodBody", this::methodBodyVisit);
         addVisit("Equality", this::stmtVisit);
         addVisit("DotExpression", this::stmtVisit);
-        //addVisit("IfStatement", this::stmtVisit);
-        //addVisit("WhileStatement", this::stmtVisit);
+        // addVisit("IfStatement", this::stmtVisit);
+        // addVisit("WhileStatement", this::stmtVisit);
         addVisit("ReturnRule", this::returnVisit); 
         /*
         addVisit("SUM", this::twoWayVisit);
@@ -117,6 +118,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             
         }
 
+        if(methodSignature.equals("main")) code.append("ret.V;\n");
         code.append("}\n\n");
 
         return 0;
@@ -205,9 +207,17 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private void assignStmtVisit(JmmNode assignStmt){
         int counter = 0;
         returnType = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, assignStmt.getJmmChild(0).get("name")));
-        if(isBinOp(assignStmt.getJmmChild(1)) && isBinOp(assignStmt.getJmmChild(1).getJmmChild(0))){
-            counter = binOpVisit(assignStmt.getJmmChild(1), 0);
+        if(isBinOp(assignStmt.getJmmChild(1))){
+            if (isBinOp(assignStmt.getJmmChild(1).getJmmChild(0)))
+                counter = binOpVisit(assignStmt.getJmmChild(1), 0);
+
+            if (assignStmt.getJmmChild(1).getJmmChild(0).getKind().equals("DotExpression"))
+                counter = dotExpInAssign(assignStmt.getJmmChild(1).getJmmChild(1), 1);
+
+            if (assignStmt.getJmmChild(1).getJmmChild(1).getKind().equals("DotExpression"))
+                counter = dotExpInAssign(assignStmt.getJmmChild(1).getJmmChild(1), 1);
         }
+        
         idVisit(assignStmt.getJmmChild(0));
 
         code.append(" :=.").append(getType(assignStmt.getJmmChild(0))).append(" ");
@@ -218,11 +228,44 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         if(counter == 0)
             expressionVisit(assignStmt.getJmmChild(i),0);
-        else
-            code.append("t").append(tempCount-1 + ".i32 ").append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getKind()))
-                .append(".").append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getJmmChild(1).getKind())).append(" ")
-                .append(expressionVisit(assignStmt.getJmmChild(1).getJmmChild(1), 0));
+        else{
+            if (assignStmt.getJmmChild(1).getJmmChild(0).getKind().equals("DotExpression")){
+                Boolean isId = false;
+                if (assignStmt.getJmmChild(1).getJmmChild(1).getKind().equals("Id")) isId = true;
+                code.append("t").append(tempCount-1 + ".i32 ").append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getKind()))
+                    .append(".");
+                if (isId) {
+                    var idType = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, assignStmt.getJmmChild(1).getJmmChild(1).get("name")));
+                    code.append(idType);
+                } else code.append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getJmmChild(1).getKind()));
+                code.append(" ")
+                    .append(expressionVisit(assignStmt.getJmmChild(1).getJmmChild(1), 0));
+            } else if (assignStmt.getJmmChild(1).getJmmChild(1).getKind().equals("DotExpression")){
+                code.append(expressionVisit(assignStmt.getJmmChild(1).getJmmChild(0), 0));
+                code.append(" ").append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getKind()))
+                    .append(" .i32 ").append("t").append(tempCount-1 + ".i32 ");
+            } else {
+                Boolean isId = false;
+                if (assignStmt.getJmmChild(1).getJmmChild(1).getKind().equals("Id")) isId = true;
+                code.append("t").append(tempCount-1 + ".i32 ").append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getKind()))
+                    .append(".");
+                    if (isId) {
+                    var idType = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, assignStmt.getJmmChild(1).getJmmChild(1).get("name")));
+                    code.append(idType);
+                } else code.append(OllirUtils.getOllirType(assignStmt.getJmmChild(1).getJmmChild(1).getKind()));
+                code.append(" ")
+                    .append(expressionVisit(assignStmt.getJmmChild(1).getJmmChild(1), 0));
+            }
+        }
 
+    }
+
+    private Integer dotExpInAssign(JmmNode dotExp, Integer counter){
+        code.append("t").append(tempCount).append(".i32 :=.i32 ");
+        tempCount++;
+        memberCallVisit(dotExp);
+        code.append(";\n");
+        return counter+1;
     }
 
     Boolean isBinOp(JmmNode op){
@@ -272,29 +315,61 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private void binOpNoAssign(JmmNode binOp){
         code.append("t").append(tempCount).append(".i32 :=.i32 ");
-                tempCount++;
-                expressionVisit(binOp.getJmmChild(0), 0);
-                code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
-                    .append(".").append(getType(binOp.getJmmChild(0))).append(" ");
-                expressionVisit(binOp.getJmmChild(1), 0);
-                code.append(";\n");
+        tempCount++;
+        expressionVisit(binOp.getJmmChild(0), 0);
+        code.append(" ").append(OllirUtils.getOllirType(binOp.getKind()))
+            .append(".").append(getType(binOp.getJmmChild(0))).append(" ");
+        expressionVisit(binOp.getJmmChild(1), 0);
+        code.append(";\n");
+    }
+
+    private void invertOp(JmmNode binOp){
+        String kind = binOp.getKind();
+        switch (kind){
+            case "LESSTHAN" : code.append(">="); break;
+            default:
+                throw new NotImplementedException("OLLIR: Operation kind not implemented: " + binOp.getKind());
+        }
     }
 
     private void ifVisit(JmmNode ifStmt){
         int elseCount = 0;
-        if (isBinOp(ifStmt.getJmmChild(0).getJmmChild(0))){
-            binOpNoAssign(ifStmt.getJmmChild(0).getJmmChild(0));
+
+        Boolean oneBool = false;
+        if (ifStmt.getJmmChild(0).getNumChildren() < 2){
+            oneBool = true;
         }
-        if (isBinOp(ifStmt.getJmmChild(0).getJmmChild(1))){
-            binOpNoAssign(ifStmt.getJmmChild(0).getJmmChild(1));
+        else {
+            if (isBinOp(ifStmt.getJmmChild(0).getJmmChild(0))){
+                binOpNoAssign(ifStmt.getJmmChild(0).getJmmChild(0));
+            }  else if(ifStmt.getJmmChild(0).getJmmChild(0).getKind().equals("DotExpression")){
+                int t = dotExpInAssign(ifStmt.getJmmChild(0).getJmmChild(0), 0);
+            }
+            if (isBinOp(ifStmt.getJmmChild(0).getJmmChild(1))){
+                binOpNoAssign(ifStmt.getJmmChild(0).getJmmChild(1));
+            } else if(ifStmt.getJmmChild(0).getJmmChild(1).getKind().equals("DotExpression")){
+                int t = dotExpInAssign(ifStmt.getJmmChild(0).getJmmChild(1), 0);
+            }
         }
         code.append("if (");
-        //missing the (op), didn't have time to fix it
-        //visit here so it does installDist, but can (and should) be removed later
-        visit(ifStmt.getJmmChild(0));
-        code.append(") goto then;\n");
-        code.append("goto else;\n");
-        code.append("then:\n");
+        if (oneBool) code.append(ifStmt.getJmmChild(0).get("value"));
+        else{
+            visitingIf = true;
+            if(isBinOp(ifStmt.getJmmChild(0).getJmmChild(0))){
+                code.append("t").append(tempCount-1).append(".i32 ");
+            } else if(ifStmt.getJmmChild(0).getJmmChild(0).getKind().equals("IntegerLiteral")){
+                code.append(ifStmt.getJmmChild(0).getJmmChild(0).get("value")).append(".i32 ");
+            } else code.append(ifStmt.getJmmChild(0).getJmmChild(0).get("name")).append(".i32 ");
+            invertOp(ifStmt.getJmmChild(0));
+            code.append(".bool ");
+            if(isBinOp(ifStmt.getJmmChild(0).getJmmChild(1))){
+                code.append("t").append(tempCount).append(".i32 ");
+            } else if(ifStmt.getJmmChild(0).getJmmChild(1).getKind().equals("IntegerLiteral")){
+                code.append(ifStmt.getJmmChild(0).getJmmChild(1).get("value")).append(".i32 ");
+            } else code.append(ifStmt.getJmmChild(0).getJmmChild(1).get("name")).append(".i32");
+            visitingIf = false;
+        }
+        code.append(") goto else;\n");
         int numChildren = ifStmt.getNumChildren();
         for (int i = 1; i < numChildren; i++){
             if(ifStmt.getJmmChild(i).getKind().equals("StatementBlock")){
@@ -314,17 +389,42 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private void whileVisit(JmmNode whileStmt){
         ++loopCount;
         code.append("Loop").append(loopCount).append(":\n");
-        if (isBinOp(whileStmt.getJmmChild(0).getJmmChild(0))){
-            binOpNoAssign(whileStmt.getJmmChild(0).getJmmChild(0));
+        Boolean oneBool = false;
+        if (whileStmt.getJmmChild(0).getNumChildren() < 2){
+            oneBool = true;
         }
-        if (isBinOp(whileStmt.getJmmChild(0).getJmmChild(1))){
-            binOpNoAssign(whileStmt.getJmmChild(0).getJmmChild(1));
+        else {
+            if (isBinOp(whileStmt.getJmmChild(0).getJmmChild(0))){
+                binOpNoAssign(whileStmt.getJmmChild(0).getJmmChild(0));
+            } else if(whileStmt.getJmmChild(0).getJmmChild(0).getKind().equals("DotExpression")){
+                int t = dotExpInAssign(whileStmt.getJmmChild(0).getJmmChild(0), 0);
+            }
+            if (isBinOp(whileStmt.getJmmChild(0).getJmmChild(1))){
+                binOpNoAssign(whileStmt.getJmmChild(0).getJmmChild(1));
+            } else if(whileStmt.getJmmChild(0).getJmmChild(1).getKind().equals("DotExpression")){
+                int t = dotExpInAssign(whileStmt.getJmmChild(0).getJmmChild(1), 0);
+            }
         }
+
         code.append("if(");
-        //missing the (op), didn't have time to fix it
-        //visit here so it does installDist, but can (and should) be removed later
-        //also needs the op to be inverted in order to work this way
-        visit(whileStmt.getJmmChild(0));
+        if (oneBool) code.append(whileStmt.getJmmChild(0).get("value"));
+        else{
+            visitingIf = true;
+            if(isBinOp(whileStmt.getJmmChild(0).getJmmChild(0)) || whileStmt.getJmmChild(0).getJmmChild(0).getKind().equals("DotExpression")){
+                code.append("t").append(tempCount-1).append(".i32 ");
+            } else if(whileStmt.getJmmChild(0).getJmmChild(0).getKind().equals("IntegerLiteral")){
+                code.append(whileStmt.getJmmChild(0).getJmmChild(0).get("value")).append(".i32 ");
+            } else code.append(whileStmt.getJmmChild(0).getJmmChild(0).get("name")).append(".i32 ");
+            invertOp(whileStmt.getJmmChild(0));
+            code.append(".bool ");
+            if(isBinOp(whileStmt.getJmmChild(0).getJmmChild(1)) || whileStmt.getJmmChild(0).getJmmChild(1).getKind().equals("DotExpression")){
+                code.append("t").append(tempCount).append(".i32");
+            } else if(whileStmt.getJmmChild(0).getJmmChild(1).getKind().equals("IntegerLiteral")){
+                code.append(whileStmt.getJmmChild(0).getJmmChild(1).get("value")).append(".i32 ");
+            } else code.append(whileStmt.getJmmChild(0).getJmmChild(1).get("name")).append(".i32");
+            visitingIf = false;
+        }
+
         code.append(") goto end;\n");
         int whileChildren = whileStmt.getNumChildren();
         for (int i = 1; i < whileChildren; i++){
@@ -334,7 +434,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         code.append("end:\n");
     }
 
-
     private Integer expressionVisit(JmmNode expression, Integer dummy){
         String kind = expression.getKind();
 
@@ -342,6 +441,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             binOpVisit(expression, 0);
             return 0;
         }
+        int trash;
         switch(kind){
             case "Id": idVisit(expression); break;
             case "DotExpression": memberCallVisit(expression); break;
@@ -354,7 +454,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "NewObject": code.append("new(").append(expression.getJmmChild(0).get("name"))
                                 .append(").")
                                 .append(OllirUtils.getOllirType(expression.getJmmChild(0).get("name"))); break;
-            case "AccessToArray": expressionVisit(expression.getJmmChild(0), 0); break;
+            case "AccessToArray":
+                if (expression.getJmmChild(0).getKind().equals("DotExpression")) trash = dotExpInAssign(expression.getJmmChild(0), 0);
+                else expressionVisit(expression.getJmmChild(0), 0); break;
             default: 
             throw new NotImplementedException("OLLIR: Expression kind not implemented: " + expression.getKind());
         }
@@ -369,12 +471,16 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             // case "IfStatement": ifVisit(stmt); break;
             // case "WhileStatement": whileVisit(stmt); break;
             case "Equality": assignStmtVisit(stmt); code.append(";\n"); break; //Assignment
-            case "DotExpression": expressionVisit(stmt, dummy); code.append(";\n"); break; 
+            case "DotExpression":
+                expressionVisit(stmt, dummy);
+                if (!visitingIf) code.append(";\n");
+                break; 
             default: 
             throw new NotImplementedException("OLLIR: Statement kind not implemented: " + stmt.getKind());
         }
         return 0;
     }
+
 
     private void memberCallVisit(JmmNode memberCall){
         //type missing
