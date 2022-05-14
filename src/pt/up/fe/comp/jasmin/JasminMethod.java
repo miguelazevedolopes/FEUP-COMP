@@ -1,24 +1,30 @@
 package pt.up.fe.comp.jasmin;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import pt.up.fe.comp.jmm.report.Report;
 import org.specs.comp.ollir.*;
+
+import pt.up.fe.comp.jasmin.Instructions.JasminInstruction;
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
 
 
 public class JasminMethod {
     private final Method method;
     private final StringBuilder jasminCode;
-    private final ClassUnit ollir;
     private final String superName;
     private final String className;
     private final Map<String, Descriptor> localVars;
     private int n_locals = 0;
     private int stackMax;
     private int currStack;
+    private List<Report> reports;
+    private int nNranches;
 
 
-    public JasminMethod(Method method, String className, String superName, ClassUnit ollir) {
+    public JasminMethod(Method method, String className, String superName) {
         this.method = method;
         this.jasminCode = new StringBuilder();
         this.superName = superName;
@@ -27,26 +33,50 @@ public class JasminMethod {
         this.n_locals = 0;
         this.stackMax = 0;
         this.currStack = 0;
-        this.ollir = ollir;
-
+        this.reports = new ArrayList<>();
+        this.nNranches = 0;
         
         addLocalVariable("this", VarScope.FIELD, new Type(ElementType.CLASS));
+    }
+
+    public List<Report> getReports(){
+        return this.reports;
     }
 
     public String getSuperName() {
         return superName;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
+    public int getNBranches() {
+        return nNranches;
+    }
+
+    public void incrementBranches(){
+        this.nNranches++;
+    }
+
     /**
      * Increment stack and update stackMax in case it's value is exceeded
      */
-    public void incrementStack(){
-        currStack++;
-        if(currStack > stackMax) stackMax = currStack;
+    public void updateMaxStack(int popSize, int pushSize) {
+        currStack -= popSize;
+        currStack += pushSize;
+        stackMax = Math.max(stackMax, currStack);
     }
+
 
     public void decrementStack(){
         currStack--;
+    }
+
+    public void incrementStack() {
+        currStack++;
+        if (currStack > stackMax)
+            stackMax = currStack;
     }
 
     public Method getMethod() {
@@ -95,11 +125,16 @@ public class JasminMethod {
         }
     }
 
-    private void generateDeclaration(){
-        jasminCode.append("\n\n.method ");
+    public Descriptor getLocalVariableByKey(Element dest, VarScope type) {
+        String key = ((Operand) dest).getName();
+        if (localVars.get(key) == null) {
+            addLocalVariable(key, type, dest.getType());
+        }
+        return localVars.get(key);
+    }
 
-        String accessModifiers = getAccessModifiers(method.getMethodAccessModifier(), method.isConstructMethod());
-        jasminCode.append(accessModifiers);
+    private void generateDeclaration(){
+        jasminCode.append("\n\n.method public");
 
         if (method.isConstructMethod())
             jasminCode.append(" <init>");
@@ -107,152 +142,48 @@ public class JasminMethod {
             if (method.isStaticMethod()) jasminCode.append(" static");
             if (method.isFinalMethod()) jasminCode.append(" final");
 
-            jasminCode.append(" ").append(method.getMethodName());
+            jasminCode.append(" ");
+            jasminCode.append(method.getMethodName());
         }
-        jasminCode.append("(").append(JasminUtils.getParametersFromMethod(this)).append(")");
+        jasminCode.append("(");
+
+        jasminCode.append(JasminUtils.getParametersFromMethod(this));
+
+        jasminCode.append(")");
 
     }
 
-    public String getJasminType(ElementType type) {
-        String res = "";
-        //switch (method.getReturnType().getTypeOfElement()) {
-        switch (type) {
-            case INT32:
-                res = "I";
-                break;
-            case BOOLEAN:
-                res = "Z";
-                break;
-            case ARRAYREF:
-                res = "[I";
-                break;
-            case OBJECTREF:
-                res = this.className;
-                break;
-            case VOID:
-                res = "V";
-                break;
-            default:
-                break;
-        }
-        return res;
-    }
 
-    public String getCode(){
+
+    public String generateJasminCode() {
 
         generateDeclaration();
 
-        jasminCode.append(getJasminType(method.getReturnType().getTypeOfElement()));
-        
-        jasminCode.append("\n\t.limit stack 99\n");
-        jasminCode.append("\t.limit locals 99\n");
+        jasminCode.append(JasminUtils.getJasminType(method.getReturnType().getTypeOfElement(), className));
 
-        for(var inst: method.getInstructions()){
-           jasminCode.append(getCode(inst));
+        StringBuilder code = new StringBuilder();
+        String currentlabel = "";
+        for (var inst : method.getInstructions()) {
+            if (!method.getLabels(inst).isEmpty())
+                if (!currentlabel.equals(method.getLabels(inst).get(0))) {
+                    currentlabel = method.getLabels(inst).get(0);
+                    for (String label : method.getLabels(inst)) {
+                        code.append("\n\t").append(label).append(":");
+                    }
+                }
+            JasminInstruction jasminInstruction = new JasminInstruction(inst, this);
+            code.append(jasminInstruction.getCode());
+            this.reports.addAll(jasminInstruction.getReports());
         }
-        
+        if (!this.method.isConstructMethod()) {
+            this.jasminCode.append("\n\t\t.limit locals ").append(n_locals);
+            this.jasminCode.append("\n\t\t.limit stack ").append(stackMax).append("\n");
+        }
+        this.jasminCode.append(code);
         jasminCode.append("\n.end method");
-
         return jasminCode.toString();
     }
 
-    private String getCode(Instruction instruction) {
-
-        StringBuilder code = new StringBuilder();
-        switch (instruction.getInstType()) {
-            case CALL:
-                code.append(getCode((CallInstruction) instruction));
-                break;
-            case RETURN:
-                code.append(getCode((ReturnInstruction) instruction));
-                break;
-            // case ASSIGN:
-            //     getCode((CallInstruction) instruction, false);
-            //     break;
-            // case PUTFIELD:
-            //     getCode((PutFieldInstruction) instruction);
-            //     break;
-            // case BRANCH:
-            //     getCode((CondBranchInstruction) instruction);
-            //     break;
-            // case GOTO:
-            //     getCode((GotoInstruction) instruction);
-            //     break;
-
-            default:
-                throw new NotImplementedException("Intruction Type not implemented: " + instruction.getInstType().toString());
-        }
-
-        return code.toString();
-    } 
-
-
-    //TODO Incomplete
-    private String getCode(ReturnInstruction instruction){
-        var code = new StringBuilder();
-
-        Element op = instruction.getOperand();
-        
-
-        code.append("\n\treturn");
-
-        return code.toString();
-
-    }
-
-    private String getCode(CallInstruction instruction){
-
-        var code = new StringBuilder();
-        /*TODO
-        invokevirtual,
-        invokeinterface,
-        invokespecial,
-        invokestatic,
-        NEW,
-        arraylength,
-        ldc
-         */
-        switch(instruction.getInvocationType()){
-            case invokestatic:
-                code.append(getInvokeSataticCode(instruction));
-                break;
-            default:
-                throw new NotImplementedException(instruction.getInvocationType());
-        }
-
-
-        return code.toString();
-
-    }
-
-    private String getInvokeSataticCode(CallInstruction instruction) {
-        StringBuilder code = new StringBuilder();
-
-        code.append("\tinvokestatic ");
-
-        var methodClass = ((Operand)instruction.getFirstArg()).getName();
-        Element secondArg = instruction.getSecondArg();
-
-        code.append(methodClass).append("/"); //TODO fully classified name
-        code.append(((LiteralElement) secondArg).getLiteral().replace("\"", ""));
-
-        code.append("(");
-        
-        //Operands
-        for(var operand: instruction.getListOfOperands()){
-            getArgumentsCode(operand);
-        }
-        code.append(")");
-
-        code.append(getJasminType(instruction.getReturnType().getTypeOfElement()));
-        return code.toString();
-
-
-    }
-
-    //TODO operands
-    private void getArgumentsCode(Element operand) {
-        throw new NotImplementedException(operand.toString());
-    }
+    
     
 }
