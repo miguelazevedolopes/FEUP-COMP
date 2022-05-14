@@ -78,6 +78,31 @@ public class JasminTest {
 
         //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
     }
+    @Test
+    public void OllirToJasminBasic() {
+        
+        String ollirCode =  SpecsIo.getResource("fixtures/public/cp2/OllirToJasminBasic.ollir");
+
+        OllirResult ollirResult = new OllirResult(ollirCode, null);
+        JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
+
+        
+        TestUtils.noErrors(jasminResult);
+        jasminResult.run();
+    }
+
+    @Test
+    public void OllirToJasminFields() {
+        
+        String ollirCode =  SpecsIo.getResource("fixtures/public/cp2/OllirToJasminFields.ollir");
+
+        OllirResult ollirResult = new OllirResult(ollirCode, null);
+        JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
+
+        
+        TestUtils.noErrors(jasminResult);
+        jasminResult.run();
+    }
 
     @Test
     public void testRunJasmin() {
@@ -86,4 +111,8 @@ public class JasminTest {
         var output = TestUtils.runJasmin(jasminCode);
         assertEquals("Hello World!\nHello World Again!\n", SpecsStrings.normalizeFileContents(output));
     }
+
+    //fixtures/public/cp2/OllirToJasminFields.ollir
+
+    //"fixtures/public/cp2/OllirToJasminBasic.ollir"
 }

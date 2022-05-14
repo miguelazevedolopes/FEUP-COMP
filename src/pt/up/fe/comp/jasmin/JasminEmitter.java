@@ -21,16 +21,12 @@ public class JasminEmitter implements JasminBackend{
         ClassUnit ollir = ollirResult.getOllirClass();
 
         try{
-            ollir.buildCFGs(); // build the CFG of each method
-            ollir.checkMethodLabels(); // check the use of labels in the OLLIR loaded
-            ollir.outputCFGs(); // output to .dot files the CFGs, one per method
-            ollir.buildVarTables(); // build the table of variables for each method
+            ollir.buildCFGs(); 
+            ollir.checkMethodLabels(); 
+            ollir.outputCFGs(); 
+            ollir.buildVarTables(); 
 
-            ollir.show(); // print to console main information about the input OLLIR
-
-            // Convert the OLLIR to a String containing the equivalent Jasmin code
             StringBuilder jasminCode = new StringBuilder();
-            // More reports from this stage
             List<Report> reports = new ArrayList<>();
 
             jasminCode.append(".class public ").append(ollir.getClassName());
