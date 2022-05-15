@@ -5,15 +5,20 @@ class HelloWorld {
 		int[] test_arr;
 		int a;
 		int b;
-		b = 10 * 5 + a + 7;
+		int x;
+		int y;
+		a = x * (b + 1);
+		//a = 1 + 2;
+		//a = 5 + ioPlus.x;
+		b = 10 * 5 + a + b;
 
 	}
 
-	public int hello(int[] x){
-		int a;
-		a = 2;
-		return a + 5;
-	}
+	//public int hello(int[] x){
+	//	int a;
+	//	a = 2;
+	//	return a + 5;
+	//}
 
 
 }

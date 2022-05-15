@@ -55,7 +55,7 @@ public class Launcher {
         JmmSemanticsResult semanticResult = analyser.semanticAnalysis(parserResult);
 
         // Check if there are parsing errors
-        TestUtils.noErrors(semanticResult.getReports());
+        //TestUtils.noErrors(semanticResult.getReports());
 
         JmmOptimizer optimizer = new JmmOptimizer();
 
