@@ -273,8 +273,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private Integer leftBinOpVisit(JmmNode binOp, Integer dummy){
-        code.append(getCode(binOp.getJmmChild(1)) + " ")
-            .append(OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(1))+ " ");
+        System.out.println("left");
+        if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
+            code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
+        else code.append(getCode(binOp.getJmmChild(1)) + " ");
+        code.append(OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(1))+ " ");
         if(binOp.getJmmChild(1).getKind().equals("DotExpression") || isBinOp(binOp.getJmmChild(1)))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
         else
@@ -285,7 +288,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
 
     private Integer rightBinOpVisit(JmmNode binOp, Integer dummy){
-        code.append(getCode(binOp.getJmmChild(0)) + " ");
+        System.out.println("right");
+        if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
+            code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
+        else code.append(getCode(binOp.getJmmChild(0)) + " ");
         code.append(OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(0))+ " ");
         if(binOp.getJmmChild(1).getKind().equals("DotExpression") || isBinOp(binOp.getJmmChild(1)))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
@@ -300,8 +306,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         else if(isBinOp(binOp.getJmmChild(1)))
             rightBinOpVisit(binOp, dummy);
         else{
-            code.append(getCode(binOp.getJmmChild(1)) + " ")
-            .append(OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(1))+ " ");
+            if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
+                code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0))+" ");
+            else code.append(getCode(binOp.getJmmChild(1)) + " ");
+            code.append(OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(1))+ " ");
             if(binOp.getJmmChild(0).getKind().equals("DotExpression"))
                 code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(1)));
             else

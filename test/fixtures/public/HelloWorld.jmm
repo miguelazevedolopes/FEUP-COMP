@@ -7,7 +7,7 @@ class HelloWorld {
 		int b;
 		int x;
 		int y;
-		a = x * (b + 1);
+		//a = x * (b + 1);
 		//a = 1 + 2;
 		//a = 5 + ioPlus.x;
 		b = 10 * 5 + a + b;
