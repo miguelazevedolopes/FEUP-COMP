@@ -76,7 +76,8 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                 Type firstOperandType = resolveType(child.getJmmChild(0),methodName);
                 Type secondOperandType = resolveType(child.getJmmChild(1),methodName);
                 if(!firstOperandType.equals(secondOperandType) || !firstOperandType.equals(new Type("TypeInt", false))){
-                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Invalid operation: "+child.getJmmChild(0).getKind()+" + "+child.getJmmChild(1).getKind()));
+                    if(!(firstOperandType.equals(new Type("UndefinedImport",false))||secondOperandType.equals(new Type("UndefinedImport",false))))
+                        reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Invalid operation: "+child.getJmmChild(0).getKind()+" + "+child.getJmmChild(1).getKind()));
                 }
             }
             else if(nodeKind.equals("DotExpression")){
