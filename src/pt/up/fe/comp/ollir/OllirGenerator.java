@@ -178,9 +178,17 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             binOpVisit(returnStmt.getJmmChild(0), 0);
             code.append(";\n");
         }
+        if(returnStmt.getJmmChild(0).getKind().equals("DotExpression"))
+        {
+            type = OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName());
+            code.append("t"+tempCount+"."+type+" ")
+                .append(":=." + type + " ");
+            expressionVisit(returnStmt.getJmmChild(0), dummy);
+            code.append(";\n");
+        }
         code.append("ret.").append(OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName()))
             .append(" ");
-        if(isBinOp(returnStmt.getJmmChild(0))){
+        if(isBinOp(returnStmt.getJmmChild(0)) || returnStmt.getJmmChild(0).getKind().equals("DotExpression")){
             code.append("t" + tempCount +"." + type);
         }
         else
@@ -210,13 +218,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             flag = true;
         for(int i = 0; i < exp.getNumChildren(); i++){
             var e = exp.getJmmChild(i);
-            System.out.println("child: " + e.getKind());
-            if(isBinOp(e) || e.getKind().equals("DotExpression")){
+            if(isBinOp(e) || e.getKind().equals("DotExpression") || e.getKind().equals("InitializeArray") || e.getKind().equals("AccessToArray")){
                 assignStmtAux(e);
                 flag = true;
             }
         }
-
 
         code.append("t" + tempCount + "." + OllirUtils.getOllirType(returnType))
         .append(" :=." + OllirUtils.getOllirType(returnType) + " ")
@@ -244,10 +250,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
 
     private Integer dotExpInAssign(JmmNode dotExp, Integer counter){
-        code.append("t").append(tempCount).append(".i32 :=.i32 ");
-        tempCount++;
         memberCallVisit(dotExp);
-        code.append(";\n");
         return counter+1;
     }
 
@@ -257,7 +260,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private Integer leftBinOpVisit(JmmNode binOp, Integer dummy){
-        System.out.println("left");
         if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
         else code.append(getCode(binOp.getJmmChild(1)) + " ");
@@ -272,7 +274,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
 
     private Integer rightBinOpVisit(JmmNode binOp, Integer dummy){
-        System.out.println("right");
         if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
         else code.append(getCode(binOp.getJmmChild(0)) + " ");
@@ -424,6 +425,15 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         code.append("end:\n");
     }
 
+    private Integer newArrayVisit(JmmNode newArr, Integer dummy){
+        
+        code.append("new(array, ");
+        // expressionVisit(newArr.getJmmChild(0),0);
+        code.append("t"+(tempCount-1)+".i32");
+        code.append(").array.i32");
+        return 0;
+    }
+
     private Integer expressionVisit(JmmNode expression, Integer dummy){
         String kind = expression.getKind();
 
@@ -439,9 +449,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "Boolean": code.append(expression.get("value")).append(".bool"); break;
             case "Negation": break;
             case "IntegerLiteral": code.append(expression.get("value")).append(".").append(OllirUtils.getOllirType("TypeInt")); break;
-            case "InitializeArray": code.append("new(array, ");
-                                    expressionVisit(expression.getJmmChild(0),0);
-                                    code.append(").array.i32"); break;
+            case "InitializeArray": newArrayVisit(expression, dummy); break;
             case "NewObject": code.append("new(").append(expression.getJmmChild(0).get("name"))
                                 .append(").")
                                 .append(OllirUtils.getOllirType(expression.getJmmChild(0).get("name"))); break;

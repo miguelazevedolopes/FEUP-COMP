@@ -5,13 +5,15 @@ class HelloWorld {
 		int[] test_arr;
 		int a;
 		int b;
-		int x;
-		int y;
+		//int x;
+		//int y;
 		//a = x * (b + 1);
 		//a = 1 + 2;
-		//a = 5 + ioPlus.x;
+		//a = 5 + ioPlus.x();
 		b = 10 * 5 + a + b;
 
+        test_arr = new int[ioPlus.lengt()];
+        test_arr = new int[10];
 	}
 
 	//public int hello(int[] x){
