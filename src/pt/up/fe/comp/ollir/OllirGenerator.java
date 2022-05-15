@@ -21,6 +21,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     public Integer varcount = 0;
     public Integer tempCount = 0;
     public Integer loopCount = 0;
+    public Integer ifCount = 0;
     public Boolean visitingIf = false;
 
     public Symbol twoWaySymbol1 = null;
@@ -41,8 +42,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("MethodBody", this::methodBodyVisit);
         addVisit("Equality", this::stmtVisit);
         addVisit("DotExpression", this::stmtVisit);
-        // addVisit("IfStatement", this::stmtVisit);
-        // addVisit("WhileStatement", this::stmtVisit);
+        addVisit("IfStatement", this::stmtVisit);
+        addVisit("WhileStatement", this::stmtVisit);
         addVisit("ReturnRule", this::returnVisit); 
         /*
         addVisit("SUM", this::twoWayVisit);
@@ -333,7 +334,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private void ifVisit(JmmNode ifStmt){
-        int elseCount = 0;
+        ++ifCount;
+        int elseStmtCount = 0;
 
         Boolean oneBool = false;
         if (ifStmt.getJmmChild(0).getNumChildren() < 2){
@@ -369,17 +371,19 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             } else code.append(ifStmt.getJmmChild(0).getJmmChild(1).get("name")).append(".i32");
             visitingIf = false;
         }
-        code.append(") goto else;\n");
+        code.append(") goto else").append(ifCount).append(";\n");
         int numChildren = ifStmt.getNumChildren();
         for (int i = 1; i < numChildren; i++){
+            if (ifStmt.getJmmChild(i).getKind().equals("StatementBlock") && (i != numChildren - 1))
+                code.append("goto endIf").append(ifCount).append(";\n");
             if(ifStmt.getJmmChild(i).getKind().equals("StatementBlock")){
-                ++elseCount;
-                if (elseCount == 2){
-                    if(i == numChildren - 1) code.append("endIf:\n");
-                    else code.append("endElse:\n");
-                    elseCount = 0;
+                ++elseStmtCount;
+                if (elseStmtCount == 2){
+                    if(i == numChildren - 1) code.append("endIf").append(ifCount).append(":\n");
+                    else code.append("endElse").append(ifCount).append(":\n");
+                    elseStmtCount = 0;
                 } else {
-                    code.append("else:\n");
+                    code.append("else").append(ifCount).append(":\n");
                 }
             }
             visit(ifStmt.getJmmChild(i));
@@ -425,13 +429,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             visitingIf = false;
         }
 
-        code.append(") goto end;\n");
+        code.append(") goto end").append(loopCount).append(";\n");
         int whileChildren = whileStmt.getNumChildren();
         for (int i = 1; i < whileChildren; i++){
             visit(whileStmt.getJmmChild(i));
         }
         code.append("goto Loop").append(loopCount).append(";\n");
-        code.append("end:\n");
+        code.append("end").append(loopCount).append(":\n");
     }
 
     private Integer expressionVisit(JmmNode expression, Integer dummy){
@@ -468,8 +472,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         String stmtType = stmt.getKind().toString();
         switch(stmtType){
             // case "StatementBlock": break;
-            // case "IfStatement": ifVisit(stmt); break;
-            // case "WhileStatement": whileVisit(stmt); break;
+            case "IfStatement": ifVisit(stmt); break;
+            case "WhileStatement": whileVisit(stmt); break;
             case "Equality": assignStmtVisit(stmt); code.append(";\n"); break; //Assignment
             case "DotExpression":
                 expressionVisit(stmt, dummy);
