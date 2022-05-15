@@ -5,7 +5,6 @@ class HelloWorld {
 		int[] test_arr;
 		int a;
 		int b;
-		a = 5 + ioPlus.x;
 		b = 10 * 5 + a + 7;
 
 	}
