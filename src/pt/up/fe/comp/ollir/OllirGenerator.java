@@ -329,6 +329,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         switch (kind){
             case "LESSTHAN" : code.append(">="); break;
             case "ANDD" : code.append("||"); break;
+            case "DotExpression": expressionVisit(binOp, 0); break;
             default:
                 throw new NotImplementedException("OLLIR: Operation Invertion not implemented: " + binOp.getKind());
         }
@@ -511,7 +512,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "Identifier": idVisit(expression.getJmmChild(0));
             case "DotExpression": memberCallVisit(expression); break;
             case "Boolean": code.append(expression.get("value")).append(".bool"); break;
-            case "Negation": break; //negationVisit(expression); break;
+            //Negation currently skipping
+            case "Negation": expressionVisit(expression.getJmmChild(0), dummy);break; //TODO negationVisit(expression); break;
             case "IntegerLiteral": code.append(expression.get("value")).append(".").append(OllirUtils.getOllirType("TypeInt")); break;
             case "InitializeArray": newArrayVisit(expression, dummy); break;
             case "NewObject": code.append("new(").append(expression.getJmmChild(0).get("name"))
@@ -529,7 +531,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         String stmtType = stmt.getKind().toString();
         switch(stmtType){
             // case "StatementBlock": break;
-            case "IfStatement": break; //ifVisit(stmt); break;
+            case "IfStatement": ifVisit(stmt); break;
             case "WhileStatement": break; //whileVisit(stmt); break;
             case "Equality": assignStmtVisit(stmt); break; //Assignment
             case "DotExpression":
