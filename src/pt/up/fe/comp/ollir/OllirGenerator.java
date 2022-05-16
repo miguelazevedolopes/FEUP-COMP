@@ -19,7 +19,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     public String curMethRetType;
     public String methodSignature;
     public Integer varcount = 0;
-    public Integer tempCount = 0;
+    public Integer tempCount = 1;
     public Integer loopCount = 0;
     public Integer ifCount = 0;
     public Boolean visitingIf = false;
@@ -201,24 +201,23 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private void idVisit(JmmNode id){
         String name = id.get("name");
+        boolean isParam = false;
         Symbol var = symbolTable.getLocalVariable(methodSignature, name);
         if(var == null){
             var = symbolTable.getParam(methodSignature, name);
-            if(var != null)
-                code.append("$" + symbolTable.getParamPos(methodSignature, name) + ".");
+            isParam = true;
         }
         if(var == null){
             var = symbolTable.getField(methodSignature, name);
         }
         if(id.getNumChildren()>0 && id.getJmmChild(0).getKind().equals("AccessToArray")){
-            code.append("t"+tempCount+".i32 :=.i32 ");
-            expressionVisit(id.getJmmChild(0).getJmmChild(0), 0);
-            code.append(";\n");
-            code.append(name).append("[t" + tempCount +".i32].");
+            code.append(name).append("[t" + (tempCount-1) +".i32].");
             code.append(getType(id.getJmmChild(0).getJmmChild(0)));
         }
         else{
             String type = OllirUtils.getCode(var.getType());
+            if(isParam)
+                code.append("$" + symbolTable.getParamPos(methodSignature, name) + ".");
             code.append(name).append(".");
             code.append(type);
         }
@@ -236,8 +235,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             }
         }
 
-        code.append("t" + tempCount + "." + OllirUtils.getOllirType(returnType))
+        code.append("t" + (tempCount) + "." + OllirUtils.getOllirType(returnType))
         .append(" :=." + OllirUtils.getOllirType(returnType) + " ");
+
         expressionVisit(exp, 0);
         tempCount++;
         code.append(";\n");
@@ -250,7 +250,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         returnType = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, assignStmt.getJmmChild(0).get("name")));
 
         assignStmtAux(assignStmt.getJmmChild(1));
+
+        if(assignStmt.getJmmChild(0).getNumChildren()>0)
+            assignStmtAux(assignStmt.getJmmChild(0));
         
+
         idVisit(assignStmt.getJmmChild(0));
 
         code.append(" :=.").append(OllirUtils.getOllirType(returnType)).append(" ");
