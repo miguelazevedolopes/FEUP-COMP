@@ -335,10 +335,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         }
     }
 
-    private void ifVisit(JmmNode ifStmt){
-        ++ifCount;
-        int elseStmtCount = 0;
-
+    private Boolean outsideIfAux(JmmNode ifStmt){
         Boolean oneBool = false;
         if (ifStmt.getJmmChild(0).getNumChildren() == 0){
             oneBool = true;
@@ -359,6 +356,44 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                 negationVisit(ifStmt.getJmmChild(0).getJmmChild(1));
             }
         }
+        return oneBool;
+    } 
+
+    private void insideIfPar(JmmNode ifStmt){
+        visitingIf = true;
+
+        if(isBinOp(ifStmt.getJmmChild(0).getJmmChild(0)) || ifStmt.getJmmChild(0).getKind().equals("DotExpression")){
+            code.append("t").append(tempCount-1).append(".i32 ");
+        } else if(ifStmt.getJmmChild(0).getJmmChild(0).getKind().equals("IntegerLiteral")){
+            code.append(ifStmt.getJmmChild(0).getJmmChild(0).get("value")).append(".i32 ");
+        } else if(ifStmt.getJmmChild(0).getJmmChild(0).getKind().equals("Negation")){
+            negationVisit(ifStmt.getJmmChild(0).getJmmChild(0));
+        /*} else if(ifStmt.getJmmChild(0).getJmmChild(0).getKind().equals("Identifier")){
+            expressionVisit(ifStmt.getJmmChild(0).getJmmChild(0), 0); */
+        } else code.append(ifStmt.getJmmChild(0).getJmmChild(0).get("name")).append(".i32 ");
+
+        invertOp(ifStmt.getJmmChild(0));
+        code.append(".bool ");
+
+        if(isBinOp(ifStmt.getJmmChild(0).getJmmChild(1)) || ifStmt.getJmmChild(0).getKind().equals("DotExpression")){
+            code.append("t").append(tempCount).append(".i32 ");
+        } else if(ifStmt.getJmmChild(0).getJmmChild(1).getKind().equals("IntegerLiteral")){
+            code.append(ifStmt.getJmmChild(0).getJmmChild(1).get("value")).append(".i32 ");
+        } else if(ifStmt.getJmmChild(0).getJmmChild(1).getKind().equals("Negation")){
+            negationVisit(ifStmt.getJmmChild(0).getJmmChild(1));
+        /* } else if(ifStmt.getJmmChild(0).getJmmChild(1).getKind().equals("Identifier")){
+            expressionVisit(ifStmt.getJmmChild(0).getJmmChild(1), 0); */
+        } else code.append(ifStmt.getJmmChild(0).getJmmChild(1).get("name")).append(".i32");
+
+        visitingIf = false;
+    }
+
+    private void ifVisit(JmmNode ifStmt){
+        ++ifCount;
+        int elseStmtCount = 0;
+
+        Boolean oneBool = outsideIfAux(ifStmt);
+
         code.append("if (");
         if (oneBool) {
             if (ifStmt.getJmmChild(0).getKind().equals("Boolean")) code.append(ifStmt.getJmmChild(0).get("value"));
@@ -369,24 +404,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             negationVisit(ifStmt.getJmmChild(0));
         }
         else{
-            visitingIf = true;
-            if(isBinOp(ifStmt.getJmmChild(0).getJmmChild(0))){
-                code.append("t").append(tempCount-1).append(".i32 ");
-            } else if(ifStmt.getJmmChild(0).getJmmChild(0).getKind().equals("IntegerLiteral")){
-                code.append(ifStmt.getJmmChild(0).getJmmChild(0).get("value")).append(".i32 ");
-            } else if(ifStmt.getJmmChild(0).getJmmChild(0).getKind().equals("Negation")){
-                negationVisit(ifStmt.getJmmChild(0).getJmmChild(0));
-            } else code.append(ifStmt.getJmmChild(0).getJmmChild(0).get("name")).append(".i32 ");
-            invertOp(ifStmt.getJmmChild(0));
-            code.append(".bool ");
-            if(isBinOp(ifStmt.getJmmChild(0).getJmmChild(1))){
-                code.append("t").append(tempCount).append(".i32 ");
-            } else if(ifStmt.getJmmChild(0).getJmmChild(1).getKind().equals("IntegerLiteral")){
-                code.append(ifStmt.getJmmChild(0).getJmmChild(1).get("value")).append(".i32 ");
-            } else if(ifStmt.getJmmChild(0).getJmmChild(1).getKind().equals("Negation")){
-                negationVisit(ifStmt.getJmmChild(0).getJmmChild(1));
-            } else code.append(ifStmt.getJmmChild(0).getJmmChild(1).get("name")).append(".i32");
-            visitingIf = false;
+            insideIfPar(ifStmt);
         }
         code.append(") goto else").append(ifCount).append(";\n");
         int numChildren = ifStmt.getNumChildren();
@@ -410,26 +428,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private void whileVisit(JmmNode whileStmt){
         ++loopCount;
         code.append("Loop").append(loopCount).append(":\n");
-        Boolean oneBool = false;
-        if (whileStmt.getJmmChild(0).getNumChildren() == 0){
-            oneBool = true;
-        }
-        else {
-            if (isBinOp(whileStmt.getJmmChild(0).getJmmChild(0))){
-                binOpNoAssign(whileStmt.getJmmChild(0).getJmmChild(0));
-            } else if(whileStmt.getJmmChild(0).getJmmChild(0).getKind().equals("DotExpression")){
-                int t = dotExpInAssign(whileStmt.getJmmChild(0).getJmmChild(0), 0);
-            } else if (whileStmt.getJmmChild(0).getJmmChild(0).getKind().equals("Negation")){
-                negationVisit(whileStmt.getJmmChild(0).getJmmChild(0));
-            }
-            if (isBinOp(whileStmt.getJmmChild(0).getJmmChild(1))){
-                binOpNoAssign(whileStmt.getJmmChild(0).getJmmChild(1));
-            } else if(whileStmt.getJmmChild(0).getJmmChild(1).getKind().equals("DotExpression")){
-                int t = dotExpInAssign(whileStmt.getJmmChild(0).getJmmChild(1), 0);
-            } else if (whileStmt.getJmmChild(0).getJmmChild(1).getKind().equals("Negation")){
-                negationVisit(whileStmt.getJmmChild(0).getJmmChild(1));
-            }
-        }
+
+        Boolean oneBool = outsideIfAux(whileStmt);
 
         code.append("if(");
         if (oneBool) {
@@ -441,24 +441,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             negationVisit(whileStmt.getJmmChild(0));
         }
         else{
-            visitingIf = true;
-            if(isBinOp(whileStmt.getJmmChild(0).getJmmChild(0)) || whileStmt.getJmmChild(0).getJmmChild(0).getKind().equals("DotExpression")){
-                code.append("t").append(tempCount-1).append(".i32 ");
-            } else if(whileStmt.getJmmChild(0).getJmmChild(0).getKind().equals("IntegerLiteral")){
-                code.append(whileStmt.getJmmChild(0).getJmmChild(0).get("value")).append(".i32 ");
-            } else if (whileStmt.getJmmChild(0).getJmmChild(0).getKind().equals("Negation")){
-                negationVisit(whileStmt.getJmmChild(0).getJmmChild(0));
-            } else code.append(whileStmt.getJmmChild(0).getJmmChild(0).get("name")).append(".i32 ");
-            invertOp(whileStmt.getJmmChild(0));
-            code.append(".bool ");
-            if(isBinOp(whileStmt.getJmmChild(0).getJmmChild(1)) || whileStmt.getJmmChild(0).getJmmChild(1).getKind().equals("DotExpression")){
-                code.append("t").append(tempCount).append(".i32");
-            } else if(whileStmt.getJmmChild(0).getJmmChild(1).getKind().equals("IntegerLiteral")){
-                code.append(whileStmt.getJmmChild(0).getJmmChild(1).get("value")).append(".i32 ");
-            } else if (whileStmt.getJmmChild(0).getJmmChild(1).getKind().equals("Negation")){
-                negationVisit(whileStmt.getJmmChild(0).getJmmChild(1));
-            } else code.append(whileStmt.getJmmChild(0).getJmmChild(1).get("name")).append(".i32");
-            visitingIf = false;
+            insideIfPar(whileStmt);
         }
 
         code.append(") goto end").append(loopCount).append(";\n");
@@ -513,7 +496,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "DotExpression": memberCallVisit(expression); break;
             case "Boolean": code.append(expression.get("value")).append(".bool"); break;
             //Negation currently skipping
-            case "Negation": expressionVisit(expression.getJmmChild(0), dummy);break; //TODO negationVisit(expression); break;
+            case "Negation": expressionVisit(expression.getJmmChild(0), dummy); break; //TODO negationVisit(expression); break;
             case "IntegerLiteral": code.append(expression.get("value")).append(".").append(OllirUtils.getOllirType("TypeInt")); break;
             case "InitializeArray": newArrayVisit(expression, dummy); break;
             case "NewObject": code.append("new(").append(expression.getJmmChild(0).get("name"))
@@ -544,9 +527,37 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return 0;
     }
 
+    private void memberCallSeparationParams(JmmNode memberCall){
+        if(memberCall.getJmmChild(1).getNumChildren()>1){ //Has params
+            var children = memberCall.getJmmChild(1).getChildren();
+            for( var child : children.subList(1, children.size()-1)){
+                if (isBinOp(child)){
+                    binOpNoAssign(child);
+                    code.append("t").append(tempCount).append(".").append(getType(child.getJmmChild(0))).append(":=")
+                        .append(".").append(getType(child.getJmmChild(0))).append(" ");
+                    
+                    if(isBinOp(child.getJmmChild(0))) code.append("t").append(tempCount-2);
+                    else if (child.getJmmChild(0).getKind().equals("IntegerLiteral")) code.append(child.getJmmChild(0).get("value"));
+                    else code.append(child.getJmmChild(0).get("name"));
+
+                    code.append(".").append(getType(child.getJmmChild(0))).append(" ");
+                    code.append(OllirUtils.getOllirType(child.getKind())).append(".").append(getType(child.getJmmChild(1))+ " ");
+
+                    if(isBinOp(child.getJmmChild(1))) code.append("t").append(tempCount-1);
+                    else if (child.getJmmChild(1).getKind().equals("IntegerLiteral")) code.append(child.getJmmChild(1).get("value"));
+                    else code.append(child.getJmmChild(1).get("name"));
+                    code.append(".").append(getType(child.getJmmChild(1))).append(";\n");
+                }
+            }
+           
+        }
+    }
 
     private void memberCallVisit(JmmNode memberCall){
         //type missing
+        
+        memberCallSeparationParams(memberCall);
+
         var childType = memberCall.getJmmChild(1).getJmmChild(0).getKind();
         if(childType.equals("Length"))
         {
@@ -577,7 +588,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         if(memberCall.getJmmChild(1).getNumChildren()>1){ //Has params
             var children = memberCall.getJmmChild(1).getChildren();
             for( var child : children.subList(1, children.size()-1)){
-                code.append(", ").append(getCode(child));
+                if (isBinOp(child)){
+                    code.append(", t").append(tempCount).append(getCode(child.getJmmChild(1)));
+                } else code.append(", ").append(getCode(child));
             }
         }
 
