@@ -20,11 +20,11 @@ class HelloWorld {
 		test_arr[3] = 4;
 	}
 
-	//public int hello(int[] x){
-	//	int a;
-	//	a = 2;
-	//	return a + 5;
-	//}
+	public int hello(int x){
+		int a;
+		a = x;
+		return a + 5;
+	}
 
 
 }

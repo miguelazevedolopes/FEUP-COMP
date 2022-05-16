@@ -204,6 +204,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         Symbol var = symbolTable.getLocalVariable(methodSignature, name);
         if(var == null){
             var = symbolTable.getParam(methodSignature, name);
+            if(var != null)
+                code.append("$" + symbolTable.getParamPos(methodSignature, name) + ".");
         }
         if(var == null){
             var = symbolTable.getField(methodSignature, name);
@@ -235,9 +237,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         }
 
         code.append("t" + tempCount + "." + OllirUtils.getOllirType(returnType))
-        .append(" :=." + OllirUtils.getOllirType(returnType) + " ")
-        .append(expressionVisit(exp, 0));
-
+        .append(" :=." + OllirUtils.getOllirType(returnType) + " ");
+        expressionVisit(exp, 0);
         tempCount++;
         code.append(";\n");
 
@@ -249,7 +250,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         returnType = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, assignStmt.getJmmChild(0).get("name")));
 
         assignStmtAux(assignStmt.getJmmChild(1));
-
+        
         idVisit(assignStmt.getJmmChild(0));
 
         code.append(" :=.").append(OllirUtils.getOllirType(returnType)).append(" ");
@@ -499,7 +500,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         int trash;
         switch(kind){
             case "Id": idVisit(expression); break;
-            case "Identifier": idVisit(expression.getJmmChild(0));
+            case "Identifier": idVisit(expression.getJmmChild(0));  break;
             case "DotExpression": memberCallVisit(expression); break;
             case "Boolean": code.append(expression.get("value")).append(".bool"); break;
             //Negation currently skipping
@@ -510,10 +511,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                                 .append(").")
                                 .append(OllirUtils.getOllirType(expression.getJmmChild(0).get("name"))); break;
             case "AccessToArray": accessToArrayVisit(expression, 0); break;
-            default: 
-            throw new NotImplementedException("OLLIR: Expression kind not implemented: " + expression.getKind());
+            default: throw new NotImplementedException("OLLIR: Expression kind not implemented: " + expression.getKind());
         }
-        return 0;
+        return 5;
     }
 
 

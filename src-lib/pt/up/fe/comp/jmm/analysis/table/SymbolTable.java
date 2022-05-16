@@ -136,5 +136,7 @@ public interface SymbolTable {
 
     String getVariableType(String methodSignature, String name);
 
+    int getParamPos(String methodSignature, String name);
+
 
 }

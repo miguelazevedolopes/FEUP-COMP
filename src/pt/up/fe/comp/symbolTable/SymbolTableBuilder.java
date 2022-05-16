@@ -87,6 +87,7 @@ public class SymbolTableBuilder implements SymbolTable{
         }
         return new ArrayList<Symbol>();
     }
+
     @Override
     public Symbol getParam(String methodSignature, String param) {
         for (Method method : methods) {
@@ -97,6 +98,19 @@ public class SymbolTableBuilder implements SymbolTable{
                 }
         }
         return null;
+    }
+    
+    @Override
+    public int getParamPos(String methodSignature, String param) {
+        for (Method method : methods) {
+            if(method.getMethodSignature().equals(methodSignature))
+                for (int i = 0; i < method.getParameters().size(); i++) {
+                    Symbol symbol = method.getParameters().get(i);
+                    if(symbol.getName().equals(param))
+                        return i+1;
+                }
+        }
+        return 0;
     }
 
 
