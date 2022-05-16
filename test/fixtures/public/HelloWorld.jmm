@@ -14,6 +14,10 @@ class HelloWorld {
 
         test_arr = new int[ioPlus.lengt()];
         test_arr = new int[10];
+		test_arr[0] = 1;
+		test_arr[1] = 2;
+		test_arr[2] = 3;
+		test_arr[3] = 4;
 	}
 
 	//public int hello(int[] x){

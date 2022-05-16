@@ -208,9 +208,18 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         if(var == null){
             var = symbolTable.getField(methodSignature, name);
         }
-        String type = OllirUtils.getCode(var.getType());
-        code.append(name).append(".");
-        code.append(type);
+        if(id.getNumChildren()>0 && id.getJmmChild(0).getKind().equals("AccessToArray")){
+            code.append("t"+tempCount+".i32 :=.i32 ");
+            expressionVisit(id.getJmmChild(0).getJmmChild(0), 0);
+            code.append(";\n");
+            code.append(name).append("[t" + tempCount +".i32].");
+            code.append(getType(id.getJmmChild(0).getJmmChild(0)));
+        }
+        else{
+            String type = OllirUtils.getCode(var.getType());
+            code.append(name).append(".");
+            code.append(type);
+        }
     }
 
     private void assignStmtAux(JmmNode exp){
@@ -228,8 +237,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         code.append("t" + tempCount + "." + OllirUtils.getOllirType(returnType))
         .append(" :=." + OllirUtils.getOllirType(returnType) + " ")
         .append(expressionVisit(exp, 0));
-
-        
 
         tempCount++;
         code.append(";\n");
