@@ -205,7 +205,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         Symbol var = symbolTable.getLocalVariable(methodSignature, name);
         if(var == null){
             var = symbolTable.getParam(methodSignature, name);
-            isParam = true;
+            isParam = (var != null);
         }
         if(var == null){
             var = symbolTable.getField(methodSignature, name);
