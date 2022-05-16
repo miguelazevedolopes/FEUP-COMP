@@ -19,7 +19,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     public String curMethRetType;
     public String methodSignature;
     public Integer varcount = 0;
-    public Integer tempCount = 0;
+    public Integer tempCount = 1;
     public Integer loopCount = 0;
     public Integer ifCount = 0;
     public Boolean visitingIf = false;
@@ -202,16 +202,26 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private void idVisit(JmmNode id){
         String name = id.get("name");
+        boolean isParam = false;
         Symbol var = symbolTable.getLocalVariable(methodSignature, name);
         if(var == null){
             var = symbolTable.getParam(methodSignature, name);
+            isParam = (var != null);
         }
         if(var == null){
             var = symbolTable.getField(methodSignature, name);
         }
-        String type = OllirUtils.getCode(var.getType());
-        code.append(name).append(".");
-        code.append(type);
+        if(id.getNumChildren()>0 && id.getJmmChild(0).getKind().equals("AccessToArray")){
+            code.append(name).append("[t" + (tempCount-1) +".i32].");
+            code.append(getType(id.getJmmChild(0).getJmmChild(0)));
+        }
+        else{
+            String type = OllirUtils.getCode(var.getType());
+            if(isParam)
+                code.append("$" + symbolTable.getParamPos(methodSignature, name) + ".");
+            code.append(name).append(".");
+            code.append(type);
+        }
     }
 
     private void assignStmtAux(JmmNode exp){
@@ -225,13 +235,12 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                 flag = true;
             }
         }
+        if(exp.getKind().equals("Id"))
+            return;
+        code.append("t" + (tempCount) + "." + OllirUtils.getOllirType(returnType))
+        .append(" :=." + OllirUtils.getOllirType(returnType) + " ");
 
-        code.append("t" + tempCount + "." + OllirUtils.getOllirType(returnType))
-        .append(" :=." + OllirUtils.getOllirType(returnType) + " ")
-        .append(expressionVisit(exp, 0));
-
-        
-
+        expressionVisit(exp, 0);
         tempCount++;
         code.append(";\n");
 
@@ -244,12 +253,18 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         assignStmtAux(assignStmt.getJmmChild(1));
 
+        if(assignStmt.getJmmChild(0).getNumChildren()>0)
+            assignStmtAux(assignStmt.getJmmChild(0));
+        
+
         idVisit(assignStmt.getJmmChild(0));
 
         code.append(" :=.").append(OllirUtils.getOllirType(returnType)).append(" ");
 
-        code.append("t" + (tempCount-1) + ".").append(OllirUtils.getOllirType(returnType)).append(";\n");
-        
+        if(assignStmt.getJmmChild(0).getNumChildren()>0)
+            code.append("t" + (tempCount-2) + ".").append(OllirUtils.getOllirType(returnType)).append(";\n");
+        else
+            code.append("t" + (tempCount-1) + ".").append(OllirUtils.getOllirType(returnType)).append(";\n");
     }
 
 
@@ -563,7 +578,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         int trash;
         switch(kind){
             case "Id": idVisit(expression); break;
-            case "Identifier": idVisit(expression.getJmmChild(0));
+            case "Identifier": idVisit(expression.getJmmChild(0));  break;
             case "DotExpression": memberCallVisit(expression); break;
             case "Boolean": code.append(expression.get("value")).append(".bool"); break;
             //Negation currently skipping
@@ -574,10 +589,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                                 .append(").")
                                 .append(OllirUtils.getOllirType(expression.getJmmChild(0).get("name"))); break;
             case "AccessToArray": accessToArrayVisit(expression, 0); break;
-            default: 
-            throw new NotImplementedException("OLLIR: Expression kind not implemented: " + expression.getKind());
+            default: throw new NotImplementedException("OLLIR: Expression kind not implemented: " + expression.getKind());
         }
-        return 0;
+        return 5;
     }
 
 
