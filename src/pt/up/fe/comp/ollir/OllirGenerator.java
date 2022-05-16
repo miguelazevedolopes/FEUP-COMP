@@ -234,7 +234,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                 flag = true;
             }
         }
-
+        if(exp.getKind().equals("Id"))
+            return;
         code.append("t" + (tempCount) + "." + OllirUtils.getOllirType(returnType))
         .append(" :=." + OllirUtils.getOllirType(returnType) + " ");
 
@@ -259,8 +260,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         code.append(" :=.").append(OllirUtils.getOllirType(returnType)).append(" ");
 
-        code.append("t" + (tempCount-1) + ".").append(OllirUtils.getOllirType(returnType)).append(";\n");
-        
+        if(assignStmt.getJmmChild(0).getNumChildren()>0)
+            code.append("t" + (tempCount-2) + ".").append(OllirUtils.getOllirType(returnType)).append(";\n");
+        else
+            code.append("t" + (tempCount-1) + ".").append(OllirUtils.getOllirType(returnType)).append(";\n");
     }
 
 

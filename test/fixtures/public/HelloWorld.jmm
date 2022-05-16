@@ -4,27 +4,11 @@ class HelloWorld {
 	public static void main(String[] args) {
 		int[] test_arr;
 		int a;
-		int b;
-		//int x;
-		//int y;
-		//a = x * (b + 1);
-		//a = 1 + 2;
-		//a = 5 + ioPlus.x();
-		b = 10 * 5 + a + b;
 
-        test_arr = new int[ioPlus.lengt()];
         test_arr = new int[10];
 		test_arr[0] = 1;
-		test_arr[1] = 2;
-		test_arr[2] = 3;
-		test_arr[3] = 4;
 	}
 
-	public int hello(int x){
-		int a;
-		a = x;
-		return a + 5;
-	}
 
 
 }
