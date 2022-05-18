@@ -15,66 +15,58 @@ import pt.up.fe.specs.util.SpecsIo;
 public class OllirToJasmin{
 
     private final ClassUnit ollir;
-    protected StringBuilder jasminCode;
     private List<Report> reports;
 
     public OllirToJasmin(ClassUnit ollir){
-        
-        jasminCode = new StringBuilder();
         this.ollir = ollir;
         this.reports = new ArrayList<>();
     }
 
+    public List<Report> getReports(){
+        return reports;
+    }
 
 
     public String getCode(){
 
-        jasminCode.append(".class public ").append(ollir.getClassName()).append("\n"); //Add class name
-        
-        
-        String superClassName =  (ollir.getSuperClass());
+        StringBuilder jasminCode = new StringBuilder();
 
-        jasminCode.append(".super ");
-        if (superClassName!= null)
-            jasminCode.append(superClassName);
-        else jasminCode.append("java/lang/Object");
+        jasminCode.append(".class public ").append(ollir.getClassName());
 
-        /*Generate code for method
-        Always the same template*/
-        String template = getTemplate(superClassName);
+        jasminCode.append(getSuper());
 
-        jasminCode.append(template).append('\n');
 
-            
-
+        //Fields
         for (var field : ollir.getFields()) {
-            jasminCode.append(getFields(field));
+            jasminCode.append("\n.field ");
+            if (field.isFinalField())
+                jasminCode.append("final ");
+            jasminCode.append("'").append(field.getFieldName()).append("' ");
+            jasminCode.append(JasminUtils.getJasminType(field.getFieldType().getTypeOfElement(), ollir.getClassName()));
+
         }
 
-        ArrayList<Method> methods = ollir.getMethods();
-        for(var method: methods.subList(1, methods.size())){
-            JasminMethod jasminMethod = new JasminMethod(method, ollir.getClassName(), ollir.getSuperClass());           
+        //Methods 
+        for (var method : ollir.getMethods()) {
+            JasminMethod jasminMethod = new JasminMethod(method, ollir.getClassName(), ollir.getSuperClass());
             jasminCode.append(jasminMethod.generateJasminCode());
+            reports.addAll(jasminMethod.getReports());
         }
 
         return jasminCode.toString();
     }
 
-    private String getFields(Field field){
-        StringBuilder code = new StringBuilder();
-        code.append("\n.field ");
-            if (field.isFinalField())
-                code.append("final ");
-            code.append("'").append(field.getFieldName()).append("' ");
-            code.append(JasminUtils.getJasminType(field.getFieldType().getTypeOfElement(), ollir.getClassName()));
-        return code.toString();
-    }
 
-    private String getTemplate(String superClassName) {
-        StringBuilder template = new StringBuilder();
-        template.append(".method public <init>()V\n").append("\taload_0\n");
-        template.append("\tinvokenonvirtual " + superClassName+ "/<init>()V\n").append("\treturn\n").append(".end method");
-        return template.toString();
+    private String getSuper() {
+        StringBuilder jasminCode = new StringBuilder();
+        jasminCode.append("\n.super ");
+
+        if (ollir.getSuperClass() != null)
+            jasminCode.append(ollir.getSuperClass());
+        else
+            jasminCode.append("java/lang/Object");
+        jasminCode.append("\n");
+        return jasminCode.toString();
     }
 
 
