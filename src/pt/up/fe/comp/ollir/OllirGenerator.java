@@ -665,8 +665,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         String stmtType = stmt.getKind().toString();
         switch(stmtType){
             // case "StatementBlock": break;
-            case "IfStatement": break;// ifVisit(stmt); break;
-            case "WhileStatement": break; //whileVisit(stmt); break;
+            case "IfStatement": ifVisit(stmt); break;
+            case "WhileStatement": whileVisit(stmt); break;
             case "Equality": assignStmtVisit(stmt); break; //Assignment
             case "DotExpression":
                 expressionVisit(stmt, dummy);
