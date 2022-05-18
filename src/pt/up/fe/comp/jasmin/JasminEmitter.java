@@ -26,52 +26,14 @@ public class JasminEmitter implements JasminBackend{
             ollir.outputCFGs(); 
             ollir.buildVarTables(); 
 
-            StringBuilder jasminCode = new StringBuilder();
-            List<Report> reports = new ArrayList<>();
-
-            jasminCode.append(".class public ").append(ollir.getClassName());
-
-            jasminCode.append("\n.super ");
-
-            if (ollir.getSuperClass() != null)
-                jasminCode.append(ollir.getSuperClass());
-            else
-                jasminCode.append("java/lang/Object");
-            jasminCode.append("\n");
-
-            for (var field : ollir.getFields()) {
-                jasminCode.append("\n.field ");
-                if (field.isFinalField())
-                    jasminCode.append("final ");
-                jasminCode.append("'").append(field.getFieldName()).append("' ");
-                switch (field.getFieldType().toString()) {
-                    case "INT32":
-                        jasminCode.append("I");
-                        break;
-                    case "BOOLEAN":
-                        jasminCode.append("Z");
-                        break;
-                    case "ARRAYREF":
-                        jasminCode.append("[I");
-                        break;
-                    case "OBJECTREF":
-                        jasminCode.append(ollir.getClassName());
-                    default:
-                        break;
-                }
-            }
-
-            for (var method : ollir.getMethods()) {
-                JasminMethod jasminMethod = new JasminMethod(method, ollir.getClassName(), ollir.getSuperClass());
-                jasminCode.append(jasminMethod.generateJasminCode());
-                reports.addAll(jasminMethod.getReports());
-            }
+            OllirToJasmin ollirToJasmin = new OllirToJasmin(ollir);
+            String jasminCode = ollirToJasmin.getCode();
 
             System.out.println("\n------------------- JASMIN CODE GENERATE -------------------");
             System.out.println(jasminCode);
             System.out.println("---------------------------------------------------");
 
-            return new JasminResult(ollirResult, jasminCode.toString(), reports);
+            return new JasminResult(ollirResult, jasminCode, ollirToJasmin.getReports());
         }catch(OllirErrorException e){
             return new JasminResult(ollir.getClassName(), null,
             Collections.singletonList(Report.newError(Stage.GENERATION, -1, -1, "Exception during Jasmin generation", e)));
