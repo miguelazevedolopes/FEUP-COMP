@@ -12,14 +12,51 @@
  * specific language governing permissions and limitations under the License. under the License.
  */
 
+ import org.junit.Test;
+
 import pt.up.fe.comp.TestUtils;
 import pt.up.fe.specs.util.SpecsIo;
 
 public class OptimizeTest {
 
-    // @Test
-    public void testHelloWorld() {
-        var result = TestUtils.optimize(SpecsIo.getResource("fixtures/public/HelloWorld.jmm"));
-        TestUtils.noErrors(result.getReports());
+    @Test
+    public void helloWorld() {
+        TestUtils.noErrors(TestUtils.optimize(SpecsIo.getResource("fixtures/public/HelloWorld.jmm")));
     }
+
+    @Test
+    public void findMaximum() {
+        TestUtils.noErrors(TestUtils.optimize(SpecsIo.getResource("fixtures/public/FindMaximum.jmm")));
+    }
+
+    @Test
+    public void lazysort() {
+        TestUtils.noErrors(TestUtils.optimize(SpecsIo.getResource("fixtures/public/Lazysort.jmm")));
+    }
+
+    @Test
+    public void life() {
+        TestUtils.noErrors(TestUtils.optimize(SpecsIo.getResource("fixtures/public/Life.jmm")));
+    }
+
+    @Test
+    public void quickSort() {
+        TestUtils.noErrors(TestUtils.optimize(SpecsIo.getResource("fixtures/public/QuickSort.jmm")));
+    }
+
+    @Test
+    public void simple() {
+        TestUtils.noErrors(TestUtils.optimize(SpecsIo.getResource("fixtures/public/Simple.jmm")));
+    }
+
+    @Test
+    public void ticTacToe() {
+        TestUtils.noErrors(TestUtils.optimize(SpecsIo.getResource("fixtures/public/TicTacToe.jmm")));
+    }
+
+    @Test
+    public void whileAndIf() {
+        TestUtils.noErrors(TestUtils.optimize(SpecsIo.getResource("fixtures/public/WhileAndIf.jmm")));
+    }
+
 }

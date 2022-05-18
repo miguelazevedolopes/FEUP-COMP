@@ -1,7 +1,23 @@
 import ioPlus;
 class HelloWorld {
+
 	public static void main(String[] args) {
-		int[] a;
-		ioPlus.printHelloWorld();
+		int[] test_arr;
+		int a;
+		boolean x;
+		boolean y;
+        test_arr = new int[10];
+		test_arr[0] = 1;
+
+		x = !(y && x);
 	}
+	
+	public boolean lt(int a, int b) {
+		return !a;
+    }
+    
+
+
+
 }
+

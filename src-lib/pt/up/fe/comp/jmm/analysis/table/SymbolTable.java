@@ -3,6 +3,7 @@ package pt.up.fe.comp.jmm.analysis.table;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 public interface SymbolTable {
 
     /**
@@ -33,6 +34,8 @@ public interface SymbolTable {
      */
     List<String> getMethods();
 
+    Boolean methodExists(String methodSignature);
+
     /**
      * 
      * @return the return type of the given method
@@ -46,6 +49,8 @@ public interface SymbolTable {
      */
     List<Symbol> getParameters(String methodSignature);
 
+    Symbol getParameter(String methodSignature, String varName);
+
     /**
      * 
      * @param methodSignature
@@ -53,6 +58,13 @@ public interface SymbolTable {
      */
     List<Symbol> getLocalVariables(String methodSignature);
 
+    Symbol getLocalVariable(String methodSignature,String variable);
+
+    Symbol getField(String methodSignature,String fieldName);
+
+    Symbol getParam(String methodSignature,String param);
+
+    List<Method> getMethodList();
     /**
      * 
      * @return a String with information about the contents of the SymbolTable
@@ -121,5 +133,10 @@ public interface SymbolTable {
 
         return builder.toString();
     }
+
+    String getVariableType(String methodSignature, String name);
+
+    int getParamPos(String methodSignature, String name);
+
 
 }

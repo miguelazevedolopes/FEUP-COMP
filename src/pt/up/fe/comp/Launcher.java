@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
+import pt.up.fe.comp.ollir.JmmOptimizer;
+import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
 import pt.up.fe.specs.util.SpecsIo;
 import pt.up.fe.specs.util.SpecsLogs;
 import pt.up.fe.specs.util.SpecsSystem;
@@ -40,12 +42,29 @@ public class Launcher {
         // Parse stage
         JmmParserResult parserResult = parser.parse(input, config);
 
-        // Display AST
-        
         // Check if there are parsing errors
         TestUtils.noErrors(parserResult.getReports());
         
+        // Display AST
         System.out.println("AST:\n\n" + parserResult.getRootNode().toTree());
+
+        // Instantiate JmmAnalysis
+        JmmAnalyser analyser = new JmmAnalyser();
+
+        // Analysis stage
+        JmmSemanticsResult semanticResult = analyser.semanticAnalysis(parserResult);
+
+        // Check if there are parsing errors
+        TestUtils.noErrors(semanticResult.getReports());
+
+        JmmOptimizer optimizer = new JmmOptimizer();
+
+        // Analysis stage
+        var ollirCode = optimizer.toOllir(semanticResult);
+
+        System.out.println("Ollir code:\n"+ ollirCode.getOllirCode() );
+        // Check if there are parsing errors
+        // TestUtils.noErrors(optimizationResult);
     }
 
 }
