@@ -46,13 +46,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("IfStatement", this::stmtVisit);
         addVisit("WhileStatement", this::stmtVisit);
         addVisit("ReturnRule", this::returnVisit); 
-        /*
-        addVisit("SUM", this::twoWayVisit);
-        addVisit("SUB", this::twoWayVisit);
-        addVisit("MUL", this::twoWayVisit);
-        addVisit("DIV", this::twoWayVisit);
-        addVisit("NewObject", this::newVisit);
-        */
+        
     }
 
     public String getCode(){
@@ -194,9 +188,16 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             expressionVisit(returnStmt.getJmmChild(0), dummy);
             code.append(";\n");
         }
+        else if(returnStmt.getJmmChild(0).getKind().equals("Negation")){
+            type = OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName());
+            code.append("t"+tempCount+"."+type+" ")
+                .append(":=." + type + " ");
+            expressionVisit(returnStmt.getJmmChild(0), dummy);
+            code.append(";\n");
+        }
         code.append("ret.").append(OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName()))
             .append(" ");
-        if(isBinOp(returnStmt.getJmmChild(0)) || returnStmt.getJmmChild(0).getKind().equals("DotExpression")){
+        if(isBinOp(returnStmt.getJmmChild(0)) || returnStmt.getJmmChild(0).getKind().equals("DotExpression") || returnStmt.getJmmChild(0).getKind().equals("Negation")){
             code.append("t" + tempCount +"." + type);
         }
         else
@@ -236,7 +237,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             flag = true;
         for(int i = 0; i < exp.getNumChildren(); i++){
             var e = exp.getJmmChild(i);
-            if(isBinOp(e) || e.getKind().equals("DotExpression") || e.getKind().equals("InitializeArray") || e.getKind().equals("AccessToArray")){
+            if(isBinOp(e) || e.getKind().equals("DotExpression") || e.getKind().equals("InitializeArray") || e.getKind().equals("AccessToArray") || e.getKind().equals("Negation")){
                 assignStmtAux(e);
                 flag = true;
             }
@@ -612,7 +613,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "DotExpression": memberCallVisit(expression); break;
             case "Boolean": code.append(expression.get("value")).append(".bool"); break;
             //Negation currently skipping
-            case "Negation": expressionVisit(expression.getJmmChild(0), dummy); break; //TODO negationVisit(expression); break;
+            case "Negation": negationVisit(expression); break; //TODO negationVisit(expression); break;
             case "IntegerLiteral": code.append(expression.get("value")).append(".").append(OllirUtils.getOllirType("TypeInt")); break;
             case "InitializeArray": newArrayVisit(expression, dummy); break;
             case "NewObject": code.append("new(").append(expression.getJmmChild(0).get("name"))
@@ -625,12 +626,26 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
 
+    private void negationVisit(JmmNode expression) {
+        if(expression.getJmmChild(0).getKind().equals("Id") || expression.getJmmChild(0).getKind().equals("IntegerLiteral")){
+            code.append(expressionVisit(expression.getJmmChild(0), 0));
+            code.append(" !.bool ");
+            code.append(expressionVisit(expression.getJmmChild(0),0));
+        }else{
+            code.append("t"+(tempCount-1) +".bool ");
+            code.append("!.bool ");
+            code.append("t"+(tempCount-1) +".bool ");
+
+        }
+
+    }
+
     private Integer stmtVisit(JmmNode stmt, Integer dummy){
         String stmtType = stmt.getKind().toString();
         switch(stmtType){
             // case "StatementBlock": break;
-            case "IfStatement": ifVisit(stmt); break;
-            case "WhileStatement": whileVisit(stmt); break;
+            case "IfStatement": break;// ifVisit(stmt); break;
+            case "WhileStatement": break; //whileVisit(stmt); break;
             case "Equality": assignStmtVisit(stmt); break; //Assignment
             case "DotExpression":
                 expressionVisit(stmt, dummy);
