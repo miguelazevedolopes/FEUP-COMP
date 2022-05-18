@@ -320,7 +320,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
                 code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0))+" ");
             else code.append(getCode(binOp.getJmmChild(1)) + " ");
-            code.append(OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(1))+ " ");
+            code.append(OllirUtils.getOllirType(binOp.getKind())).append(".");
+            if(boolInOp) code.append("bool ");
+            else code.append(getType(binOp.getJmmChild(1))+ " ");
             if(binOp.getJmmChild(0).getKind().equals("DotExpression"))
                 code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(1)));
             else
@@ -357,6 +359,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             case "LESSTHAN" : code.append(">="); break;
             case "ANDD" : code.append("||"); break;
             case "DotExpression": expressionVisit(binOp, 0); break;
+            case "Negation": code.append(""); break;
             default:
                 throw new NotImplementedException("OLLIR: Operation Invertion not implemented: " + binOp.getKind());
         }
@@ -414,12 +417,31 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private Boolean outsideIfAux(JmmNode ifStmt){
         Boolean oneBool = false;
+        int trash;
         if (ifStmt.getJmmChild(0).getNumChildren() == 0){
             oneBool = true;
         } else {
             JmmNode child = ifStmt.getJmmChild(0);
-            if (child.getNumChildren() != 0) outsideIfAuxLeft(ifStmt.getJmmChild(0));
-            if (child.getNumChildren() > 1) outsideIfAuxRight(ifStmt.getJmmChild(0));
+            if(ifStmt.getJmmChild(0).getKind().equals("DotExpression"))
+                trash = dotExpInAssign(ifStmt.getJmmChild(0), 0);
+            else {
+                if (child.getNumChildren() != 0) outsideIfAuxLeft(ifStmt.getJmmChild(0));
+                if (child.getNumChildren() > 1) outsideIfAuxRight(ifStmt.getJmmChild(0));
+            }
+            /* code.append("t").append(tempCount).append(".i32 :=.i32 ");
+
+            if (child.getNumChildren() != 0){
+                if (child.getNumChildren() > 1){
+                    code.append("t").append(tempCount-2).append(".i32");
+                } else code.append("t").append(tempCount-1).append(".i32");
+            }
+            invertOp(ifStmt.getJmmChild(0));
+            code.append(".bool ");
+
+            if (child.getNumChildren() > 1) code.append("t").append(tempCount-1).append(".i32");
+
+            code.append(";\n"); */
+
         }
         return oneBool;
     }
@@ -471,6 +493,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         insideIfParLeft(ifStmt);
 
         invertOp(ifStmt.getJmmChild(0));
+
         code.append(".bool ");
 
         insideIfParRight(ifStmt);
@@ -485,16 +508,16 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             boolInOp = false;
         }
         else if (oneB.getKind().equals("DotExpression")){
-            code.append("t").append(tempCount).append(".bool");
+            code.append("t").append(tempCount);
         }
         else if (oneB.getKind().equals("Negation")){
             if (oneB.getJmmChild(0).getKind().equals("Boolean")) 
                 code.append(oneB.getJmmChild(0).get("value"));
             else if (oneB.getJmmChild(0).getKind().equals("DotExpression"))
-                code.append("t").append(tempCount).append(".bool");
+                code.append("t").append(tempCount);
             else if (isBinOp(oneB.getJmmChild(0))){
                 boolInOp = true;
-                binOpNoAssign(oneB.getJmmChild(0));
+                binOpVisit(oneB.getJmmChild(0), 0);
                 boolInOp = false;
             }
             else code.append(oneB.getJmmChild(0).get("name"));
@@ -590,11 +613,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     /* private void negationVisit(JmmNode negStmt){
-        if(isBinOp(negStmt.getJmmChild(0))){
-            binOpNoAssign(negStmt.getJmmChild(0));
-        } else {
-            code.append("not ");
-            expressionVisit(negStmt.getJmmChild(0), 0);
+        var toNegate = negStmt.getJmmChild(0); 
+        if(toNegate){
+        } else if (toNegate.getKind()) {
         }
     } */
 
