@@ -1,16 +1,11 @@
 package pt.up.fe.comp.jasmin;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.management.RuntimeErrorException;
 import org.specs.comp.ollir.ClassUnit;
-import org.specs.comp.ollir.ElementType;
-import org.specs.comp.ollir.Field;
-import org.specs.comp.ollir.Method;
 
-import freemarker.core.builtins.sourceBI;
+import pt.up.fe.comp.jasmin.Methods.JasminMethod;
 import pt.up.fe.comp.jmm.report.Report;
-import pt.up.fe.specs.util.SpecsIo;
 
 public class OllirToJasmin{
 

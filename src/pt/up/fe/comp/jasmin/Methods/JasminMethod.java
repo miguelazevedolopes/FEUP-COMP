@@ -1,13 +1,14 @@
-package pt.up.fe.comp.jasmin;
+package pt.up.fe.comp.jasmin.Methods;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import pt.up.fe.comp.jasmin.JasminUtils;
 import pt.up.fe.comp.jmm.report.Report;
 import org.specs.comp.ollir.*;
 
-import pt.up.fe.comp.jasmin.Instructions.JasminInstruction;
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
 
 

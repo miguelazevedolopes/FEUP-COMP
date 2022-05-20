@@ -3,7 +3,8 @@ import java.util.Map;
 
 import org.specs.comp.ollir.*;
 
-import pt.up.fe.comp.jasmin.Instructions.JasminInstruction;
+import pt.up.fe.comp.jasmin.Methods.JasminInstruction;
+import pt.up.fe.comp.jasmin.Methods.JasminMethod;
 
 public class JasminUtils {
 

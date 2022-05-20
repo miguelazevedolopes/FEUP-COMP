@@ -1,11 +1,11 @@
-package pt.up.fe.comp.jasmin.Instructions;
+package pt.up.fe.comp.jasmin.Methods;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import org.specs.comp.ollir.*;
-import pt.up.fe.comp.jasmin.JasminMethod;
+
 import pt.up.fe.comp.jasmin.JasminUtils;
 import pt.up.fe.comp.jmm.report.Report;
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
@@ -39,22 +39,22 @@ public class JasminInstruction {
     public String getCode(){
 
         switch (instruction.getInstType()) {
-            case CALL:
-                generateCall((CallInstruction)instruction, false);
-                break;
-            case RETURN:
-                generateReturn((ReturnInstruction)instruction);
-                break;
-            case ASSIGN:
-                generateAssign((AssignInstruction) instruction);
-                break;
             case PUTFIELD:
-                generatePutField((PutFieldInstruction) instruction);
+                generateCode((PutFieldInstruction) instruction);
                 break;
             case BRANCH:
                     break;
             case GOTO:
-                generateGoto((GotoInstruction) instruction);
+                generateCode((GotoInstruction) instruction);
+                break;
+            case CALL:
+                generateCode((CallInstruction)instruction, false);
+                break;
+            case RETURN:
+                generateCode((ReturnInstruction)instruction);
+                break;
+            case ASSIGN:
+                generateCode((AssignInstruction) instruction);
                 break;
 
             default:
@@ -70,12 +70,9 @@ public class JasminInstruction {
 
     //------ASSING STARTS----------------------
 
-    private void generateAssign(AssignInstruction instruction) {
+    private void generateCode(AssignInstruction instruction) {
         Instruction rhs = instruction.getRhs();
         switch (rhs.getInstType()) {
-            case NOPER:
-                generateAssignNOper(instruction);
-                break;
             case BINARYOPER:
                 generateAssignBinaryOper(instruction);
                 break;
@@ -85,6 +82,10 @@ public class JasminInstruction {
             case CALL:
                 generateAssignCall(instruction);
                 break;
+            case NOPER:
+                generateAssignNOper(instruction);
+                break;
+
             case UNARYOPER:
                 generateAssignNot(instruction);
                 break;
@@ -194,7 +195,7 @@ public class JasminInstruction {
 
     private void generateAssignGetfield(AssignInstruction instruction) {
         Instruction rhs = instruction.getRhs();
-        generateGetField((GetFieldInstruction) rhs);
+        generateCode((GetFieldInstruction) rhs);
         storeOrIastore(instruction.getDest());
     }
 
@@ -221,7 +222,7 @@ public class JasminInstruction {
     }
 
     public void generateAssignCallAuxiliar(CallInstruction rhs) {
-        generateCall(rhs, true);
+        generateCode(rhs, true);
         Element firstArg = rhs.getFirstArg();
         Operand opFirstArg = (Operand) firstArg;
         if (firstArg.getType().getTypeOfElement() == ElementType.OBJECTREF &&
@@ -234,7 +235,7 @@ public class JasminInstruction {
 
     //---------CALL STARTS
         
-    private void generateCall(CallInstruction instruction, boolean assign) {
+    private void generateCode(CallInstruction instruction, boolean assign) {
         if (method.getMethod().isConstructMethod()) {
             addCode("\n\taload_0\n\tinvokespecial ");
             if (method.getSuperName() == null)
@@ -306,7 +307,6 @@ public class JasminInstruction {
             loadOrAload(element, null);
         }
         addCode("\n\t\tnewarray int");
-        //Increase for newarray, decrease for length of the array
     }
 
     private void generateStaticMethod(CallInstruction instruction) {
@@ -347,7 +347,7 @@ public class JasminInstruction {
 
 
     //--------RETURN STARTS
-    private void generateReturn(ReturnInstruction instruction) {
+    private void generateCode(ReturnInstruction instruction) {
         Element e1 = instruction.getOperand();
         if (e1 != null) {
             if (!e1.isLiteral()) {
@@ -366,7 +366,7 @@ public class JasminInstruction {
     }
 
     //-------PUTFIELD STARTS
-    private void generatePutField(PutFieldInstruction instruction) {
+    private void generateCode(PutFieldInstruction instruction) {
 
         Element e1 = instruction.getFirstOperand();
         Element e2 = instruction.getSecondOperand();
@@ -387,7 +387,7 @@ public class JasminInstruction {
     }
 
     //-----------GETFIELD STARTS
-    private void generateGetField(GetFieldInstruction instruction) {
+    private void generateCode(GetFieldInstruction instruction) {
         String firstName = "";
         Element e1 = instruction.getFirstOperand();
         if (!e1.isLiteral()) {
@@ -406,14 +406,16 @@ public class JasminInstruction {
 
     }
 
+    private void generateCode(GotoInstruction instruction) {
+        addCode("\n\t\tgoto " + instruction.getLabel() + "\n");
+    }
+
         
 
     // -------------- Auxiliary Functions --------------
 
 
-    private void generateGoto(GotoInstruction instruction) {
-        addCode("\n\t\tgoto " + instruction.getLabel() + "\n");
-    }
+    
 
     private boolean decideType(Element element) {
         switch (element.getType().getTypeOfElement()) {
