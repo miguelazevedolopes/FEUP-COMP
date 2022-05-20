@@ -11,6 +11,7 @@ import pt.up.fe.comp.jmm.report.Report;
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
 
 
+
 public class JasminInstruction {
     private final Instruction instruction;
     private final StringBuilder jasminCode;
