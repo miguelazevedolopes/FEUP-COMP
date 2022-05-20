@@ -167,12 +167,12 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private Integer returnVisit(JmmNode returnStmt, Integer dummy){
-        String type = OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName());
+        returnType = OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName());
         assignStmtAux(returnStmt.getJmmChild(0));
         code.append("ret.").append(OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName()))
             .append(" ");
         if(isBinOp(returnStmt.getJmmChild(0)) || returnStmt.getJmmChild(0).getKind().equals("DotExpression") || returnStmt.getJmmChild(0).getKind().equals("Negation")){
-            code.append("t" + (tempCount-1) +"." + type );
+            code.append("t" + (tempCount-1) +"." + returnType );
         }
         else
             expressionVisit(returnStmt.getJmmChild(0), dummy);
