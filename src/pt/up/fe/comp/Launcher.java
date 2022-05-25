@@ -65,18 +65,17 @@ public class Launcher {
         // Analysis stage
         var ollirResult = optimizer.toOllir(semanticResult);
 
+        TestUtils.noErrors(ollirResult.getReports());
         System.out.println("Ollir code:\n"+ ollirResult.getOllirCode() );
-
 
         JasminEmitter emitter = new JasminEmitter();
 
         JasminResult jasminResult = emitter.toJasmin(ollirResult);
+        TestUtils.noErrors(jasminResult.getReports());
 
         System.out.println("Running jasmin");
         jasminResult.run();
         
-        // Check if there are parsing errors
-        // TestUtils.noErrors(optimizationResult);
     }
 
 }
