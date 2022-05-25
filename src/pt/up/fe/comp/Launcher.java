@@ -7,7 +7,9 @@ import java.util.Map;
 
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
 import pt.up.fe.comp.ollir.JmmOptimizer;
+import pt.up.fe.comp.jasmin.JasminEmitter;
 import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
+import pt.up.fe.comp.jmm.jasmin.JasminResult;
 import pt.up.fe.specs.util.SpecsIo;
 import pt.up.fe.specs.util.SpecsLogs;
 import pt.up.fe.specs.util.SpecsSystem;
@@ -63,6 +65,14 @@ public class Launcher {
         var ollirCode = optimizer.toOllir(semanticResult);
 
         System.out.println("Ollir code:\n"+ ollirCode.getOllirCode() );
+
+        JasminEmitter emitter = new JasminEmitter();
+
+        JasminResult jasminResult = emitter.toJasmin(ollirCode);
+
+        System.out.println("Running jasmin");
+        jasminResult.run();
+        
         // Check if there are parsing errors
         // TestUtils.noErrors(optimizationResult);
     }
