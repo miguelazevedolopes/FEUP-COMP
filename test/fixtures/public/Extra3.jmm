@@ -1,0 +1,32 @@
+/*
+    Array access with method call, array creation with method call and also method overloading (different parameters)
+*/
+
+
+class Test3{
+    public int getArraySize(){
+        return 4;
+    }
+
+    public int getArraySize(int aux){
+        return aux * 3;
+    }
+
+    public int getFirstIndex(){
+        return true;
+    }
+
+
+    public static void main(String[] args){
+        Test3 a;
+        int b;
+        int[] c;
+        int d;
+
+        a = new Test3();
+        b = 6;
+        c = new int[a.getArraySize()*a.getArraySize(b)];
+        c[0] = 8;
+        d = c[a.getFirstIndex()];
+    }
+}
