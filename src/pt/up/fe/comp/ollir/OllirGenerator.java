@@ -718,7 +718,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                 } else code.append(", ").append(getCode(child));
             }
         }
-
+        if(returnType.isBlank())
+            returnType = "V";
         code.append(").").append(returnType);
 
     }
