@@ -1,16 +1,23 @@
 import org.junit.Test;
 
+import pt.up.fe.comp.JmmAnalyser;
+import pt.up.fe.comp.SimpleParser;
 import pt.up.fe.comp.TestUtils;
+import pt.up.fe.comp.jasmin.JasminEmitter;
+import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
+import pt.up.fe.comp.jmm.jasmin.JasminResult;
+import pt.up.fe.comp.jmm.parser.JmmParserResult;
+import pt.up.fe.comp.ollir.JmmOptimizer;
+import pt.up.fe.specs.util.SpecsIo;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExampleTest {
 
     @Test
     public void testExpression() {
-        // TestUtils.parse("2+3\n10+20\n");
-        // var parserResult = TestUtils.parse("2+3\n10+20\n");
-        // parserResult.getReports().get(0).getException().get().printStackTrace();
-        // System.out.println();
-        // var analysisResult = TestUtils.analyse(parserResult);
+
     }
 
 }
