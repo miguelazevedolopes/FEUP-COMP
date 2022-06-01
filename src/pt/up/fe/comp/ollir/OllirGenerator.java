@@ -735,7 +735,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             returnType = "V";
         var type = symbolTable.getReturnType(this.methodSignature);
         if(type!= null) returnType = type.getName();
-        code.append(").").append(returnType);
+        code.append(").").append(OllirUtils.getOllirType(returnType));
 
     }
 
