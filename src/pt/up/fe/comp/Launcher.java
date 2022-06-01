@@ -75,6 +75,7 @@ public class Launcher {
 
         System.out.println("Running jasmin");
         jasminResult.run();
+        jasminResult.compile(new File("out"));
         
     }
 

@@ -1,4 +1,4 @@
 digraph cfg {
 	begin [shape=Msquare];
 	end [shape=Msquare];
-	begin -> 1;	1 -> 2;	2 -> end;}
+	begin -> 1;	1 -> 2;	2 -> 3;	3 -> 8[label=T];	3 -> 4[label=F];	4 -> 5;	5 -> 6;	6 -> 7;	7 -> 10;	8 -> 9;	9 -> 10;	10 -> 14[label=T];	10 -> 11[label=F];	11 -> 12;	12 -> 13;	13 -> 16;	14 -> 15;	15 -> 16;	16 -> end;}

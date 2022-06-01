@@ -731,9 +731,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                 } else code.append(", ").append(getCode(child));
             }
         }
-        if(returnType.isBlank())
-            returnType = "V";
-        code.append(").").append(returnType);
+        returnType = "V";
+        var type = symbolTable.getReturnType(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+        if(type!= null) returnType = type.getName();
+        code.append(").").append(OllirUtils.getOllirType(returnType));
 
     }
 
