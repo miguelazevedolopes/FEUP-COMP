@@ -45,9 +45,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("DotExpression", this::stmtVisit);
         addVisit("IfStatement", this::stmtVisit);
         addVisit("WhileStatement", this::stmtVisit);
-        addVisit("ReturnRule", this::returnVisit); 
-        
+        addVisit("ReturnRule", this::returnVisit);
+
     }
+
+
 
     public String getCode(){
         return code.toString();
@@ -65,12 +67,25 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return 0;
     }
 
+    private void varVisit(JmmNode jmmNode) {
+        code.append(".field private ");
+        code.append(jmmNode.get("name"))
+                .append(".")
+                .append(OllirUtils.getOllirType(jmmNode.getJmmChild(0).getKind()))
+                .append(";\n");
+    }
+
     private Integer classDeclVisit(JmmNode classDecl, Integer dummy){
         code.append("public ").append(symbolTable.getClassName());
         var superClass = symbolTable.getSuper();
         if (!superClass.isEmpty()) code.append(" extends ").append(superClass);
         code.append("{\n");
 
+        for (var child : classDecl.getChildren()){
+            if(child.getKind().equals("Var"))
+                varVisit(child);
+        }
+        code.append("\n");
         code.append(".construct ").append(symbolTable.getClassName()).append("().V{\ninvokespecial(this, \"<init>\").V;\n}\n");
 
         for (var child : classDecl.getChildren()){

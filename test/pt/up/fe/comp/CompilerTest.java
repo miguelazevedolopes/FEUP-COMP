@@ -54,51 +54,51 @@ public class CompilerTest {
 
         jasminResult.run();
     }
-
-    @Test
-    public void helloWord(){
-        runFile("fixtures/public/HelloWorld.jmm");
-    }
-
-    @Test
-    public void FindMaximum(){
-        runFile("fixtures/public/FindMaximum.jmm");
-    }
-
-    @Test
-    public void LazySort(){
-        runFile("fixtures/public/LazySort.jmm");
-    }
-
-    @Test
-    public void Life(){
-        runFile("fixtures/public/Life.jmm");
-    }
-
-    @Test
-    public void MonteCarloPi(){
-        runFile("fixtures/public/MonteCarloPi.jmm");
-    }
-
-    @Test
-    public void QuickSort(){
-        runFile("fixtures/public/QuickSort.jmm");
-    }
-
-    @Test
-    public void Simple(){
-        runFile("fixtures/public/Simple.jmm");
-    }
-
-    @Test
-    public void TicTacToe(){
-        runFile("fixtures/public/QuickSort.jmm");
-    }
-
-    @Test
-    public void WhileAndIf(){
-        runFile("fixtures/public/QuickSort.jmm");
-    }
+//
+//    @Test
+//    public void helloWord(){
+//        runFile("fixtures/public/HelloWorld.jmm");
+//    }
+//
+//    @Test
+//    public void FindMaximum(){
+//        runFile("fixtures/public/FindMaximum.jmm");
+//    }
+//
+//    @Test
+//    public void LazySort(){
+//        runFile("fixtures/public/LazySort.jmm");
+//    }
+//
+//    @Test
+//    public void Life(){
+//        runFile("fixtures/public/Life.jmm");
+//    }
+//
+//    @Test
+//    public void MonteCarloPi(){
+//        runFile("fixtures/public/MonteCarloPi.jmm");
+//    }
+//
+//    @Test
+//    public void QuickSort(){
+//        runFile("fixtures/public/QuickSort.jmm");
+//    }
+//
+//    @Test
+//    public void Simple(){
+//        runFile("fixtures/public/Simple.jmm");
+//    }
+//
+//    @Test
+//    public void TicTacToe(){
+//        runFile("fixtures/public/QuickSort.jmm");
+//    }
+//
+//    @Test
+//    public void WhileAndIf(){
+//        runFile("fixtures/public/QuickSort.jmm");
+//    }
 
 
 
