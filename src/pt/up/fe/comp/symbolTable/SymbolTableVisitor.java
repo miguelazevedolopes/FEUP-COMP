@@ -71,10 +71,12 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
     public Boolean visitImport(JmmNode node, Boolean dummy){
         List<JmmNode> children = node.getChildren();
 
+        StringBuilder importName = new StringBuilder();
         for (JmmNode child : children){
-            symbolTable.addImport(child.get("name"));
+            importName.append(child.get("name")).append(".");
         }
-
+        importName.delete(importName.length()-1,importName.length());
+        symbolTable.addImport(importName.toString());
         return true;
 
     }
