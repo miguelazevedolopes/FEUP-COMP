@@ -51,8 +51,15 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
                 if(child.getNumChildren()>0 && child.getJmmChild(0).getNumChildren() > 0){
                     isArray = true;
                 }
-                Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));
-                fields.add(symbol);
+                if(child.getJmmChild(0).getKind().equals("Id")){
+                    Symbol symbol = new Symbol(new Type(child.getJmmChild(0).get("name"),isArray), child.get("name"));
+                    fields.add(symbol);
+                }
+                else{
+                    Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));
+                    fields.add(symbol);
+                }
+               
 
                 if(++i >= children.size())
                     break;
