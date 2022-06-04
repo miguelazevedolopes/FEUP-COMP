@@ -1,6 +1,5 @@
 /bin/
 .gradle/
-.idea/
 /build/
 /.settings/
 /generated/
