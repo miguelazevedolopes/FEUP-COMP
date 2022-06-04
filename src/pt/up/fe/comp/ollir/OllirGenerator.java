@@ -45,9 +45,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         addVisit("DotExpression", this::stmtVisit);
         addVisit("IfStatement", this::stmtVisit);
         addVisit("WhileStatement", this::stmtVisit);
-        addVisit("ReturnRule", this::returnVisit); 
-        
+        addVisit("ReturnRule", this::returnVisit);
+
     }
+
+
 
     public String getCode(){
         return code.toString();
@@ -65,11 +67,26 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         return 0;
     }
 
+    private void varVisit(JmmNode jmmNode) {
+        code.append(".field private ");
+        code.append(jmmNode.get("name"))
+                .append(".")
+                .append(OllirUtils.getOllirType(jmmNode.getJmmChild(0).getKind()))
+                .append(";\n");
+    }
+
     private Integer classDeclVisit(JmmNode classDecl, Integer dummy){
         code.append("public ").append(symbolTable.getClassName());
         var superClass = symbolTable.getSuper();
         if (!superClass.isEmpty()) code.append(" extends ").append(superClass);
         code.append("{\n");
+
+        for (var child : classDecl.getChildren()){
+            if(child.getKind().equals("Var"))
+                varVisit(child);
+        }
+        code.append("\n");
+        code.append(".construct ").append(symbolTable.getClassName()).append("().V{\ninvokespecial(this, \"<init>\").V;\n}\n");
 
         for (var child : classDecl.getChildren()){
             visit(child);
@@ -686,25 +703,21 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         var childType = memberCall.getJmmChild(1).getJmmChild(0).getKind();
         if(childType.equals("Length"))
         {
-            code.append("arraylength(").append(getCode(memberCall.getJmmChild(0)))
-                .append(").i32");
+            code.append("arraylength(").append(getCode(memberCall.getJmmChild(0))).append(").i32");
             return;
         }
         visit(memberCall.getJmmChild(0));
-        
-        if(childType.equals("main")){
+        boolean isVirtual = false;
+        if(childType.equals("main") || symbolTable.getImports().contains(memberCall.getJmmChild(0).get("name"))){
             code.append("invokestatic(");
         }
         else{
+            isVirtual = true;
             code.append("invokevirtual(");
         }
         code.append(memberCall.getJmmChild(0).get("name"));
-        if(!memberCall.getJmmChild(0).get("name").equals("this")){
-            if(!symbolTable.getImports().contains(memberCall.getJmmChild(0).get("name"))){
-                code.append(".").append(getType(memberCall.getJmmChild(0)));
-            }
-            else
-                code.append(".").append(memberCall.getJmmChild(0).get("name"));
+        if(!memberCall.getJmmChild(0).get("name").equals("this") && isVirtual){
+           code.append(".").append(memberCall.getJmmChild(0).get("name"));
         }
         code.append(", \"").append(memberCall.getJmmChild(1).getJmmChild(0).get("name"))
             .append("\"");
@@ -718,8 +731,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                 } else code.append(", ").append(getCode(child));
             }
         }
-
-        code.append(").").append(returnType);
+        returnType = "V";
+        var type = symbolTable.getReturnType(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+        if(type!= null) returnType = type.getName();
+        code.append(").").append(OllirUtils.getOllirType(returnType));
 
     }
 

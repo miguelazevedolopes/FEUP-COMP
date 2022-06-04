@@ -1,0 +1,43 @@
+/*
+
+*/
+
+class Test4 {
+    boolean isMinor;
+
+    public boolean isMinor(int year, int month, int day, int actualYear, int actualMonth, int actualDay) {
+        int age;
+        isMinor = false;
+
+        if(!((actualYear-year)<0)) {
+            age = 0;
+        }
+        else {
+            if(actualYear-year<17) {
+                isMinor = true;
+            }
+            else {
+                isMinor = false;
+                age = actualYear - year;
+            }
+        }
+
+        return isMinor;
+    }
+
+    public static void main(String[] args){
+        boolean d;
+        Test4 t;
+
+        t = new Test4();
+        d = t.isMinor(2021, 05, 31, 2*1*1000, t.getMonth(), 1);
+
+    }
+
+    public int getMonth() {
+        int a;
+        a = 2;
+        return 4*5+a;
+    }
+
+}
