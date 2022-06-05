@@ -16,6 +16,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private final StringBuilder code;
     private final SymbolTable symbolTable;
 
+    public boolean writeArray = false;
     public String curMethRetType;
     public String methodSignature;
     public Integer varcount = 0;
@@ -140,8 +141,18 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private String getCode(JmmNode node){
         StringBuilder code = new StringBuilder();
-        if(node.getKind().equals("Id"))
-            code.append(node.get("name"));
+        if(node.getKind().equals("Id")){
+            if(node.getNumChildren()>0 && node.getJmmChild(0).getKind().equals("AccessToArray")){
+                String attribute = node.getJmmChild(0).getJmmChild(0).getKind().equals("IntegerLiteral") ? "value" : "name";
+                code.append(node.get("name")).append("[")
+                        .append(node.getJmmChild(0).getJmmChild(0).get(attribute))
+                        .append(".i32]");
+                ;
+            }
+            else
+                code.append(node.get("name"));
+
+        }
         else if(node.getKind().equals("IntegerLiteral"))
             code.append(node.get("value"));
         else
@@ -219,17 +230,20 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         if(exp.getKind().equals("DotExpression"))
             flag = true;
         for(int i = 0; i < exp.getNumChildren(); i++){
+
             var e = exp.getJmmChild(i);
             if(isBinOp(e) || e.getKind().equals("DotExpression") || e.getKind().equals("InitializeArray") || e.getKind().equals("AccessToArray") || e.getKind().equals("Negation")){
                 assignStmtAux(e);
                 flag = true;
             }
+            if(e.getKind().equals("Id") && e.getNumChildren()>0 && e.getJmmChild(0).getKind().equals("AccessToArray"))
+                assignStmtAux(e);
         }
-        if(exp.getKind().equals("Id"))
+        if(exp.getKind().equals("Id") && exp.getNumChildren()==0)
             return;
+        if(exp.getKind().equals("Id") && exp.getNumChildren()>0 && writeArray) return;
         code.append("t" + (tempCount) + "." + OllirUtils.getOllirType(returnType))
         .append(" :=." + OllirUtils.getOllirType(returnType) + " ");
-
         expressionVisit(exp, 0);
         tempCount++;
         code.append(";\n");
@@ -241,6 +255,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         returnType = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, assignStmt.getJmmChild(0).get("name")));
 
+        if(assignStmt.getJmmChild(0).getKind().equals("Id") && assignStmt.getJmmChild(0).getNumChildren()>0) writeArray = true;
         assignStmtAux(assignStmt.getJmmChild(1));
 
         if(assignStmt.getJmmChild(0).getNumChildren()>0)
@@ -255,6 +270,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             code.append("t" + (tempCount-2) + ".").append(OllirUtils.getOllirType(returnType)).append(";\n");
         else
             code.append("t" + (tempCount-1) + ".").append(OllirUtils.getOllirType(returnType)).append(";\n");
+        writeArray = false;
     }
 
     private Integer dotExpInAssign(JmmNode dotExp, Integer counter){
@@ -271,24 +287,31 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private Integer leftBinOpVisit(JmmNode binOp, Integer dummy){
-        if(binOp.getJmmChild(1).getKind().equals("DotExpression") || binOp.getJmmChild(1).getKind().equals("Negation"))
+        if(binOp.getJmmChild(1).getKind().equals("DotExpression")
+                || binOp.getJmmChild(1).getKind().equals("Negation")
+                || (binOp.getJmmChild(1).getKind().equals("Id")&&binOp.getNumChildren()>0))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
         else code.append(getCode(binOp.getJmmChild(1)) + " ");
         code.append(" "+ OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(1))+ " ");
-        if(binOp.getJmmChild(1).getKind().equals("DotExpression") || isBinOp(binOp.getJmmChild(1)) || binOp.getJmmChild(1).getKind().equals("Negation"))
+        if(binOp.getJmmChild(1).getKind().equals("DotExpression")
+                || isBinOp(binOp.getJmmChild(1))
+                || binOp.getJmmChild(1).getKind().equals("Negation")
+                || (binOp.getJmmChild(0).getKind().equals("Id")&&binOp.getNumChildren()>0))
             code.append("t"+(tempCount-3)+"."+getType(binOp.getJmmChild(0)));
         else
         code.append(getCode(binOp.getJmmChild(1)));
-        code.append(binOp.getJmmChild(1).getKind());
+        //code.append(binOp.getJmmChild(1).getKind());
         return 0;
+
     }
 
     private Integer rightBinOpVisit(JmmNode binOp, Integer dummy){
-        if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
+        if(binOp.getJmmChild(0).getKind().equals("DotExpression") || (binOp.getJmmChild(0).getKind().equals("Id")&&binOp.getNumChildren()>0))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
         else code.append(getCode(binOp.getJmmChild(0)) + " ");
         code.append(OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(0))+ " ");
-        if(binOp.getJmmChild(1).getKind().equals("DotExpression") || isBinOp(binOp.getJmmChild(1)))
+        if(binOp.getJmmChild(1).getKind().equals("DotExpression") || isBinOp(binOp.getJmmChild(1))
+                || (binOp.getJmmChild(1).getKind().equals("Id")&&binOp.getNumChildren()>0))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
         else
             code.append(getCode(binOp.getJmmChild(1)));
@@ -296,9 +319,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private Integer binOpVisit(JmmNode binOp, Integer dummy){
-        if(isBinOp(binOp.getJmmChild(0)) || binOp.getJmmChild(0).getKind().equals("Negation"))
+        var lChild = binOp.getJmmChild(0);
+        var rChild = binOp.getJmmChild(1);
+        if(isBinOp(lChild) || lChild.getKind().equals("Negation") || (lChild.getKind().equals("Id")&&lChild.getNumChildren()>0))
             leftBinOpVisit(binOp, dummy);
-        else if(isBinOp(binOp.getJmmChild(1))  || binOp.getJmmChild(1).getKind().equals("Negation"))
+        else if(isBinOp(rChild)  || rChild.getKind().equals("Negation") || (rChild.getKind().equals("Id")&&rChild.getNumChildren()>0))
             rightBinOpVisit(binOp, dummy);
         else{
             if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
