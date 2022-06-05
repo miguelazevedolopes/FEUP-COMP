@@ -162,7 +162,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             return "i32";
         if(node.getKind().equals("This"))
             return "this";
-        if(node.getKind().equals("Negation"))
+        if(node.getKind().equals("Negation") || node.getKind().equals("Boolean"))
             return "bool";
         if(node.getKind().equals("DotExpression"))
             return getType(node.getJmmChild(1));
