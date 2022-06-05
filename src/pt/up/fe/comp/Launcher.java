@@ -7,10 +7,7 @@ import java.util.Map;
 
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
 import pt.up.fe.comp.ollir.JmmOptimizer;
-import pt.up.fe.comp.jasmin.JasminEmitter;
 import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
-import pt.up.fe.comp.jmm.jasmin.JasminResult;
-import pt.up.fe.comp.jmm.ollir.OllirResult;
 import pt.up.fe.specs.util.SpecsIo;
 import pt.up.fe.specs.util.SpecsLogs;
 import pt.up.fe.specs.util.SpecsSystem;
@@ -63,20 +60,11 @@ public class Launcher {
         JmmOptimizer optimizer = new JmmOptimizer();
 
         // Analysis stage
-        var ollirResult = optimizer.toOllir(semanticResult);
+        var ollirCode = optimizer.toOllir(semanticResult);
 
-        TestUtils.noErrors(ollirResult.getReports());
-        System.out.println("Ollir code:\n"+ ollirResult.getOllirCode() );
-
-        JasminEmitter emitter = new JasminEmitter();
-
-        JasminResult jasminResult = emitter.toJasmin(ollirResult);
-        TestUtils.noErrors(jasminResult.getReports());
-
-        System.out.println("Running jasmin");
-        jasminResult.run();
-        jasminResult.compile(new File("out"));
-        
+        System.out.println("Ollir code:\n"+ ollirCode.getOllirCode() );
+        // Check if there are parsing errors
+        // TestUtils.noErrors(optimizationResult);
     }
 
 }
