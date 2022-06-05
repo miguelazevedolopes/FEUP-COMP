@@ -156,7 +156,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private String getType(JmmNode node){
-        if(node.getKind().equals("IntegerLiteral"))
+        if(node.getKind().equals("IntegerLiteral") || node.getKind().equals("int"))
             return "i32";
         if(node.getKind().equals("This"))
             return "this";
