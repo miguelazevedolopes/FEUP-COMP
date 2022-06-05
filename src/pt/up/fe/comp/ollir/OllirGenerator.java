@@ -710,7 +710,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         }
         code.append(memberCall.getJmmChild(0).get("name"));
         if(!memberCall.getJmmChild(0).get("name").equals("this") && isVirtual){
-            code.append(".").append(memberCall.getJmmChild(0).get("name"));
+            code.append(".").append(symbolTable.getVariableType(methodSignature,memberCall.getJmmChild(0).get("name")));
         }
         code.append(", \"").append(memberCall.getJmmChild(1).getJmmChild(0).get("name"))
                 .append("\"");
