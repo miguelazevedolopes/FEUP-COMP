@@ -685,38 +685,35 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         }
     }
 
+
     private void memberCallVisit(JmmNode memberCall){
         //type missing
-        
+
         memberCallSeparationParams(memberCall);
 
         var childType = memberCall.getJmmChild(1).getJmmChild(0).getKind();
         if(childType.equals("Length"))
         {
-            code.append("arraylength(").append(getCode(memberCall.getJmmChild(0)))
-                .append(").i32");
+            code.append("arraylength(").append(getCode(memberCall.getJmmChild(0))).append(").i32");
             return;
         }
         visit(memberCall.getJmmChild(0));
-        
-        if(childType.equals("main")){
+        boolean isVirtual = false;
+        if(childType.equals("main") || symbolTable.getImports().contains(memberCall.getJmmChild(0).get("name"))){
             code.append("invokestatic(");
         }
         else{
+            isVirtual = true;
             code.append("invokevirtual(");
         }
         code.append(memberCall.getJmmChild(0).get("name"));
-        if(!memberCall.getJmmChild(0).get("name").equals("this")){
-            if(!symbolTable.getImports().contains(memberCall.getJmmChild(0).get("name"))){
-                code.append(".").append(getType(memberCall.getJmmChild(0)));
-            }
-            else
-                code.append(".").append(memberCall.getJmmChild(0).get("name"));
+        if(!memberCall.getJmmChild(0).get("name").equals("this") && isVirtual){
+            code.append(".").append(memberCall.getJmmChild(0).get("name"));
         }
         code.append(", \"").append(memberCall.getJmmChild(1).getJmmChild(0).get("name"))
-            .append("\"");
+                .append("\"");
 
-        
+
         if(memberCall.getJmmChild(1).getNumChildren()>1){ //Has params
             var children = memberCall.getJmmChild(1).getChildren();
             for( var child : children.subList(1, children.size()-1)){
@@ -725,8 +722,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                 } else code.append(", ").append(getCode(child));
             }
         }
-
-        code.append(").").append(returnType);
+        returnType = "V";
+        var type = symbolTable.getReturnType(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+        if(type!= null) returnType = type.getName();
+        code.append(").").append(OllirUtils.getOllirType(returnType));
 
     }
 
