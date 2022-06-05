@@ -71,6 +71,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         if (!superClass.isEmpty()) code.append(" extends ").append(superClass);
         code.append("{\n");
 
+        for(var field : symbolTable.getFields()){
+            code.append(".field private ").append(field.getName()).
+                    append(".").append(field.getType().getName()).append(";\n");
+        }
+
+        code.append("\n");
+        //.field private a.i32;
         for (var child : classDecl.getChildren()){
             visit(child);
         }
