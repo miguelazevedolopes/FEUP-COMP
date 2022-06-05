@@ -56,7 +56,7 @@ TOKEN :
     <IDENTIFIER_TOKEN: (["a"-"z"] | ["A"-"Z"] | "_")+ (["0" - "9"] | ["a"-"z"] | ["A"-"Z"] | "_")* >
 ;
 
-Start : ImportDeclaration ClassDeclaration < EOF >;
+Start : (ImportDeclaration)* ClassDeclaration < EOF >;
 
 IdentifierRule #Id:
 	(<IDENTIFIER_TOKEN> {jjtThis.put("name", lastConsumedToken.getImage()); }) (AccessToArray)?
@@ -103,9 +103,12 @@ Statement #void:
 ;
 
 
+ImportAux #void:
+IdentifierRule (<PERIOD> IdentifierRule)* <SEMI_COLON>
+;
 
-ImportDeclaration : 
-	(<IMPORT> IdentifierRule (<PERIOD> IdentifierRule)* <SEMI_COLON>)* 
+ImportDeclaration:
+	<IMPORT>  ImportAux
 ;
 
 ExtendsRule:
