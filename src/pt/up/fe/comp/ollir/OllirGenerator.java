@@ -16,6 +16,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private final StringBuilder code;
     private final SymbolTable symbolTable;
 
+    public boolean writeArray = false;
     public String curMethRetType;
     public String methodSignature;
     public Integer varcount = 0;
@@ -71,6 +72,15 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         if (!superClass.isEmpty()) code.append(" extends ").append(superClass);
         code.append("{\n");
 
+        for(var field : symbolTable.getFields()){
+            code.append(".field private ").append(field.getName());
+            if(field.getType().isArray())
+                code.append(".array");
+            code.append(".").append(OllirUtils.getOllirType(field.getType().getName())).append(";\n");
+        }
+
+        code.append("\n");
+        //.field private a.i32;
         for (var child : classDecl.getChildren()){
             visit(child);
         }
@@ -131,8 +141,18 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
     private String getCode(JmmNode node){
         StringBuilder code = new StringBuilder();
-        if(node.getKind().equals("Id"))
-            code.append(node.get("name"));
+        if(node.getKind().equals("Id")){
+            if(node.getNumChildren()>0 && node.getJmmChild(0).getKind().equals("AccessToArray")){
+                String attribute = node.getJmmChild(0).getJmmChild(0).getKind().equals("IntegerLiteral") ? "value" : "name";
+                code.append(node.get("name")).append("[")
+                        .append(node.getJmmChild(0).getJmmChild(0).get(attribute))
+                        .append(".i32]");
+                ;
+            }
+            else
+                code.append(node.get("name"));
+
+        }
         else if(node.getKind().equals("IntegerLiteral"))
             code.append(node.get("value"));
         else
@@ -149,11 +169,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private String getType(JmmNode node){
-        if(node.getKind().equals("IntegerLiteral"))
+        if(node.getKind().equals("IntegerLiteral") || node.getKind().equals("int"))
             return "i32";
         if(node.getKind().equals("This"))
             return "this";
-        if(node.getKind().equals("Negation"))
+        if(node.getKind().equals("Negation") || node.getKind().equals("Boolean"))
             return "bool";
         if(node.getKind().equals("DotExpression"))
             return getType(node.getJmmChild(1));
@@ -210,17 +230,20 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         if(exp.getKind().equals("DotExpression"))
             flag = true;
         for(int i = 0; i < exp.getNumChildren(); i++){
+
             var e = exp.getJmmChild(i);
             if(isBinOp(e) || e.getKind().equals("DotExpression") || e.getKind().equals("InitializeArray") || e.getKind().equals("AccessToArray") || e.getKind().equals("Negation")){
                 assignStmtAux(e);
                 flag = true;
             }
+            if(e.getKind().equals("Id") && e.getNumChildren()>0 && e.getJmmChild(0).getKind().equals("AccessToArray"))
+                assignStmtAux(e);
         }
-        if(exp.getKind().equals("Id"))
+        if(exp.getKind().equals("Id") && exp.getNumChildren()==0)
             return;
+        if(exp.getKind().equals("Id") && exp.getNumChildren()>0 && writeArray) return;
         code.append("t" + (tempCount) + "." + OllirUtils.getOllirType(returnType))
         .append(" :=." + OllirUtils.getOllirType(returnType) + " ");
-
         expressionVisit(exp, 0);
         tempCount++;
         code.append(";\n");
@@ -232,6 +255,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         returnType = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, assignStmt.getJmmChild(0).get("name")));
 
+        if(assignStmt.getJmmChild(0).getKind().equals("Id") && assignStmt.getJmmChild(0).getNumChildren()>0) writeArray = true;
         assignStmtAux(assignStmt.getJmmChild(1));
 
         if(assignStmt.getJmmChild(0).getNumChildren()>0)
@@ -246,6 +270,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             code.append("t" + (tempCount-2) + ".").append(OllirUtils.getOllirType(returnType)).append(";\n");
         else
             code.append("t" + (tempCount-1) + ".").append(OllirUtils.getOllirType(returnType)).append(";\n");
+        writeArray = false;
     }
 
     private Integer dotExpInAssign(JmmNode dotExp, Integer counter){
@@ -262,24 +287,31 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private Integer leftBinOpVisit(JmmNode binOp, Integer dummy){
-        if(binOp.getJmmChild(1).getKind().equals("DotExpression") || binOp.getJmmChild(1).getKind().equals("Negation"))
+        if(binOp.getJmmChild(1).getKind().equals("DotExpression")
+                || binOp.getJmmChild(1).getKind().equals("Negation")
+                || (binOp.getJmmChild(1).getKind().equals("Id")&&binOp.getNumChildren()>0))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
         else code.append(getCode(binOp.getJmmChild(1)) + " ");
         code.append(" "+ OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(1))+ " ");
-        if(binOp.getJmmChild(1).getKind().equals("DotExpression") || isBinOp(binOp.getJmmChild(1)) || binOp.getJmmChild(1).getKind().equals("Negation"))
+        if(binOp.getJmmChild(1).getKind().equals("DotExpression")
+                || isBinOp(binOp.getJmmChild(1))
+                || binOp.getJmmChild(1).getKind().equals("Negation")
+                || (binOp.getJmmChild(0).getKind().equals("Id")&&binOp.getNumChildren()>0))
             code.append("t"+(tempCount-3)+"."+getType(binOp.getJmmChild(0)));
         else
         code.append(getCode(binOp.getJmmChild(1)));
-        code.append(binOp.getJmmChild(1).getKind());
+        //code.append(binOp.getJmmChild(1).getKind());
         return 0;
+
     }
 
     private Integer rightBinOpVisit(JmmNode binOp, Integer dummy){
-        if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
+        if(binOp.getJmmChild(0).getKind().equals("DotExpression") || (binOp.getJmmChild(0).getKind().equals("Id")&&binOp.getNumChildren()>0))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
         else code.append(getCode(binOp.getJmmChild(0)) + " ");
         code.append(OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(0))+ " ");
-        if(binOp.getJmmChild(1).getKind().equals("DotExpression") || isBinOp(binOp.getJmmChild(1)))
+        if(binOp.getJmmChild(1).getKind().equals("DotExpression") || isBinOp(binOp.getJmmChild(1))
+                || (binOp.getJmmChild(1).getKind().equals("Id")&&binOp.getNumChildren()>0))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
         else
             code.append(getCode(binOp.getJmmChild(1)));
@@ -287,9 +319,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     }
 
     private Integer binOpVisit(JmmNode binOp, Integer dummy){
-        if(isBinOp(binOp.getJmmChild(0)) || binOp.getJmmChild(0).getKind().equals("Negation"))
+        var lChild = binOp.getJmmChild(0);
+        var rChild = binOp.getJmmChild(1);
+        if(isBinOp(lChild) || lChild.getKind().equals("Negation") || (lChild.getKind().equals("Id")&&lChild.getNumChildren()>0))
             leftBinOpVisit(binOp, dummy);
-        else if(isBinOp(binOp.getJmmChild(1))  || binOp.getJmmChild(1).getKind().equals("Negation"))
+        else if(isBinOp(rChild)  || rChild.getKind().equals("Negation") || (rChild.getKind().equals("Id")&&rChild.getNumChildren()>0))
             rightBinOpVisit(binOp, dummy);
         else{
             if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
@@ -678,38 +712,35 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         }
     }
 
+
     private void memberCallVisit(JmmNode memberCall){
         //type missing
-        
+
         memberCallSeparationParams(memberCall);
 
         var childType = memberCall.getJmmChild(1).getJmmChild(0).getKind();
         if(childType.equals("Length"))
         {
-            code.append("arraylength(").append(getCode(memberCall.getJmmChild(0)))
-                .append(").i32");
+            code.append("arraylength(").append(getCode(memberCall.getJmmChild(0))).append(").i32");
             return;
         }
         visit(memberCall.getJmmChild(0));
-        
-        if(childType.equals("main")){
+        boolean isVirtual = false;
+        if(childType.equals("main") || symbolTable.getImports().contains(memberCall.getJmmChild(0).get("name"))){
             code.append("invokestatic(");
         }
         else{
+            isVirtual = true;
             code.append("invokevirtual(");
         }
         code.append(memberCall.getJmmChild(0).get("name"));
-        if(!memberCall.getJmmChild(0).get("name").equals("this")){
-            if(!symbolTable.getImports().contains(memberCall.getJmmChild(0).get("name"))){
-                code.append(".").append(getType(memberCall.getJmmChild(0)));
-            }
-            else
-                code.append(".").append(memberCall.getJmmChild(0).get("name"));
+        if(!memberCall.getJmmChild(0).get("name").equals("this") && isVirtual){
+            code.append(".").append(symbolTable.getVariableType(methodSignature,memberCall.getJmmChild(0).get("name")));
         }
         code.append(", \"").append(memberCall.getJmmChild(1).getJmmChild(0).get("name"))
-            .append("\"");
+                .append("\"");
 
-        
+
         if(memberCall.getJmmChild(1).getNumChildren()>1){ //Has params
             var children = memberCall.getJmmChild(1).getChildren();
             for( var child : children.subList(1, children.size()-1)){
@@ -718,8 +749,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
                 } else code.append(", ").append(getCode(child));
             }
         }
-
-        code.append(").").append(returnType);
+        returnType = "V";
+        var type = symbolTable.getReturnType(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
+        if(type!= null) returnType = type.getName();
+        code.append(").").append(OllirUtils.getOllirType(returnType));
 
     }
 
