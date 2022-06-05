@@ -72,8 +72,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         code.append("{\n");
 
         for(var field : symbolTable.getFields()){
-            code.append(".field private ").append(field.getName()).
-                    append(".").append(field.getType().getName()).append(";\n");
+            code.append(".field private ").append(field.getName());
+            if(field.getType().isArray())
+                code.append(".array");
+            code.append(".").append(OllirUtils.getOllirType(field.getType().getName())).append(";\n");
         }
 
         code.append("\n");
