@@ -22,6 +22,9 @@ public interface SymbolTable {
      */
     String getSuper();
 
+
+    public Boolean isField(String field);
+
     /**
      * 
      * @return a list of Symbols that represent the fields of the class

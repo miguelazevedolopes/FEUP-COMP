@@ -192,6 +192,17 @@ public class SymbolTableBuilder implements SymbolTable{
     }
 
     @Override
+    public Boolean isField(String field){
+        for(Symbol f : fields){
+            if(f.getName().equals(field)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    @Override
     public String getVariableType(String methodSignature, String name) {
         Symbol s = getLocalVariable(methodSignature, name);
         if(s == null){
