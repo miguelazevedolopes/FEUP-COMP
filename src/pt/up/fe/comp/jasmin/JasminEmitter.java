@@ -24,7 +24,7 @@ public class JasminEmitter implements JasminBackend{
             ollir.buildCFGs(); 
             ollir.checkMethodLabels(); 
             ollir.outputCFGs(); 
-            ollir.buildVarTables(); 
+            ollir.buildVarTables();
 
             OllirToJasmin ollirToJasmin = new OllirToJasmin(ollir);
             String jasminCode = ollirToJasmin.getCode();

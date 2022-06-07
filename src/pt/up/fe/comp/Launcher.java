@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import pt.up.fe.comp.jasmin.JasminEmitter;
+import pt.up.fe.comp.jmm.jasmin.JasminBackend;
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
 import pt.up.fe.comp.ollir.JmmOptimizer;
 import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
@@ -63,6 +65,12 @@ public class Launcher {
         var ollirCode = optimizer.toOllir(semanticResult);
 
         System.out.println("Ollir code:\n"+ ollirCode.getOllirCode() );
+
+        JasminBackend jasminBackend = new JasminEmitter();
+
+        var jasminCode = jasminBackend.toJasmin(ollirCode);
+
+        jasminCode.compile(new File("out"));
         // Check if there are parsing errors
         // TestUtils.noErrors(optimizationResult);
     }
