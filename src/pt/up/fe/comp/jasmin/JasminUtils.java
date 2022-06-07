@@ -95,7 +95,7 @@ public class JasminUtils {
                 res = "[I";
                 break;
             case OBJECTREF:
-                res = className;
+                res = "L" + className + ";";
                 break;
             case VOID:
                 res = "V";

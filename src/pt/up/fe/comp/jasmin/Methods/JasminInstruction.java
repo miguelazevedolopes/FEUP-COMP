@@ -44,6 +44,7 @@ public class JasminInstruction {
                 generateCode((PutFieldInstruction) instruction);
                 break;
             case BRANCH:
+               // generateCode((CondBranchInstruction) instruction);
                     break;
             case GOTO:
                 generateCode((GotoInstruction) instruction);
@@ -68,9 +69,36 @@ public class JasminInstruction {
 
     }
 
+    //-----------------BRANCH-------------------
+    
+    private void generateCode(CondBranchInstruction instruction) {
+        Instruction inst2 = instruction;
+        constOrLoad((instruction).getOperands().get(0), null);
+        constOrLoad((instruction).getOperands().get(1), null);
+
+        OperationType conditionType = ((BinaryOpInstruction) instruction.getCondition()).getOperation().getOpType();
+        switch (conditionType) {
+            case EQ:
+                addCode("\n\t\tif_icmpeq ");
+                break;
+            case LTH:
+                addCode("\n\t\tif_icmplt ");
+                break;
+            case ANDB:
+                addCode("\n\t\tiandb\n\t\ticonst_1\n\t\tif_icmpeq ");
+                break;
+            default:
+                break;
+        }
+        method.decrementStack();
+        method.decrementStack();
+        addCode(instruction.getLabel());
+    }
+
 
     //------ASSING STARTS----------------------
 
+    
     private void generateCode(AssignInstruction instruction) {
         Instruction rhs = instruction.getRhs();
         switch (rhs.getInstType()) {
