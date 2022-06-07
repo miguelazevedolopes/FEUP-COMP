@@ -152,9 +152,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
             }
             else
                 code.append(node.get("name"));
-
         }
         else if(node.getKind().equals("IntegerLiteral"))
+            code.append(node.get("value"));
+        else if(node.getKind().equals("Boolean"))
             code.append(node.get("value"));
         else
             code.append(node.getKind());
@@ -329,14 +330,14 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         else{
             if(binOp.getJmmChild(1).getKind().equals("DotExpression"))
                 code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0))+" ");
-            else code.append(getCode(binOp.getJmmChild(1)) + " ");
+            else code.append(getCode(binOp.getJmmChild(0)) + " ");
             code.append(OllirUtils.getOllirType(binOp.getKind())).append(".");
             if(boolInOp) code.append("bool ");
             else code.append(getType(binOp.getJmmChild(1))+ " ");
             if(binOp.getJmmChild(0).getKind().equals("DotExpression"))
                 code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(1)));
             else
-            code.append(getCode(binOp.getJmmChild(0)));
+            code.append(getCode(binOp.getJmmChild(1)));
         }
         return 0;
     }
@@ -744,12 +745,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         if(memberCall.getJmmChild(1).getNumChildren()>1){ //Has params
             var children = memberCall.getJmmChild(1).getChildren();
-            for( var child : children.subList(1, children.size()-1)){
+            for( var child : children.subList(1, children.size())){
                 if (isBinOp(child)){
                     code.append(", t").append(tempCount).append(getCode(child.getJmmChild(1)));
                 } else code.append(", ").append(getCode(child));
             }
         }
+
         returnType = "V";
         var type = symbolTable.getReturnType(memberCall.getJmmChild(1).getJmmChild(0).get("name"));
         if(type!= null) returnType = type.getName();
