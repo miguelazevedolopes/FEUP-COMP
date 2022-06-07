@@ -25,7 +25,7 @@
 
 		aload_0
 		iload_3
-		invokevirtual Fac.compFac(I)I
+		invokevirtual Fac/compFac(I)I
 		istore 4
 
 		iload_1
@@ -50,9 +50,9 @@
 
 		aload_2
 		bipush 10
-		invokevirtual Fac.compFac(I)I
+		invokevirtual Fac/compFac(I)I
 		istore_3
 
 		iload_3
-		invokestatic io.println(I)V
+		invokestatic io/println(I)V
 .end method

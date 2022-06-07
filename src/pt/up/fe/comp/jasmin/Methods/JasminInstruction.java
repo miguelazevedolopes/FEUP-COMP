@@ -506,7 +506,7 @@ public class JasminInstruction {
         if (instruction.getNumOperands() > 1) {
             Element secondArg = instruction.getSecondArg();
             if (secondArg.isLiteral()) {
-                addCode("." + ((LiteralElement) secondArg).getLiteral().replace("\"", "") + "(");
+                addCode("/" + ((LiteralElement) secondArg).getLiteral().replace("\"", "") + "(");
                 for (Element parameter : instruction.getListOfOperands()) {
                     addCode(JasminUtils.getJasminType(parameter.getType().getTypeOfElement(), method.getClassName()));
                 }

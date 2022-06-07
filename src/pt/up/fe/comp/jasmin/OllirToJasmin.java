@@ -66,25 +66,25 @@ public class OllirToJasmin{
 
 
 
-    // public String getFullyClassifiedName(String className){
-    //     for (var importString : ollir.getImports()){
-    //         var imports = importString.split("\\."); //get all imports
+    public String getFullyClassifiedName(String className){
+        for (var importString : ollir.getImports()){
+            var imports = importString.split("\\."); //get all imports
 
-    //         String lastImport;
-    //         if(imports.length == 0){
-    //             lastImport = importString;
-    //         }else{
-    //             lastImport = imports[imports.length -1];
-    //         }
+            String lastImport;
+            if(imports.length == 0){
+                lastImport = importString;
+            }else{
+                lastImport = imports[imports.length -1];
+            }
             
 
-    //         if(lastImport.equals(className)){
-    //             return importString.replace("." , "/"); 
-    //         }
+            if(lastImport.equals(className)){
+                return importString.replace("." , "/"); 
+            }
 
 
-    //     }
-    //     return "java/lang/Object";
+        }
+        return "java/lang/Object";
 
-    // }
+    }
 }

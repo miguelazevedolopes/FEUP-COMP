@@ -12,6 +12,6 @@
 		.limit locals 2
 		.limit stack 0
 
-		invokestatic ioPlus.printHelloWorld()V
+		invokestatic ioPlus/printHelloWorld()V
 		return
 .end method
