@@ -28,10 +28,11 @@ public class OllirUtils {
     public static String getOllirType(String jmmType){
 
         switch(jmmType){
-            case "int": return "i32";
-            case "TypeInt": return "i32";
+            case "int":
+            case "TypeInt":
             case "IntegerLiteral": return "i32";
             case "TypeString": return "String";
+            case "boolean":
             case "TypeBoolean": return "bool";
             case "void": return "V";
             case "TypeIntArray": return "array.i32";
