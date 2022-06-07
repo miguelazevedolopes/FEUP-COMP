@@ -5,7 +5,7 @@
 /generated/
 /run/
 *.dot
-.idea
+.idea/
 # Class files
 **/*.class
 !libs-jmm/**/*.class
