@@ -5,14 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/libs-jmm/compiled/Dummy.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.dot" beforeDir="false" afterPath="$PROJECT_DIR$/main.dot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/JasminUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/JasminUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/jasmin/Fac.j" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/jasmin/Fac.j" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/jasmin/myclass1.j" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/jasmin/myclass1.j" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/cpf/4_jasmin/arithmetic/ComplexAddMul.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/cpf/4_jasmin/arithmetic/ComplexAddMul.jmm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,7 +167,7 @@
       <updated>1654628122996</updated>
       <workItem from="1654628128001" duration="1727000" />
       <workItem from="1654632508915" duration="278000" />
-      <workItem from="1654674991258" duration="4134000" />
+      <workItem from="1654674991258" duration="4899000" />
     </task>
     <servers />
   </component>
