@@ -64,7 +64,8 @@ public class Launcher {
         // Analysis stage
         var ollirCode = optimizer.toOllir(semanticResult);
 
-        System.out.println("Ollir code:\n"+ ollirCode.getOllirCode() );
+        System.out.println("--------------------------OLLIR CODE START--------------------------\n"+ ollirCode.getOllirCode() );
+        System.out.println("--------------------------OLLIR CODE END----------------------------\n");
 
         JasminBackend jasminBackend = new JasminEmitter();
 
