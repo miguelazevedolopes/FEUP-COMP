@@ -1,6 +1,5 @@
-import ioPlus;
 import io;
-class Dummy {
+class Arithmetic1 {
     public static void main(String[] args) {
         int a;
         int b;

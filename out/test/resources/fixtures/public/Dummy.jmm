@@ -1,7 +1,0 @@
-class Dummy {
-
-    public boolean func2(){
-        return false;
-    }
-
-}
