@@ -28,7 +28,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         addVisit("NormalMethod", this::methodDeclVisit);
         addVisit("MethodBody", this::methodBodyVisit);
         addVisit("Equality", this::assignStmtVisit);
-//        addVisit("DotExpression", this::stmtVisit);
+        addVisit("DotExpression", this::methodCallVisit);
 //        addVisit("IfStatement", this::stmtVisit);
 //        addVisit("WhileStatement", this::stmtVisit);
         addVisit("SUM", this::binOpVisit);
@@ -137,11 +137,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
     private Code assignStmtVisit(JmmNode assignStmt, Integer dummy){
         var varname = assignStmt.getJmmChild(0).get("name");
-        Code localcode = visit(assignStmt.getJmmChild(1));
-        code.append(localcode.prefix);
-        code.append(varname); //Var name
-        code.append(" =.").append(OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature,varname))); //.i32 .bool etc
-        code.append(localcode.code);
+        Code thisCode = visit(assignStmt.getJmmChild(1));
+        var type = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature,varname));
+        code.append(thisCode.prefix);
+        code.append("\t" +varname).append("."+type); //Var name
+        code.append(" :=.").append(type+ " "); //.i32 .bool etc
+        code.append(thisCode.code).append("."+type);
+        code.append(";\n");
         return null;
     }
 
@@ -151,7 +153,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         Code rhs = visit(node.getJmmChild(1));
 
-        String op = OllirUtils.getOllirType(node.getKind()); //BIN OP TYPE
+        String op = node.getKind(); //BIN OP TYPE
 
         Code thisCode = new Code();
 
@@ -163,8 +165,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         //I am considering that I always need a new temp
 
         String temp = ollirTable.newTemp();
-
-        thisCode.prefix += temp + "=" + lhs.code + op + rhs.code;
+        ollirTable.put(rhs.code, temp);
+        String type = OllirUtils.getOllirType(node.getKind());
+        thisCode.prefix += "\t" + temp + "." + type
+                + " :=." + type +" "+ lhs.code + " " + OllirUtils.getCode(op)
+                + " " + rhs.code + "." + type +";\n";
 
         thisCode.code = temp;
 
@@ -172,7 +177,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
     }
 
-    private Code visitMethodCall(JmmNode node, Integer dummy){
+    private Code methodCallVisit(JmmNode node, Integer dummy){
 
         String prefixCode = "";
 
@@ -180,14 +185,14 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         prefixCode += target.prefix;
 
-        String methodName = node.get("name");
+        String methodName = node.getJmmChild(1).getJmmChild(0).get("name");
 
         //invokevirtual(temp1,"foo"
 
         String finalcode = "invokevirtual("+target.code+","+methodName;
 
-        for(JmmNode arg : node.getChildren()){ //for each argument
-
+        for(int i = 1; i < node.getJmmChild(0).getNumChildren(); i++){  //for each argument
+            JmmNode arg = node.getJmmChild(0).getJmmChild(i);
             Code argCode = visit(arg);
 
             prefixCode += argCode.prefix; //append code of argument prior to invocation
@@ -204,7 +209,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         String temp = ollirTable.newTemp();
 
-        finalcode = temp + "=" + finalcode;
+        finalcode = temp + ":=" + finalcode;
 
         Code thisCode = new Code();
 
@@ -219,7 +224,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
     private Code idVisit(JmmNode node, Integer integer) {
         Code thisCode = new Code();
         var varname = node.get("name");
-        thisCode.code = varname + OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature,varname));
+        thisCode.code = varname +"."+ OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, varname));
         return thisCode;
     }
 
@@ -227,13 +232,14 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         Code thisCode = new Code();
         Code thatCode = visit(node.getJmmChild(0));
         thisCode.prefix = thatCode.prefix;
-        thisCode.code = "new(" + thatCode.code +")." + OllirUtils.getOllirType(node.getJmmChild(0).get("name"));
+        thisCode.code = "new(" + thatCode.code.substring(0,thatCode.code.length()-1) +")."
+                + OllirUtils.getOllirType(node.getJmmChild(0).get("name"));
         return thisCode;
     }
 
     private Code integerLiteralVisit(JmmNode node, Integer integer) {
         Code thisCode = new Code();
-        thisCode.code = node.get("value");
+        thisCode.code = node.get("value") + ".i32";
         return thisCode;
     }
 

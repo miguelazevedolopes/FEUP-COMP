@@ -36,17 +36,27 @@ public class OllirUtils {
             case "TypeBoolean": return "bool";
             case "void": return "V";
             case "TypeIntArray": return "array.i32";
-            case "ANDD": return "&&";
-            case "SUM": return "+";
-            case "SUB": return "-";
-            case "LESSTHAN": return "<";
-            case "MUL": return "*";
-            case "DIV": return "/";
+            case "ANDD": return "bool";
+            case "SUM":
+            case "SUB":
+            case "LESSTHAN":
+            case "MUL":
+            case "DIV": return "i32";
             default: return jmmType;
         }
     }
 
 
-
-
+    public static String getCode(String op) {
+        StringBuilder code = new StringBuilder();
+        switch (op){
+            case "SUM" -> code.append("+.i32");
+            case "SUB" -> code.append("-.i32");
+            case "MUL" -> code.append("*.i32");
+            case "DIV" -> code.append("/.i32");
+            case "LESSTHAN" -> code.append("<.i32");
+            case "ANDD" -> code.append("&&.bool");
+        }
+        return code.toString();
+    }
 }

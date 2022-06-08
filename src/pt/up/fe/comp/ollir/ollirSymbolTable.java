@@ -18,7 +18,7 @@ public class ollirSymbolTable {
 
     public String newTemp(){
         Integer n = 0;
-        while(table.containsKey("t".concat(n.toString())))
+        while(table.containsValue("t".concat(n.toString())))
             n++;
         return "t".concat(n.toString(n));
     }
