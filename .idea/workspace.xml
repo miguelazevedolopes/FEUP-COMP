@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.dot" beforeDir="false" afterPath="$PROJECT_DIR$/main.dot" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +69,7 @@
       <recent name="$PROJECT_DIR$/test/fixtures/public" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_and">
+  <component name="RunManager" selected="Application.Launcher">
     <configuration name="Launcher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.Launcher" />
       <module name="comp2022-2b.main" />
@@ -145,11 +147,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Launcher" />
         <item itemvalue="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_and" />
         <item itemvalue="JUnit.Cpf4_Jasmin" />
         <item itemvalue="JUnit.fixtures.public.cpf.4_jasmin.arithmetic in comp2022-2b.test" />
         <item itemvalue="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_add" />
-        <item itemvalue="Application.Launcher" />
       </list>
     </recent_temporary>
   </component>
@@ -163,6 +165,7 @@
       <updated>1654628122996</updated>
       <workItem from="1654628128001" duration="1727000" />
       <workItem from="1654632508915" duration="278000" />
+      <workItem from="1654674991258" duration="368000" />
     </task>
     <servers />
   </component>
@@ -187,11 +190,6 @@
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminMethod.java</url>
           <line>162</line>
           <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>543</line>
-          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

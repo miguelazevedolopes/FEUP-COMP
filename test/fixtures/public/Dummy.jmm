@@ -1,7 +1,12 @@
+import ioPlus;
+import io;
 class Dummy {
-
-    public boolean func2(){
-        return false;
+    public static void main(String[] args) {
+        int a;
+        int b;
+        a = 5 + 6;
+        b = a * 2;
+        ioPlus.printHelloWorld();
+        io.println(b);
     }
-
 }
