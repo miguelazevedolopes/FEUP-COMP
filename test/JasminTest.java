@@ -53,10 +53,10 @@ public class JasminTest {
         OllirResult ollirResult = new OllirResult(ollirCode, null);
         JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
 
-        Files.writeString(path, jasminResult.getJasminCode());
+        //Files.writeString(path, jasminResult.getJasminCode());
         
 
-        jasminResult.run();
+        //jasminResult.run();
 
         //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
     }
