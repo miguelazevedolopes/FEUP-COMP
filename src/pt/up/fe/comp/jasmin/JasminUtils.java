@@ -76,7 +76,7 @@ public class JasminUtils {
         else if (val > 5 && val <= 128) aux = "bipush ";
         else if (val > 128 && val <= 32768) aux = "sipush ";
         else aux = "ldc ";
-        res = "\n\t\t" + aux + val;
+        res = "\n\t\t" + aux + val + " ";
         method.incrementStack();
         return res;
     }
