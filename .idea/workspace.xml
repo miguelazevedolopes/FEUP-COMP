@@ -5,173 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/test/fixtures/public/demo/Arithmetic1.jmm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libs-jmm/compiled/Dummy.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.dot" beforeDir="false" afterPath="$PROJECT_DIR$/main.dot" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/BackendTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/ExampleTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/JasminTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/OptimizeTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/Dummy.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/FindMaximum.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/HelloWorld.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/demo/HelloWorld.jmm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/Lazysort.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/Life.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/MonteCarloPi.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/QuickSort.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/QuickSort.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/Simple.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/TicTacToe.input" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/TicTacToe.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/TicTacToe.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/WhileAndIf.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/WhileAndIf.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/ArrayAccessOnInt.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/ArrayInWhileCondition.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/ArrayIndexNotInt.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/ArrayPlusInt.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/AssignIntToBool.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/AssumeArguments.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/BoolTimesInt.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/CallToMethodAssumedInExtends.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/CallToMethodAssumedInImport.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/CallToUndeclaredMethod.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/ClassNotImported.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/CompileArithmetic.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/CompileAssignment.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/CompileBasic.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/CompileMethodInvocation.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/IncompatibleArguments.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/IncompatibleReturn.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/IntInIfCondition.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/IntPlusObject.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/ObjectAssignmentFail.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/ObjectAssignmentPassExtends.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/ObjectAssignmentPassImports.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/OllirArithmetic.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/OllirAssignment.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/OllirBasic.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/OllirMethodInvocation.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/OllirToJasminArithmetics.ollir" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/OllirToJasminBasic.ollir" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/OllirToJasminFields.ollir" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/OllirToJasminInvoke.ollir" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/SymbolTable.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cp2/VarNotDeclared.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/1_parser_and_tree/AddMultConstants.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/calls/Inherited_Method_Call_Simple.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/calls/Method_Call_Missing.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/calls/Other_Class_Method_Call_Simple.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/import/ImportSuper.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/lookup/VarLookup_Field.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/lookup/VarLookup_Field_Main_Fail.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/lookup/VarLookup_Local.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/symboltable/MethodsAndFields.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/symboltable/Parameters.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/this/ThisAsArg.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/this/ThisInMain.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/type_verification/Array_Index_Bad.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/type_verification/Array_Sum_Bad.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/type_verification/Assignment_Array_Bad.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/type_verification/Assignment_Bool_Bad.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/type_verification/BinaryOps_BadInts.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/type_verification/BinaryOps_Simple.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/type_verification/While_If_Array_AccessArrayNotInteger.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/type_verification/While_If_Array_IfCondNotBool.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/2_semantic_analysis/type_verification/While_If_Array_WhileCondBool.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/arithmetic/Arithmetic_and.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/arithmetic/Arithmetic_div.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/arithmetic/Arithmetic_less.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/arrays/ArrayAccess.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/arrays/ArrayInit.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/arrays/ComplexArrayAccess.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/basic/BasicImportsPackages.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/basic/BasicMethodsArray.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/basic/BasicMethodsClass.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/basic/Structure_class.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/basic/Structure_fields_intarray.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/calls/InvokeStatic.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/calls/NoArgsFuncCall.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/calls/PrintOtherClassFromParam.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/control_flow/SimpleIfElseStat.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/control_flow/SimpleWhileStat.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/control_flow/SwitchStat.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_add.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_and.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_div.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_less.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_mul.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_sub.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/ByteCodeIndexes1.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/ByteCodeIndexes2.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/ComplexAdd.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/ComplexAddMul.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/ComplexArithmetic.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/ComplexProd.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arithmetic/ComplexSubDiv.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arrays/ArrayAccess.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arrays/ArrayAsArg.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arrays/ArrayAsArgCode.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arrays/ArrayInit.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/arrays/ComplexArrayAccess.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/basic/BasicMethodsArray.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/basic/BasicMethodsBool.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/basic/BasicMethodsClass.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/basic/BasicMethodsInt.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/basic/Structure_class.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/basic/Structure_fields.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/calls/ArithmeticArgsFuncCall.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/calls/ConditionArgsFuncCall.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/calls/FuncArgsFuncCall.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/calls/InvokeStatic.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/calls/NoArgsFuncCall.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/calls/OneArgFuncCall.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/calls/PrintOtherClassInline.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/calls/UsesPop.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/calls/VarArgsFuncCall.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/control_flow/IfWhileNested.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/control_flow/SimpleIfElseNot.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/control_flow/SimpleIfElseStat.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/control_flow/SimpleWhileStat.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/control_flow/SwitchStat.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/4_jasmin/limits/LocalLimits.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/arr_index_not_int.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/arr_size_not_int.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/badArguments.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/binop_incomp.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/extra/miss_type.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/funcNotFound.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/simple_length.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/varNotInit.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/var_exp_incomp.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/var_lit_incomp.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/semantic/var_undef.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/syntactical/BlowUp.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/syntactical/CompleteWhileTest.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/syntactical/LengthError.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/syntactical/MissingRightPar.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/syntactical/MultipleSequential.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/fail/syntactical/NestedLoop.jmm" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/jasmin/Fac.j" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/jasmin/HelloWorld.j" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/jasmin/HelloWorld2.j" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/jasmin/myclass1.j" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/ollir/Fac.ollir" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/ollir/HelloWorld.ollir" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/ollir/myclass1.ollir" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/ollir/myclass2.ollir" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/ollir/myclass3.ollir" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/ollir/myclass4.ollir" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/pt/up/fe/comp/AnalyserTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/pt/up/fe/comp/Cp2Test.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/pt/up/fe/comp/CpUtils.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/pt/up/fe/comp/GrammarTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/pt/up/fe/comp/ParserTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/pt/up/fe/comp/cpf/Cpf1_ParserAndTree.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/pt/up/fe/comp/cpf/Cpf2_SemanticAnalysis.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/pt/up/fe/comp/cpf/Cpf3_Ollir.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/pt/up/fe/comp/cpf/Cpf4_Jasmin.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/JasminUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/JasminUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/jasmin/Fac.j" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/jasmin/Fac.j" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/jasmin/myclass1.j" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/jasmin/myclass1.j" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -330,7 +171,7 @@
       <updated>1654628122996</updated>
       <workItem from="1654628128001" duration="1727000" />
       <workItem from="1654632508915" duration="278000" />
-      <workItem from="1654674991258" duration="3261000" />
+      <workItem from="1654674991258" duration="4134000" />
     </task>
     <servers />
   </component>

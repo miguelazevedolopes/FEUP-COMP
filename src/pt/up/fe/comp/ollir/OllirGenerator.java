@@ -291,7 +291,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
     private Integer leftBinOpVisit(JmmNode binOp, Integer dummy){
         if(binOp.getJmmChild(1).getKind().equals("DotExpression")
                 || binOp.getJmmChild(1).getKind().equals("Negation")
-                || (binOp.getJmmChild(1).getKind().equals("Id")&&binOp.getNumChildren()>0))
+                || (binOp.getJmmChild(1).getKind().equals("Id")&&binOp.getNumChildren()>0)
+                || isBinOp(binOp.getJmmChild(0)))
             code.append("t"+(tempCount-1)+"."+getType(binOp.getJmmChild(0)));
         else code.append(getCode(binOp.getJmmChild(1)) + " ");
         code.append(" "+ OllirUtils.getOllirType(binOp.getKind())).append(".").append(getType(binOp.getJmmChild(1))+ " ");

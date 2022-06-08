@@ -1,0 +1,11 @@
+import io;
+class While {
+    public static void main(String[] args) {
+        int a;
+        a = 5;
+        while(0 < a){
+            io.println(a);
+            a = a - 1;
+        }
+    }
+}
