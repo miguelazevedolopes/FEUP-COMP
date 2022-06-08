@@ -96,7 +96,7 @@ public class JasminInstruction {
                 addCode("\n\t\tif_icmpge ");
                 break;
             case EQ:
-                addCode("\n\t\tif_icmpeq ");
+                addCode("\n\t\tif_icmpeq} ");
                 break;
             case LTH:
                 addCode("\n\t\tif_icmplt ");
@@ -544,7 +544,7 @@ public class JasminInstruction {
 
     private boolean iincInstruction(Element leftElement, Element rightElement, Element dest, OperationType operation) {
         String literal;
-        if ((operation.toString().equals("ADD") || operation.toString().equals("SUB"))) {
+        if ((operation == OperationType.ADD  || operation == OperationType.SUB)) {
             if (sameOperand(dest, leftElement) && rightElement.isLiteral())
                 literal = ((LiteralElement) rightElement).getLiteral();
             else if (sameOperand(dest, rightElement) && leftElement.isLiteral())
@@ -553,7 +553,7 @@ public class JasminInstruction {
             Descriptor var = method.getLocalVariableByKey(dest, null);
             if (var.getVarType().getTypeOfElement() != ElementType.ARRAYREF) {
                 addCode("\n\t\tiinc " + var.getVirtualReg());
-                if ((operation.toString().equals("ADD")))
+                if ((operation == OperationType.ADD))
                     addCode(" " + literal);
                 else
                     addCode(" -" + literal);
