@@ -71,6 +71,7 @@ public class Launcher {
         var jasminCode = jasminBackend.toJasmin(ollirCode);
 
         jasminCode.compile(new File("out"));
+        jasminCode.run();
         // Check if there are parsing errors
         // TestUtils.noErrors(optimizationResult);
     }

@@ -7,6 +7,9 @@ class Dummy {
         a = 5 + 6;
         b = a * 2;
         ioPlus.printHelloWorld();
-        io.println(b);
+        while(b < 0){
+            io.println(b);
+            b = b - 3;
+        }
     }
 }
