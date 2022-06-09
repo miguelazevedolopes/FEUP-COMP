@@ -7,10 +7,14 @@ public class OllirSymbolTable {
     public ArrayList<Integer> table;
     public Stack<Integer> ifStack;
     public Stack<Integer> elseStack;
+
+    public Stack<Integer> whileStack;
+
     public OllirSymbolTable() {
         table = new ArrayList<>();
         ifStack = new Stack<>();
         elseStack = new Stack<>();
+        whileStack = new Stack<>();
     }
 
     public String newTemp(){
@@ -35,6 +39,14 @@ public class OllirSymbolTable {
             n++;
         ifStack.add(n);
         return "endif".concat(n.toString(n));
+    }
+
+    public Integer newWhile(){
+        Integer n = 0;
+        while(whileStack.contains(n))
+            n++;
+        whileStack.add(n);
+        return n;
     }
 
 

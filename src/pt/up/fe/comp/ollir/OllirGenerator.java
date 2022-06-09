@@ -25,7 +25,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         addVisit("DotExpression", this::methodCallVisit);
         addVisit("IfStatement", this::ifVisit);
         addVisit("ElseStatement", this::elseVisit);
-//        addVisit("WhileStatement", this::stmtVisit);
+        addVisit("WhileStatement", this::whileVisit);
         addVisit("SUM", this::binOpVisit);
         addVisit("SUB", this::binOpVisit);
         addVisit("MUL", this::binOpVisit);
@@ -40,6 +40,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         addVisit("ReturnRule", this::returnVisit);
         addVisit("Boolean", this::booleanVisit);
     }
+
 
 
     public String getCode(){
@@ -145,7 +146,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         Code thisCode = visit(node.getJmmChild(1));
         thisCode.prefix += thatCode.prefix;
         var type = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature,varname));
-        thisCode.code = "\t" + thatCode.code  +" :=." + type + " " + thisCode.code + ";\n";
+        thisCode.code = "\t" + thatCode.code  +" :=." + type + " " + thisCode.code + ";\n\n";
         return thisCode;
     }
 
@@ -373,6 +374,32 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         return thisCode;
     }
 
+    private Code whileVisit(JmmNode node, Integer integer) {
+        Code thisCode = new Code();
+        Code condCode = visit(node.getJmmChild(0));
+        Integer whileNumber = ollirTable.newWhile();
+        String whileTag = "while" + whileNumber.toString();
+        String endWhileTag = "endWhile" + whileNumber.toString();
+        thisCode.code =  "\t"+whileTag+":\n";
+        thisCode.code += "\t"+condCode.prefix;
+        String temp = ollirTable.newTemp();
+        thisCode.code += "\t\t" + temp + ".bool :=.bool " + condCode.code + " !.bool " + condCode.code + ";\n";
+        thisCode.code += "\t\tif(" + temp + ".bool) goto " + endWhileTag+";\n";
 
+        int i = 1;
+        for(; i < node.getNumChildren(); i++){
+            var child = node.getJmmChild(i);
+            Code thatCode = visit(child);
+            String[] lines = thatCode.prefix.split("\n");
+            for(var line : lines)
+                thisCode.code += "\t" + line + "\n";
+            thisCode.code += "\t" + thatCode.code;
+        }
 
+        thisCode.code += "\t\tgoto " + whileTag + ";\n";
+        thisCode.code += "\t"+endWhileTag + ":\n";
+        return thisCode;
     }
+
+
+}

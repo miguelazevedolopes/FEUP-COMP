@@ -6,13 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/javacc/JmmGrammar.jj" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/JmmGrammar.jj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/control_flow/SimpleIfElseStat.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/control_flow/SimpleIfElseStat.jmm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGeneratorOld.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirSymbolTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirSymbolTable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirUtilsOld.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/cpf/3_ollir/control_flow/SimpleIfElseStat.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/cpf/3_ollir/control_flow/SimpleIfElseStat.jmm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -185,7 +180,7 @@
       <workItem from="1654628128001" duration="1727000" />
       <workItem from="1654632508915" duration="278000" />
       <workItem from="1654674991258" duration="4899000" />
-      <workItem from="1654760875001" duration="13085000" />
+      <workItem from="1654760875001" duration="15395000" />
     </task>
     <servers />
   </component>
@@ -208,17 +203,17 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>295</line>
+          <line>294</line>
           <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>321</line>
+          <line>320</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>228</line>
+          <line>229</line>
           <option name="timeStamp" value="37" />
         </line-breakpoint>
       </breakpoints>
