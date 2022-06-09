@@ -124,7 +124,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         var stmts = methodBody.getChildren();
         for(var stmt: stmts){
-            visit(stmt);
+            Code thisCode = visit(stmt);
+            if (thisCode == null) continue;
+            code.append(thisCode.prefix);
+            if(stmt.getKind().equals("DotExpression")) continue;
+            code.append(thisCode.code);
         }
 
         return null;
@@ -135,12 +139,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         var varname = assignStmt.getJmmChild(0).get("name");
         Code thisCode = visit(assignStmt.getJmmChild(1));
         var type = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature,varname));
-        code.append(thisCode.prefix);
-        code.append("\t" +varname).append("."+type); //Var name
-        code.append(" :=.").append(type+ " "); //.i32 .bool etc
-        code.append(thisCode.code);
-        code.append(";\n");
-        return null;
+        thisCode.code = "\t" + varname + "." + type + ":=." + type + " " + thisCode.code + ";\n";
+        return thisCode;
     }
 
     private Code binOpVisit(JmmNode node, Integer dummy){
@@ -177,12 +177,16 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         Code thatCode = visit(node.getJmmChild(0));  //first child is the target object
 
         thisCode.prefix = thatCode.prefix;
+        boolean isStatic = symbolTable.getImports().contains(thatCode.code);
 
         String methodName = node.getJmmChild(1).getJmmChild(0).get("name");
 
         //invokevirtual(temp1,"foo"
-
-        String finalcode = "invokevirtual("+thatCode.code+", \""+methodName + "\"";
+        String finalcode;
+        if(isStatic)
+            finalcode = "invokestatic("+thatCode.code+", \""+methodName +"\"";
+        else
+            finalcode = "invokevirtual("+thatCode.code+", \""+methodName + "\"";
 
         for(int i = 1; i < node.getJmmChild(1).getNumChildren(); i++){  //for each argument
             JmmNode arg = node.getJmmChild(1).getJmmChild(i);
@@ -195,7 +199,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         //invokevirtual(temp1,"foo" <(, arg)*>).V
 
-        String type = OllirUtils.getOllirType(symbolTable.getReturnType(methodName).getName());
+
+        var ttype = symbolTable.getReturnType(methodName);
+        String type = OllirUtils.getOllirType(ttype == null ? "" : ttype.getName());
+        if(isStatic) type = "V"; //thatCode.code has import name
         finalcode += ")."+ type;
 
         //here you can decide if the temporary variable is necessary or not
@@ -219,7 +226,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         }
         Code thisCode = new Code();
         var varname = node.get("name");
-        thisCode.code = varname +"."+ OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, varname));
+        //TODO  check if import
+
+        thisCode.code = varname;
+        if(!symbolTable.getImports().contains(varname))
+            thisCode.code += "."+ OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, varname));
         return thisCode;
     }
 
@@ -265,8 +276,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         String type = OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName());
         thisCode.code = "\tret." + type + " " + thatCode.code + ";\n";
 
-        code.append(thisCode.prefix);
-        code.append(thisCode.code);
         return thisCode;
     }
 
