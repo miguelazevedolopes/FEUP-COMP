@@ -6,6 +6,10 @@ class Dummy {
         int a;
         int[] b;
         if(false){
+            a = 0;
+        }
+        else{
+            a = 1;
         }
     }
 

@@ -393,27 +393,36 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         return false;
     }
     private Code ifVisit(JmmNode node, Integer integer) {
-        if(optimize && !hasElse(node) && node.getNumChildren()==1)
+        if(optimize && !hasElse(node) && node.getNumChildren()==1) {
             return new Code();
+        }
         Code thisCode = new Code();
-        Code condCode = visit(node.getJmmChild(0));
-        thisCode.prefix = condCode.prefix;
-        String temp = ollirTable.newTemp();
-        thisCode.code = "\t" + temp + ".bool :=.bool " + condCode.code + " !.bool " + condCode.code + ";\n";
         String elseTag = ollirTable.newElse();
         String endIf = ollirTable.newEndIf();
-        thisCode.code += "\tif(" + temp + ".bool) goto ";
+        boolean removeIf = false;
+        if(!(optimize && node.getJmmChild(0).getKind().equals("Boolean")
+                && !parseBoolean(node.getJmmChild(0).get("value")) )){
+            Code condCode = visit(node.getJmmChild(0));
+            thisCode.prefix = condCode.prefix;
+            String temp = ollirTable.newTemp();
+            thisCode.code = "\t" + temp + ".bool :=.bool " + condCode.code + " !.bool " + condCode.code + ";\n";
 
-        if(hasElse(node))
-            thisCode.code +=  elseTag +";\n";
-        else
-            thisCode.code +=  endIf +";\n";
+            thisCode.code += "\tif(" + temp + ".bool) goto ";
+
+            if(hasElse(node))
+                thisCode.code +=  elseTag +";\n";
+            else
+                thisCode.code +=  endIf +";\n";
+
+        }else removeIf = true;
+
 
         int i = 1;
         for(; i < node.getNumChildren(); i++){
             var child = node.getJmmChild(i);
+            if(removeIf && !child.getKind().equals("ElseStatement")) continue;
             Code thatCode = visit(child);
-            if(child.getKind().equals("ElseStatement")){
+            if(child.getKind().equals("ElseStatement") && !removeIf){
                 thisCode.code += "\tgoto " + endIf +";\n";
                 thisCode.code += "\t" + elseTag +":\n";
             }
