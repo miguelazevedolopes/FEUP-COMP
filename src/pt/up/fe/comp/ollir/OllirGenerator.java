@@ -413,7 +413,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         Code thisCode = new Code();
         Code thatCode = visit(node.getJmmChild(0));
         thisCode.prefix = thatCode.prefix;
-        thisCode.code = thatCode.code + " !.bool " + thatCode.code;
+        String temp = ollirTable.newTemp();
+        thisCode.prefix += "\t" + temp +".bool" + " :=.bool " + thatCode.code + " !.bool " + thatCode.code + ";\n";
+        thisCode.code = temp + ".bool";
         return thisCode;
     }
 
