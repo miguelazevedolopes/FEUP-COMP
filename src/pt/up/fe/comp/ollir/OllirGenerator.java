@@ -23,7 +23,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         addVisit("MethodBody", this::methodBodyVisit);
         addVisit("Equality", this::assignStmtVisit);
         addVisit("DotExpression", this::methodCallVisit);
-//        addVisit("IfStatement", this::stmtVisit);
+        addVisit("IfStatement", this::ifVisit);
+        addVisit("ElseStatement", this::elseVisit);
 //        addVisit("WhileStatement", this::stmtVisit);
         addVisit("SUM", this::binOpVisit);
         addVisit("SUB", this::binOpVisit);
@@ -39,7 +40,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         addVisit("ReturnRule", this::returnVisit);
         addVisit("Boolean", this::booleanVisit);
     }
-
 
 
     public String getCode(){
@@ -132,7 +132,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
             Code thisCode = visit(stmt);
             if (thisCode == null) continue;
             code.append(thisCode.prefix);
-            if(stmt.getKind().equals("DotExpression")) continue;
             code.append(thisCode.code);
         }
 
@@ -182,6 +181,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         if(node.getJmmChild(1).getNumChildren() > 0 && node.getJmmChild(1).getJmmChild(0).getKind().equals("Length"))
         {
+            //NOT METHOD CALL! HERE'S A LENGTH CALL
+            //TODO: Separate method call and length call
             Code thisCode = new Code();
             Code thatCode = visit(node.getJmmChild(0));
             thisCode.prefix = thatCode.prefix;
@@ -199,7 +200,6 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         String methodName = node.getJmmChild(1).getJmmChild(0).get("name");
 
-        //invokevirtual(temp1,"foo"
         String finalcode;
         if(isStatic)
             finalcode = "invokestatic("+thatCode.code+", \""+methodName +"\"";
@@ -211,34 +211,37 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
             Code argCode = visit(arg);
 
             thisCode.prefix += argCode.prefix; //append code of argument prior to invocation
-
             finalcode += ", " + argCode.code; //append temp variable to arguments
         }
-
-        //invokevirtual(temp1,"foo" <(, arg)*>).V
-
 
         var ttype = symbolTable.getReturnType(methodName);
         String type = OllirUtils.getOllirType(ttype == null ? "i32" : ttype.getName());
         if(isStatic) type = "V"; //thatCode.code has import name
         finalcode += ")."+ type;
 
-        //here you can decide if the temporary variable is necessary or not
-        //I am considering that I always need a new temp
-
         String temp = ollirTable.newTemp();
 
-        if(node.getJmmParent().getKind().equals("MethodBody"))
+        if(isStatement(node))
             finalcode = "\t" + finalcode + ";\n";
         else
             finalcode = "\t" + temp +"."+  type+ " :=." + type + " " + finalcode + ";\n";
 
-        thisCode.code = temp + "." + type;
-
-        thisCode.prefix += finalcode;
-
+        if(isStatic || isStatement(node)){
+            thisCode.code = finalcode;
+        }
+        else{
+            thisCode.code = temp + "." + type;
+            thisCode.prefix += finalcode;
+        }
         return thisCode;
 
+    }
+
+    private boolean isStatement(JmmNode node) {
+        String kind = node.getJmmParent().getKind();
+        return kind.equals("MethodBody")
+                || kind.equals("IfStatement")
+                || kind.equals("ElseStatement");
     }
 
     private Code idVisit(JmmNode node, Integer integer) {
@@ -323,8 +326,53 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         return thisCode;
     }
 
+    private boolean hasElse(JmmNode node){
+        for(var child : node.getChildren())
+            if (child.getKind().equals("ElseStatement")) return true;
+        return false;
+    }
+    private Code ifVisit(JmmNode node, Integer integer) {
+        Code thisCode = new Code();
+        Code condCode = visit(node.getJmmChild(0));
+        thisCode.prefix = condCode.prefix;
+        String temp = ollirTable.newTemp();
+        thisCode.code = "\t" + temp + ".bool :=.bool " + condCode.code + " !.bool " + condCode.code + ";\n";
+        String elseTag = ollirTable.newElse();
+        String endIf = ollirTable.newEndIf();
+        thisCode.code += "\tif(" + temp + ".bool) goto ";
+
+        if(hasElse(node))
+            thisCode.code +=  elseTag +";\n";
+        else
+            thisCode.code +=  endIf +";\n";
+
+        int i = 1;
+        for(; i < node.getNumChildren(); i++){
+            var child = node.getJmmChild(i);
+            Code thatCode = visit(child);
+            if(child.getKind().equals("ElseStatement")){
+                thisCode.code += "\tgoto " + endIf +";\n";
+                thisCode.code += "\t" + elseTag +":\n";
+            }
+            thisCode.code += thatCode.prefix.isEmpty() ? "" : "\t" + thatCode.prefix;
+            thisCode.code += "\t" + thatCode.code;
+
+        }
+
+        thisCode.code += "\t" + endIf + ":\n";
+        return thisCode;
+    }
+
+    private Code elseVisit(JmmNode node, Integer integer) {
+        Code thisCode = new Code();
+        for(var child : node.getChildren()){
+            Code thatCode = visit(child);
+            thisCode.prefix += thatCode.prefix;
+            thisCode.code += thatCode.code;
+        }
+        return thisCode;
+    }
 
 
 
-
-}
+    }

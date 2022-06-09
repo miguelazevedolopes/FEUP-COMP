@@ -6,6 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/JmmGrammar.jj" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/JmmGrammar.jj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/control_flow/SimpleIfElseStat.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/resources/fixtures/public/cpf/3_ollir/control_flow/SimpleIfElseStat.jmm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGeneratorOld.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirSymbolTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirSymbolTable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirUtilsOld.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/cpf/3_ollir/control_flow/SimpleIfElseStat.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/cpf/3_ollir/control_flow/SimpleIfElseStat.jmm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +85,7 @@
       <recent name="pt.up.fe.comp.ollir" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.Cpf4_Jasmin.section5_Arrays_As_Arg_Simple">
+  <component name="RunManager" selected="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_add">
     <configuration name="Launcher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.Launcher" />
       <module name="comp2022-2b.main" />
@@ -159,10 +166,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.Cpf4_Jasmin.section5_Arrays_As_Arg_Simple" />
-        <item itemvalue="JUnit.Cpf3_Ollir.section2_Arithmetic_Simple_and" />
-        <item itemvalue="JUnit.Cpf4_Jasmin.section5_Arrays_Store_Array" />
         <item itemvalue="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_add" />
+        <item itemvalue="JUnit.Cpf3_Ollir.section2_Arithmetic_Simple_and" />
+        <item itemvalue="JUnit.Cpf4_Jasmin.section5_Arrays_As_Arg_Simple" />
+        <item itemvalue="JUnit.Cpf4_Jasmin.section5_Arrays_Store_Array" />
         <item itemvalue="Application.Launcher" />
       </list>
     </recent_temporary>
@@ -178,7 +185,7 @@
       <workItem from="1654628128001" duration="1727000" />
       <workItem from="1654632508915" duration="278000" />
       <workItem from="1654674991258" duration="4899000" />
-      <workItem from="1654760875001" duration="9656000" />
+      <workItem from="1654760875001" duration="13085000" />
     </task>
     <servers />
   </component>
@@ -201,18 +208,18 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>290</line>
+          <line>295</line>
           <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>154</line>
-          <option name="timeStamp" value="33" />
+          <line>321</line>
+          <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>316</line>
-          <option name="timeStamp" value="35" />
+          <line>228</line>
+          <option name="timeStamp" value="37" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

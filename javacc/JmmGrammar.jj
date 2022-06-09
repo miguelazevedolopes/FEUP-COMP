@@ -83,7 +83,11 @@ WhileStatement:
 ;
 
 IfStatement:
-	<IF> Condition Statement (<ELSE> Statement)*
+	<IF> Condition Statement (ElseStatement)*
+;
+
+ElseStatement:
+    <ELSE> Statement
 ;
 
 AccessToArray:
@@ -95,7 +99,7 @@ Equality:
 ;
 
 Statement #void:
-	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS> #StatementBlock
+	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS>
 	| IfStatement
 	| WhileStatement
 	| (LOOKAHEAD(2) Equality | (Expression <SEMI_COLON>))
