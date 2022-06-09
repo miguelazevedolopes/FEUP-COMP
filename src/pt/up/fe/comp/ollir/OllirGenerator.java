@@ -39,6 +39,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         addVisit("AccessToArray", this::accessArrayVisit);
         addVisit("ReturnRule", this::returnVisit);
         addVisit("Boolean", this::booleanVisit);
+
+        addVisit("Negation", this::negationVisit);
     }
 
 
@@ -406,5 +408,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         return thisCode;
     }
 
+
+    private Code negationVisit(JmmNode node, Integer integer) {
+        Code thisCode = new Code();
+        Code thatCode = visit(node.getJmmChild(0));
+        thisCode.prefix = thatCode.prefix;
+        thisCode.code = thatCode.code + " !.bool " + thatCode.code;
+        return thisCode;
+    }
 
 }
