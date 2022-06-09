@@ -431,7 +431,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         }
 
-        thisCode.code += "\t" + endIf + ":\n";
+        if(!removeIf) thisCode.code += "\t" + endIf + ":\n";
         return thisCode;
     }
 
