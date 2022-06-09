@@ -135,11 +135,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
     }
 
 
-    private Code assignStmtVisit(JmmNode assignStmt, Integer dummy){
-        var varname = assignStmt.getJmmChild(0).get("name");
-        Code thisCode = visit(assignStmt.getJmmChild(1));
+    private Code assignStmtVisit(JmmNode node, Integer dummy){
+        var varname = node.getJmmChild(0).get("name");
+        Code thatCode = visit(node.getJmmChild(0));
+        Code thisCode = visit(node.getJmmChild(1));
+        thisCode.prefix = thatCode.prefix;
         var type = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature,varname));
-        thisCode.code = "\t" + varname + "." + type + ":=." + type + " " + thisCode.code + ";\n";
+        thisCode.code = "\t" + thatCode.code + "." + type + ":=." + type + " " + thisCode.code + ";\n";
         return thisCode;
     }
 
@@ -262,6 +264,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
     }
 
     private Code accessArrayVisit(JmmNode node, Integer integer) {
+        //TODO change thisCode.code
         Code thisCode = new Code();
         Code thatCode = visit(node.getJmmChild(0));
         var parent = node.getJmmParent();

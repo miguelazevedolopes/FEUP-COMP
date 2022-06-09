@@ -79,7 +79,7 @@
       <recent name="pt.up.fe.comp.ollir" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_add">
+  <component name="RunManager" selected="JUnit.Cpf4_Jasmin.section5_Arrays_Store_Array">
     <configuration name="Launcher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.Launcher" />
       <module name="comp2022-2b.main" />
@@ -106,21 +106,6 @@
       <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.cpf.Cpf3_Ollir" />
       <option name="METHOD_NAME" value="section2_Arithmetic_Simple_and" />
       <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Cpf4_Jasmin" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="comp2022-2b.test" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="pt.up.fe.comp.cpf.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="pt.up.fe.comp.cpf" />
-      <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.cpf.Cpf4_Jasmin" />
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -157,13 +142,29 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Cpf4_Jasmin.section5_Arrays_Store_Array" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="comp2022-2b.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pt.up.fe.comp.cpf.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="pt.up.fe.comp.cpf" />
+      <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.cpf.Cpf4_Jasmin" />
+      <option name="METHOD_NAME" value="section5_Arrays_Store_Array" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.Cpf4_Jasmin.section5_Arrays_Store_Array" />
         <item itemvalue="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_add" />
         <item itemvalue="JUnit.Cpf3_Ollir.section2_Arithmetic_Simple_and" />
         <item itemvalue="Application.Launcher" />
         <item itemvalue="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_and" />
-        <item itemvalue="JUnit.Cpf4_Jasmin" />
       </list>
     </recent_temporary>
   </component>
@@ -178,7 +179,7 @@
       <workItem from="1654628128001" duration="1727000" />
       <workItem from="1654632508915" duration="278000" />
       <workItem from="1654674991258" duration="4899000" />
-      <workItem from="1654760875001" duration="5333000" />
+      <workItem from="1654760875001" duration="5712000" />
     </task>
     <servers />
   </component>
