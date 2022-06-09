@@ -185,7 +185,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
             Code thisCode = new Code();
             Code thatCode = visit(node.getJmmChild(0));
             thisCode.prefix = thatCode.prefix;
-            thisCode.code = "arraylength(" + thatCode.code+").i32";
+            String temp = ollirTable.newTemp();
+            thisCode.prefix += "\t" + temp + ".i32 :=.i32 " + "arraylength(" + thatCode.code+").i32" + ";\n";
+            thisCode.code = temp + ".i32";
             return thisCode;
         }
 
@@ -283,16 +285,24 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
     }
 
     private Code accessArrayVisit(JmmNode node, Integer integer) {
+        boolean needsTemp = !node.getJmmParent().getJmmParent().getKind().equals("Equality");
         //TODO change thisCode.code
         Code thisCode = new Code();
         Code thatCode = visit(node.getJmmChild(0));
         var parent = node.getJmmParent();
         thisCode.prefix = thatCode.prefix;
-        String temp = ollirTable.newTemp();
         String type = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature,parent.get("name")));
-        thisCode.prefix += "\t" + temp + "." + type + " :=." + type + " " + parent.get("name") + "[" + thatCode.code +"]."
-                + OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, parent.get("name"))) + ";\n";
-        thisCode.code = temp + "." + type;
+        if(needsTemp){
+            String temp = ollirTable.newTemp();
+            thisCode.prefix += "\t" + temp + "." + type + " :=." + type + " " + parent.get("name") + "[" + thatCode.code +"]."
+                    + OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, parent.get("name"))) + ";\n";
+            thisCode.code = temp + "." + type;
+        }
+        else{
+            thisCode.code = parent.get("name") + "[" + thatCode.code +"]."
+                    + OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, parent.get("name")));
+        }
+
         return thisCode;
     }
 
