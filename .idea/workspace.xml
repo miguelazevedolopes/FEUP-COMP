@@ -6,7 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/Dummy.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/resources/fixtures/public/Dummy.jmm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/FindMaximum.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/resources/fixtures/public/FindMaximum.jmm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/FindMaximum.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/FindMaximum.jmm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,19 +83,17 @@
       <recent name="pt.up.fe.comp.ollir" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.Cpf4_Jasmin.section4_Calls_UsesPop">
-    <configuration name="Cpf3_Ollir.section2_Arithmetic_Simple_and" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="comp2022-2b.test" />
+  <component name="RunManager" selected="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_and">
+    <configuration type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.Launcher" />
+      <module name="comp2022-2b.main" />
+      <option name="PROGRAM_PARAMETERS" value="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="pt.up.fe.comp.cpf.*" />
+          <option name="PATTERN" value="pt.up.fe.comp.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="pt.up.fe.comp.cpf" />
-      <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.cpf.Cpf3_Ollir" />
-      <option name="METHOD_NAME" value="section2_Arithmetic_Simple_and" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -107,6 +109,22 @@
       <option name="PACKAGE_NAME" value="pt.up.fe.comp.cpf" />
       <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.cpf.Cpf4_Jasmin" />
       <option name="METHOD_NAME" value="section2_Arithmetic_Simple_add" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Cpf4_Jasmin.section2_Arithmetic_Simple_and" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="comp2022-2b.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pt.up.fe.comp.cpf.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="pt.up.fe.comp.cpf" />
+      <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.cpf.Cpf4_Jasmin" />
+      <option name="METHOD_NAME" value="section2_Arithmetic_Simple_and" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -144,29 +162,13 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Cpf4_Jasmin.section5_Arrays_As_Arg_Simple" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="comp2022-2b.test" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="pt.up.fe.comp.cpf.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="pt.up.fe.comp.cpf" />
-      <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.cpf.Cpf4_Jasmin" />
-      <option name="METHOD_NAME" value="section5_Arrays_As_Arg_Simple" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_and" />
+        <item itemvalue="Application." />
         <item itemvalue="JUnit.Cpf4_Jasmin.section4_Calls_UsesPop" />
         <item itemvalue="JUnit.Cpf4_Jasmin.section3_ControlFlow_Mixed_Nested" />
         <item itemvalue="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_add" />
-        <item itemvalue="JUnit.Cpf3_Ollir.section2_Arithmetic_Simple_and" />
-        <item itemvalue="JUnit.Cpf4_Jasmin.section5_Arrays_As_Arg_Simple" />
       </list>
     </recent_temporary>
   </component>
@@ -204,23 +206,38 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>302</line>
+          <line>353</line>
           <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>328</line>
+          <line>379</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>190</line>
+          <line>241</line>
           <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>200</line>
+          <line>251</line>
           <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
+          <line>174</line>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
+          <line>205</line>
+          <option name="timeStamp" value="45" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
+          <line>194</line>
+          <option name="timeStamp" value="46" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -6,6 +6,10 @@ import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
 import pt.up.fe.comp.jmm.ast.AJmmVisitor;
 import pt.up.fe.comp.jmm.ast.JmmNode;
 
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Integer.parseInt;
+import static java.lang.String.valueOf;
+
 public class OllirGenerator extends AJmmVisitor<Integer, Code> {
     private final StringBuilder code;
     private final SymbolTable symbolTable;
@@ -153,7 +157,54 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         return thisCode;
     }
 
+    private boolean isFoldable(JmmNode node){
+        //Foldable if both args are integer literals i.e. 1 + 5, 6 < 8, etc
+        //Or if both are boolean values i.e. true && false
+        return  (node.getJmmChild(0).getKind().equals("IntegerLiteral") &&
+                node.getJmmChild(1).getKind().equals("IntegerLiteral")) |
+                (node.getJmmChild(0).getKind().equals("Boolean") &&
+                (node.getJmmChild(1).getKind().equals("Boolean")));
+    }
+
+    private Code foldBinOp(JmmNode node){
+        Code thisCode = new Code();
+        var val0 = node.getJmmChild(0).get("value");
+        var val1 = node.getJmmChild(1).get("value");
+        String res = "";
+        switch (node.getKind()){
+            case "SUM" -> res = new String(String.valueOf(parseInt(val0) + parseInt(val1)));
+            case "SUB" -> res = new String(String.valueOf(parseInt(val0) - parseInt(val1)));
+            case "MUL" -> res = new String(String.valueOf(parseInt(val0) * parseInt(val1)));
+            case "DIV" -> res = new String(String.valueOf(parseInt(val0) / parseInt(val1)));
+            case "ANDD" -> res = new String(String.valueOf(parseBoolean(val0) && parseBoolean(val1)));
+            case "LESSTHAN" -> res = new String(String.valueOf(parseInt(val0) < parseInt(val1)));
+        }
+        switch (node.getKind()){
+            case "ANDD":
+            case "LESSTHAN": res += ".bool"; break;
+            default: res += ".i32";break;
+        }
+        thisCode.code = res;
+        return thisCode;
+    }
+
     private Code binOpVisit(JmmNode node, Integer dummy){
+        boolean needsTemp = !node.getJmmParent().getKind().equals("Equality");
+        if(isFoldable(node)){
+            Code thisCode = new Code();
+            Code thatCode = foldBinOp(node);
+            if(needsTemp){
+                String temp = ollirTable.newTemp();
+                String type = OllirUtils.opReturnType(node.getKind());
+                thisCode.prefix = "\t" + temp + "." + type
+                                + " :=." + type + " " + thatCode.code + ";\n";
+                thisCode.code = temp + "." + type;
+            }
+            else {
+                thisCode.code = thatCode.code;
+            }
+            return  thisCode;
+        }
 
         Code lhs = visit(node.getJmmChild(0));
 
