@@ -59,4 +59,16 @@ public class OllirUtils {
         }
         return code.toString();
     }
+
+    public static String opReturnType(String kind) {
+        switch (kind){
+            case "SUM":
+            case "SUB":
+            case "MUL":
+            case "DIV": return "i32";
+            case "LESSTHAN":
+            case "ANDD": return  "bool";
+            default: return "";
+        }
+    }
 }

@@ -146,7 +146,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         Code thisCode = visit(node.getJmmChild(1));
         thisCode.prefix += thatCode.prefix;
         var type = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature,varname));
-        thisCode.code = "\t" + thatCode.code  +" :=." + type + " " + thisCode.code + ";\n\n";
+        thisCode.code = "\t" + thatCode.code  +" :=." + type + " " + thisCode.code + ";\n";
         return thisCode;
     }
 
@@ -168,12 +168,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         String temp = ollirTable.newTemp();
 
-        String type = OllirUtils.getOllirType(node.getKind());
-        thisCode.prefix += "\t" + temp + "." + type
-                + " :=." + type +" "+ lhs.code + " " + OllirUtils.getCode(op)
+        String opType = OllirUtils.getOllirType(node.getKind());
+        String tempType = OllirUtils.opReturnType(node.getKind());
+        thisCode.prefix += "\t" + temp + "." + tempType
+                + " :=." + opType +" "+ lhs.code + " " + OllirUtils.getCode(op)
                 + " " + rhs.code +";\n";
 
-        thisCode.code = temp +"."+type;
+        thisCode.code = temp +"."+tempType;
 
         return thisCode;
     }
