@@ -393,6 +393,8 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         return false;
     }
     private Code ifVisit(JmmNode node, Integer integer) {
+        if(optimize && !hasElse(node) && node.getNumChildren()==1)
+            return new Code();
         Code thisCode = new Code();
         Code condCode = visit(node.getJmmChild(0));
         thisCode.prefix = condCode.prefix;

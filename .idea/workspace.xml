@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/Launcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/Launcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/JmmOptimizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/JmmOptimizer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,27 +200,27 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>353</line>
+          <line>354</line>
           <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>379</line>
+          <line>380</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>241</line>
+          <line>242</line>
           <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>251</line>
+          <line>252</line>
           <option name="timeStamp" value="43" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>174</line>
+          <line>175</line>
           <option name="timeStamp" value="44" />
         </line-breakpoint>
       </breakpoints>
