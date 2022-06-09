@@ -210,7 +210,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         String temp = ollirTable.newTemp();
 
-        finalcode = "\t" + temp +"."+  type+ " :=." + type + " " + finalcode + ";\n";
+        if(node.getJmmParent().getKind().equals("MethodBody"))
+            finalcode = "\t" + finalcode + ";\n";
+        else
+            finalcode = "\t" + temp +"."+  type+ " :=." + type + " " + finalcode + ";\n";
 
         thisCode.code = temp + "." + type;
 
