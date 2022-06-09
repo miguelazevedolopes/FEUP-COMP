@@ -219,7 +219,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
 
         var ttype = symbolTable.getReturnType(methodName);
-        String type = OllirUtils.getOllirType(ttype == null ? "" : ttype.getName());
+        String type = OllirUtils.getOllirType(ttype == null ? "i32" : ttype.getName());
         if(isStatic) type = "V"; //thatCode.code has import name
         finalcode += ")."+ type;
 
