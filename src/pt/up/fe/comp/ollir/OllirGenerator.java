@@ -39,9 +39,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         addVisit("AccessToArray", this::accessArrayVisit);
         addVisit("ReturnRule", this::returnVisit);
         addVisit("Boolean", this::booleanVisit);
-
+        addVisit("This", this::thisVisit);
         addVisit("Negation", this::negationVisit);
     }
+
 
 
 
@@ -416,6 +417,12 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         String temp = ollirTable.newTemp();
         thisCode.prefix += "\t" + temp +".bool" + " :=.bool " + thatCode.code + " !.bool " + thatCode.code + ";\n";
         thisCode.code = temp + ".bool";
+        return thisCode;
+    }
+
+    private Code thisVisit(JmmNode node, Integer integer) {
+        Code thisCode = new Code();
+        thisCode.code = "this";
         return thisCode;
     }
 
