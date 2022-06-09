@@ -1,0 +1,13 @@
+import ioPlus;
+import io;
+class {
+    public static void main(String[] args) {
+        ioPlus.printHelloWorld()
+        int a;
+        a = ;
+    }
+}
+
+//Falta nome class SyntacticErrros
+//Falta ;
+//Falta = ...;

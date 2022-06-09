@@ -1,0 +1,13 @@
+import io;
+class Arithmetic1 {
+    public static void main(String[] args) {
+        int a;
+        int b;
+        a = 5 + 6;
+        b = a * 2;
+        while(0 < b){
+            io.println(b);
+            b = b-2;
+        }
+    }
+}

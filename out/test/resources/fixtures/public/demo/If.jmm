@@ -1,0 +1,16 @@
+import io;
+class Arithmetic1 {
+    public static void main(String[] args) {
+        int a;
+        int b;
+        a = 5;
+        b = 10;
+        if(a < b){
+            io.println(b);
+        }
+        else{
+            io.println(a);
+        }
+
+    }
+}

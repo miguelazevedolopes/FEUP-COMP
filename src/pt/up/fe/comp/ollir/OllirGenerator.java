@@ -2,26 +2,20 @@ package pt.up.fe.comp.ollir;
 
 import java.util.stream.Collectors;
 
-import jasmin.sym;
-import java_cup.runtime.symbol;
-import pt.up.fe.comp.ast.AstNode;
-import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
-import pt.up.fe.comp.jmm.analysis.table.Method;
 import pt.up.fe.comp.jmm.ast.AJmmVisitor;
 import pt.up.fe.comp.jmm.ast.JmmNode;
-import pt.up.fe.specs.util.exceptions.NotImplementedException; 
 
 public class OllirGenerator extends AJmmVisitor<Integer, Code> {
     private final StringBuilder code;
     private final SymbolTable symbolTable;
-    private final ollirSymbolTable ollirTable;
+    private final OllirSymbolTable ollirTable;
     private String methodSignature;
 
     public OllirGenerator(SymbolTable symbolTable){
         this.code = new StringBuilder();
         this.symbolTable = symbolTable;
-        this.ollirTable = new ollirSymbolTable();
+        this.ollirTable = new OllirSymbolTable();
         addVisit("Start", this::programVisit);
         addVisit("ClassDeclaration", this::classDeclVisit);
         addVisit("MainMethod", this::methodDeclVisit);
@@ -41,8 +35,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         addVisit("NewObject", this::newObjectVisit);
         addVisit("IntegerLiteral", this::integerLiteralVisit);
         addVisit("InitializeArray", this::initializeArrayVisit);
+        addVisit("AccessToArray", this::accessArrayVisit);
+        addVisit("ReturnRule", this::returnVisit);
+        addVisit("Boolean", this::booleanVisit);
     }
-
 
 
 
@@ -142,7 +138,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         code.append(thisCode.prefix);
         code.append("\t" +varname).append("."+type); //Var name
         code.append(" :=.").append(type+ " "); //.i32 .bool etc
-        code.append(thisCode.code).append("."+type);
+        code.append(thisCode.code);
         code.append(";\n");
         return null;
     }
@@ -158,70 +154,69 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         Code thisCode = new Code();
 
         thisCode.prefix = lhs.prefix;
-
         thisCode.prefix += rhs.prefix;
 
         //here you can decide if the temporary variable is necessary or not
         //I am considering that I always need a new temp
 
         String temp = ollirTable.newTemp();
-        ollirTable.put(rhs.code, temp);
+
         String type = OllirUtils.getOllirType(node.getKind());
         thisCode.prefix += "\t" + temp + "." + type
                 + " :=." + type +" "+ lhs.code + " " + OllirUtils.getCode(op)
-                + " " + rhs.code + "." + type +";\n";
+                + " " + rhs.code +";\n";
 
-        thisCode.code = temp;
+        thisCode.code = temp +"."+type;
 
         return thisCode;
-
     }
 
     private Code methodCallVisit(JmmNode node, Integer dummy){
 
-        String prefixCode = "";
+        Code thisCode = new Code();
+        Code thatCode = visit(node.getJmmChild(0));  //first child is the target object
 
-        Code target = visit(node.getJmmChild(0));  //first child is the target object
-
-        prefixCode += target.prefix;
+        thisCode.prefix = thatCode.prefix;
 
         String methodName = node.getJmmChild(1).getJmmChild(0).get("name");
 
         //invokevirtual(temp1,"foo"
 
-        String finalcode = "invokevirtual("+target.code+","+methodName;
+        String finalcode = "invokevirtual("+thatCode.code+", \""+methodName + "\"";
 
-        for(int i = 1; i < node.getJmmChild(0).getNumChildren(); i++){  //for each argument
-            JmmNode arg = node.getJmmChild(0).getJmmChild(i);
+        for(int i = 1; i < node.getJmmChild(1).getNumChildren(); i++){  //for each argument
+            JmmNode arg = node.getJmmChild(1).getJmmChild(i);
             Code argCode = visit(arg);
 
-            prefixCode += argCode.prefix; //append code of argument prior to invocation
+            thisCode.prefix += argCode.prefix; //append code of argument prior to invocation
 
-            finalcode += "," + argCode.code; //append temp variable to arguments
+            finalcode += ", " + argCode.code; //append temp variable to arguments
         }
 
         //invokevirtual(temp1,"foo" <(, arg)*>).V
 
-        finalcode += ")."+ symbolTable.getReturnType(methodName);
+        String type = OllirUtils.getOllirType(symbolTable.getReturnType(methodName).getName());
+        finalcode += ")."+ type;
 
         //here you can decide if the temporary variable is necessary or not
         //I am considering that I always need a new temp
 
         String temp = ollirTable.newTemp();
 
-        finalcode = temp + ":=" + finalcode;
+        finalcode = "\t" + temp +"."+  type+ " :=." + type + " " + finalcode + ";\n";
 
-        Code thisCode = new Code();
+        thisCode.code = temp + "." + type;
 
-        thisCode.code = temp;
-
-        thisCode.prefix = prefixCode;
+        thisCode.prefix += finalcode;
 
         return thisCode;
 
     }
 
     private Code idVisit(JmmNode node, Integer integer) {
+        if(node.getNumChildren()>0 && node.getJmmChild(0).getKind().equals("AccessToArray")){
+            return visit(node.getJmmChild(0));
+        }
         Code thisCode = new Code();
         var varname = node.get("name");
         thisCode.code = varname +"."+ OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, varname));
@@ -248,9 +243,40 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         Code thatCode = visit(node.getJmmChild(0).getJmmChild(0));
         thisCode.prefix = thatCode.prefix;
         //new(array, t1.i32).array.i32;
-        thisCode.code = "new(array, " + thatCode.code + ".i32).array.i32";
+        thisCode.code = "new(array, " + thatCode.code +").array.i32";
         return thisCode;
     }
+
+    private Code accessArrayVisit(JmmNode node, Integer integer) {
+        Code thisCode = new Code();
+        Code thatCode = visit(node.getJmmChild(0));
+        var parent = node.getJmmParent();
+        thisCode.prefix = thatCode.prefix;
+        thisCode.code = parent.get("name") + "[" + thatCode.code +"]."
+                + OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, parent.get("name")));
+        return thisCode;
+    }
+
+    private Code returnVisit(JmmNode node, Integer integer) {
+        Code thisCode = new Code();
+        Code thatCode = visit(node.getJmmChild(0));
+
+        thisCode.prefix = thatCode.prefix;
+        String type = OllirUtils.getOllirType(symbolTable.getReturnType(methodSignature).getName());
+        thisCode.code = "\tret." + type + " " + thatCode.code + ";\n";
+
+        code.append(thisCode.prefix);
+        code.append(thisCode.code);
+        return thisCode;
+    }
+
+    private Code booleanVisit(JmmNode node, Integer integer) {
+        Code thisCode = new Code();
+        thisCode.code = node.get("value") + ".bool";
+        return thisCode;
+    }
+
+
 
 
 
