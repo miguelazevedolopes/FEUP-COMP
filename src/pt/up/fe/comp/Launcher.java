@@ -21,11 +21,18 @@ public class Launcher {
 
         SpecsLogs.info("Executing with args: " + Arrays.toString(args));
 
+        //TODO change args to accept -o
         // read the input code
-        if (args.length != 1) {
-            throw new RuntimeException("Expected a single argument, a path to an existing input file.");
+        if (args.length != 1 && args.length!=2) {
+            throw new RuntimeException("Expected 1 or 2 arguments, a path to an existing input file.");
         }
-        File inputFile = new File(args[0]);
+        int i = 0;
+        boolean optimize = false;
+        if(args.length == 2) {
+            if(args[0].equals("-o")) optimize = true;
+            i = 1;
+        }
+        File inputFile = new File(args[i]);
         if (!inputFile.isFile()) {
             throw new RuntimeException("Expected a path to an existing input file, got '" + args[0] + "'.");
         }
@@ -60,6 +67,7 @@ public class Launcher {
         TestUtils.noErrors(semanticResult.getReports());
 
         JmmOptimizer optimizer = new JmmOptimizer();
+        optimizer.optimize = optimize;
 
         // Analysis stage
         var ollirCode = optimizer.toOllir(semanticResult);

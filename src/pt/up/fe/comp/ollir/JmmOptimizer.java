@@ -9,9 +9,11 @@ import pt.up.fe.specs.util.SpecsIo;
 
 public class JmmOptimizer implements JmmOptimization {
 
+    public boolean optimize = false;
     @Override
     public OllirResult toOllir(JmmSemanticsResult semanticsResult) {
         var OllirGenerator = new OllirGenerator(semanticsResult.getSymbolTable());
+        OllirGenerator.optimize = optimize;
         OllirGenerator.visit(semanticsResult.getRootNode());
         var ollirCode = OllirGenerator.getCode();
         //String ollirCode = SpecsIo.getResource("fixtures/public/ollir/Fac.ollir");

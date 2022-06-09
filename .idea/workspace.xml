@@ -6,11 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/Dummy.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/resources/fixtures/public/Dummy.jmm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/resources/fixtures/public/FindMaximum.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/out/test/resources/fixtures/public/FindMaximum.jmm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/Dummy.jmm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/FindMaximum.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/FindMaximum.jmm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/Launcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/Launcher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/JmmOptimizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/JmmOptimizer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,7 +162,6 @@
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_and" />
-        <item itemvalue="Application." />
         <item itemvalue="JUnit.Cpf4_Jasmin.section4_Calls_UsesPop" />
         <item itemvalue="JUnit.Cpf4_Jasmin.section3_ControlFlow_Mixed_Nested" />
         <item itemvalue="JUnit.Cpf4_Jasmin.section2_Arithmetic_Simple_add" />
@@ -228,16 +224,6 @@
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
           <line>174</line>
           <option name="timeStamp" value="44" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>205</line>
-          <option name="timeStamp" value="45" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>194</line>
-          <option name="timeStamp" value="46" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

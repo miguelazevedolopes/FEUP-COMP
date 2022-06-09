@@ -14,6 +14,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
     private final StringBuilder code;
     private final SymbolTable symbolTable;
     private final OllirSymbolTable ollirTable;
+    public boolean optimize;
     private String methodSignature;
 
     public OllirGenerator(SymbolTable symbolTable){
@@ -190,7 +191,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
     private Code binOpVisit(JmmNode node, Integer dummy){
         boolean needsTemp = !node.getJmmParent().getKind().equals("Equality");
-        if(isFoldable(node)){
+        if(isFoldable(node) && optimize){
             Code thisCode = new Code();
             Code thatCode = foldBinOp(node);
             if(needsTemp){
