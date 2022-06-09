@@ -216,5 +216,20 @@ public class SymbolTableBuilder implements SymbolTable{
         }
         return s.getType().getName();
     }
+
+    @Override
+    public boolean isArray(String methodSignature, String name) {
+        Symbol s = getLocalVariable(methodSignature, name);
+        if(s == null){
+            s = getParam(methodSignature, name);
+        }
+        if(s==null){
+            s = getField(methodSignature, name);
+        }
+        if(s==null){
+            return false;
+        }
+        return s.getType().isArray();
+    }
     
 }

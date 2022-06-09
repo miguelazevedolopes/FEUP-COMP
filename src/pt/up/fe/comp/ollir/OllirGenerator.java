@@ -108,8 +108,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         code.append(" {\n");
 
         for (var child : methodDecl.getChildren()){
-            if(child.getKind().equals("MethodBody") || child.getKind().equals("ReturnRule")){
+            if(child.getKind().equals("MethodBody") ){
                 visit(child);
+            }
+            else if(child.getKind().equals("ReturnRule")){
+                Code thisCode = visit(child);
+                code.append(thisCode.prefix);
+                code.append(thisCode.code);
             }
         }
 
@@ -175,6 +180,15 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
     private Code methodCallVisit(JmmNode node, Integer dummy){
 
+        if(node.getJmmChild(1).getNumChildren() > 0 && node.getJmmChild(1).getJmmChild(0).getKind().equals("Length"))
+        {
+            Code thisCode = new Code();
+            Code thatCode = visit(node.getJmmChild(0));
+            thisCode.prefix = thatCode.prefix;
+            thisCode.code = "arraylength(" + thatCode.code+").i32";
+            return thisCode;
+        }
+
         Code thisCode = new Code();
         Code thatCode = visit(node.getJmmChild(0));  //first child is the target object
 
@@ -234,6 +248,9 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         //TODO  check if import
 
         thisCode.code = varname;
+        if(symbolTable.isArray(methodSignature,varname)){
+            thisCode.code += ".array";
+        }
         if(!symbolTable.getImports().contains(varname))
             thisCode.code += "."+ OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature, varname));
         return thisCode;
