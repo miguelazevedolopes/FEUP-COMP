@@ -273,6 +273,10 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
     private Code integerLiteralVisit(JmmNode node, Integer integer) {
         Code thisCode = new Code();
+        if(node.getJmmParent().getKind().equals("Equality")) {
+            thisCode.code = node.get("value") + ".i32";
+            return thisCode;
+        }
         String temp = ollirTable.newTemp();
         thisCode.prefix = "\t" + temp +".i32 " + " :=.i32 " + node.get("value") + ".i32" + ";\n";
         thisCode.code = temp + ".i32";
