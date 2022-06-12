@@ -64,12 +64,6 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                 visitScope(child, methodName);
                 checkReturnType(child, methodName);
             }
-            else if(nodeKind.equals("Id")){
-                Symbol s=getDeclaredSymbol(child.get("name"), methodName);
-                if(s==null){
-                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"The variable with name '"+child.get("name")+"' is used without being declared"));
-                }
-            }
             else if(nodeKind.equals("Equality")){
                 checkValidEquality(child, methodName);
                 visitScope(child, methodName);
@@ -88,7 +82,32 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                 }
             }
             else if(nodeKind.equals("DotExpression")){
+                visitScope(child, methodName);
                 resolveType(child, methodName);
+            }
+            else if(nodeKind.equals("ANDD")||nodeKind.equals("Negation")){
+                visitScope(child, methodName);
+                Type firstOperandType = resolveType(child.getJmmChild(0),methodName);
+                if(nodeKind.equals("Negation") &&  firstOperandType.getName().equals("boolean")) return;
+                if(nodeKind.equals("Negation") &&  !firstOperandType.getName().equals("boolean")){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Negation can only be applied to a boolean type. Instead it got: "+firstOperandType.getName()));
+
+                };
+
+                Type secondOperandType = resolveType(child.getJmmChild(1),methodName);
+                if(firstOperandType==null || secondOperandType==null){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Invalid operation"));
+                    return;
+                }
+                if(!firstOperandType.equals(secondOperandType) || !firstOperandType.getName().equals("boolean")){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),nodeKind+" needs 2 boolean operands. Instead it got "+firstOperandType.getName()+" and "+secondOperandType.getName()));
+                }
+            }
+            else if(nodeKind.equals("This")){
+                if(methodName.equals("main")){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"This can't be called inside main, a static method."));
+                    return;
+                }
             }
         }
     }
