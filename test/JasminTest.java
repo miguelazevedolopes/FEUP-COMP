@@ -9,6 +9,7 @@ import org.junit.Test;
 import pt.up.fe.comp.TestUtils;
 import pt.up.fe.comp.jasmin.JasminEmitter;
 import pt.up.fe.comp.jmm.jasmin.JasminResult;
+import pt.up.fe.comp.jmm.jasmin.JasminUtils;
 import pt.up.fe.comp.jmm.ollir.OllirResult;
 import pt.up.fe.specs.util.SpecsIo;
 import pt.up.fe.specs.util.SpecsStrings;
@@ -111,6 +112,49 @@ public class JasminTest {
         var output = TestUtils.runJasmin(jasminCode);
         assertEquals("Hello World!\nHello World Again!\n", SpecsStrings.normalizeFileContents(output));
     }
+
+
+    @Test
+    public void JasminSimpleAnd() {
+        
+        String ollirCode =  SpecsIo.getResource("fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_and.ollir");
+
+        OllirResult ollirResult = new OllirResult(ollirCode, null);
+        JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
+
+        
+        TestUtils.noErrors(jasminResult);
+        TestUtils.runJasmin(jasminResult.getJasminCode());
+    }
+
+    @Test
+    public void JasminSimpleLess() {
+        
+        String ollirCode =  SpecsIo.getResource("fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_less.ollir");
+
+        OllirResult ollirResult = new OllirResult(ollirCode, null);
+        JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
+
+        
+        TestUtils.noErrors(jasminResult);
+        TestUtils.runJasmin(jasminResult.getJasminCode());
+    }
+
+    @Test
+    public void JasminSetAndPrintInline() {
+        
+        String ollirCode =  SpecsIo.getResource("fixtures/public/cpf/4_jasmin/calls/PrintOtherClassInline.ollir");
+
+        OllirResult ollirResult = new OllirResult(ollirCode, null);
+        JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
+
+        
+        TestUtils.noErrors(jasminResult);
+        TestUtils.runJasmin(jasminResult.getJasminCode());
+    }
+
+
+    //test/fixtures/public/cpf/4_jasmin/calls/PrintOtherClassInline.ollir
 
     //fixtures/public/cp2/OllirToJasminFields.ollir
 
