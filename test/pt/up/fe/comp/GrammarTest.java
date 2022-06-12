@@ -46,7 +46,9 @@ public class GrammarTest {
         TestUtils.noErrors(result.getReports());
 
         System.out.println("Code: " + code + "\n");
-        System.out.println("AST:\n\n" + result.getRootNode().toTree());
+        if(result.getRootNode()!=null){
+            System.out.println("AST:\n\n" + result.getRootNode().toTree());
+        }
         System.out.println("\n---------\n");
     }
 

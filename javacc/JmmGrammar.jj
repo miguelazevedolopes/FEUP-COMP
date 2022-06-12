@@ -103,7 +103,6 @@ Statement #void:
 	| IfStatement
 	| WhileStatement
 	| (LOOKAHEAD(2) Equality | (Expression <SEMI_COLON>))
-
 ;
 
 
