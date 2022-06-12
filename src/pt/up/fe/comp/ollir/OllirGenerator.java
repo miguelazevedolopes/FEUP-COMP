@@ -41,10 +41,12 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         addVisit("Boolean", this::booleanVisit);
         addVisit("This", this::thisVisit);
         addVisit("Negation", this::negationVisit);
+        addVisit("StatementBlock", this::skipVisit);
     }
 
-
-
+    private Code skipVisit(JmmNode node, Integer integer) {
+        return new Code();
+    }
 
     public String getCode(){
         return code.toString();

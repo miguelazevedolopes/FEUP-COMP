@@ -99,7 +99,7 @@ Equality:
 ;
 
 Statement #void:
-	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS>
+	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS> #StatementBlock
 	| IfStatement
 	| WhileStatement
 	| (LOOKAHEAD(2) Equality | (Expression <SEMI_COLON>))

@@ -6,8 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/compFac.dot" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/javacc/JmmGrammar.jj" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/JmmGrammar.jj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/SimpleParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/SimpleParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/Code.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/Code.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/JmmOptimizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/JmmOptimizer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/pt/up/fe/comp/GrammarTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/pt/up/fe/comp/GrammarTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,12 +32,7 @@
         </task>
         <projects_view>
           <tree_state>
-            <expand>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="comp2022-2b" type="f1a62948:ProjectNode" />
-              </path>
-            </expand>
+            <expand />
             <select />
           </tree_state>
         </projects_view>
@@ -58,18 +58,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/mariasofia/Desktop/FEUP/COMP/comp2022-2b/test/fixtures/public&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/home/mariasofia/Desktop/FEUP/CPD/g09/assign2/src",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/test/fixtures/public" />
@@ -183,6 +183,10 @@
       <workItem from="1654632508915" duration="278000" />
       <workItem from="1654674991258" duration="4899000" />
       <workItem from="1654760875001" duration="17360000" />
+      <workItem from="1655059779654" duration="71000" />
+      <workItem from="1655061981567" duration="138000" />
+      <workItem from="1655062150681" duration="636000" />
+      <workItem from="1655070526250" duration="3736000" />
     </task>
     <servers />
   </component>
@@ -205,23 +209,28 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>302</line>
+          <line>304</line>
           <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>328</line>
+          <line>330</line>
           <option name="timeStamp" value="35" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>190</line>
+          <line>192</line>
           <option name="timeStamp" value="41" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
-          <line>200</line>
+          <line>202</line>
           <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/ollir/OllirGenerator.java</url>
+          <line>105</line>
+          <option name="timeStamp" value="44" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
