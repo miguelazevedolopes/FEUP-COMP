@@ -135,9 +135,10 @@ public class JasminMethod {
     }
 
     private void generateDeclaration(){
-        jasminCode.append("\n\n.method public");
-
-        if (method.isConstructMethod())
+        boolean isConstructMethod = method.isConstructMethod();
+        jasminCode.append("\n\n.method ");
+        jasminCode.append(getAccessModifiers(method.getMethodAccessModifier(), isConstructMethod));
+        if (isConstructMethod)
             jasminCode.append(" <init>");
         else {
             if (method.isStaticMethod()) jasminCode.append(" static");

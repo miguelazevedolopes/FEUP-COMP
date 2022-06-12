@@ -76,7 +76,7 @@ public class JasminUtils {
         else if (val > 5 && val <= 128) aux = "bipush ";
         else if (val > 128 && val <= 32768) aux = "sipush ";
         else aux = "ldc ";
-        res = "\n\t\t" + aux + val;
+        res = "\n\t\t" + aux + val + " ";
         method.incrementStack();
         return res;
     }
@@ -84,6 +84,7 @@ public class JasminUtils {
     
     public static String getJasminType(ElementType type, String className) {
         String res = "";
+        type.name();
         switch (type) {
             case INT32:
                 res = "I";

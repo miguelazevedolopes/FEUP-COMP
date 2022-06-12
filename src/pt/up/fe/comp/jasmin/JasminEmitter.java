@@ -23,12 +23,10 @@ public class JasminEmitter implements JasminBackend{
         try{
             ollir.buildCFGs(); 
             ollir.checkMethodLabels(); 
-            ollir.outputCFGs(); 
-            ollir.buildVarTables(); 
+            ollir.buildVarTables();
 
             OllirToJasmin ollirToJasmin = new OllirToJasmin(ollir);
             String jasminCode = ollirToJasmin.getCode();
-
             System.out.println("\n------------------- JASMIN CODE GENERATE -------------------");
             System.out.println(jasminCode);
             System.out.println("---------------------------------------------------");
@@ -40,6 +38,5 @@ public class JasminEmitter implements JasminBackend{
         }
         
     }
-    
-    
+        
 }

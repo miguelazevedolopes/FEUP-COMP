@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.specs.comp.ollir.*;
 
+import freemarker.core.builtins.sourceBI;
 import pt.up.fe.comp.jasmin.JasminUtils;
 import pt.up.fe.comp.jmm.report.Report;
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
@@ -44,8 +45,8 @@ public class JasminInstruction {
                 generateCode((PutFieldInstruction) instruction);
                 break;
             case BRANCH:
-               // generateCode((CondBranchInstruction) instruction);
-                    break;
+                generateCode((CondBranchInstruction) instruction);
+                break;
             case GOTO:
                 generateCode((GotoInstruction) instruction);
                 break;
@@ -72,14 +73,30 @@ public class JasminInstruction {
     //-----------------BRANCH-------------------
     
     private void generateCode(CondBranchInstruction instruction) {
-        Instruction inst2 = instruction;
-        constOrLoad((instruction).getOperands().get(0), null);
-        constOrLoad((instruction).getOperands().get(1), null);
-
-        OperationType conditionType = ((BinaryOpInstruction) instruction.getCondition()).getOperation().getOpType();
+        Instruction condition = instruction.getCondition();
+        if(condition.getInstType() != InstructionType.BINARYOPER){
+            return;
+        }
+        System.out.println("[IS BINARYOP]");
+        constOrLoad(((BinaryOpInstruction) condition).getLeftOperand(), null);
+        constOrLoad(((BinaryOpInstruction) condition).getRightOperand(), null);
+        OperationType conditionType = ((BinaryOpInstruction) condition).getOperation().getOpType();
+        System.out.println("[COND TYPE]" + conditionType.toString());
         switch (conditionType) {
+            case LTE:
+                addCode("\n\t\tif_icmple ");
+                break;
+            case NEQ:
+                addCode("\n\t\tif_acmpne ");
+                break;
+            case GTH:
+                addCode("\n\t\tif_icmpgt ");
+                break;
+            case GTE:
+                addCode("\n\t\tif_icmpge ");
+                break;
             case EQ:
-                addCode("\n\t\tif_icmpeq ");
+                addCode("\n\t\tif_icmpeq} ");
                 break;
             case LTH:
                 addCode("\n\t\tif_icmplt ");
@@ -93,6 +110,7 @@ public class JasminInstruction {
         method.decrementStack();
         method.decrementStack();
         addCode(instruction.getLabel());
+        
     }
 
 
@@ -526,7 +544,7 @@ public class JasminInstruction {
 
     private boolean iincInstruction(Element leftElement, Element rightElement, Element dest, OperationType operation) {
         String literal;
-        if ((operation.toString().equals("ADD") || operation.toString().equals("SUB"))) {
+        if ((operation == OperationType.ADD  || operation == OperationType.SUB)) {
             if (sameOperand(dest, leftElement) && rightElement.isLiteral())
                 literal = ((LiteralElement) rightElement).getLiteral();
             else if (sameOperand(dest, rightElement) && leftElement.isLiteral())
@@ -535,7 +553,7 @@ public class JasminInstruction {
             Descriptor var = method.getLocalVariableByKey(dest, null);
             if (var.getVarType().getTypeOfElement() != ElementType.ARRAYREF) {
                 addCode("\n\t\tiinc " + var.getVirtualReg());
-                if ((operation.toString().equals("ADD")))
+                if ((operation == OperationType.ADD))
                     addCode(" " + literal);
                 else
                     addCode(" -" + literal);

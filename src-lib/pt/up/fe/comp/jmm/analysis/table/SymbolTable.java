@@ -142,4 +142,5 @@ public interface SymbolTable {
     int getParamPos(String methodSignature, String name);
 
 
+    boolean isArray(String methodSignature, String name);
 }

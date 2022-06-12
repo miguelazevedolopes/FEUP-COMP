@@ -83,7 +83,11 @@ WhileStatement:
 ;
 
 IfStatement:
-	<IF> Condition Statement (<ELSE> Statement)*
+	<IF> Condition Statement (ElseStatement)*
+;
+
+ElseStatement:
+    <ELSE> Statement
 ;
 
 AccessToArray:
@@ -95,7 +99,7 @@ Equality:
 ;
 
 Statement #void:
-	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS> #StatementBlock
+	<OPEN_CURLY_BRACKETS> (Statement)* <CLOSE_CURLY_BRACKETS>
 	| IfStatement
 	| WhileStatement
 	| (LOOKAHEAD(2) Equality | (Expression <SEMI_COLON>))
@@ -172,23 +176,23 @@ And #void:
 ;
 
 LessThan #void:
-	Sum ( LOOKAHEAD(2) <LESS_THAN> Sum #LESSTHAN(2))*
+	AdditiveExpression ( LOOKAHEAD(2) <LESS_THAN> AdditiveExpression #LESSTHAN(2))*
 ;
 
-Sum #void:
-	Sub (LOOKAHEAD(2) <PLUS> Sub #SUM(2))*
+AdditiveExpression #void:
+	MultiplicativeExpression
+	(
+		(< PLUS > MultiplicativeExpression #SUM(2)| < MINUS > MultiplicativeExpression #SUB(2))
+
+	)*
 ;
 
-Sub #void:
-	Mul (LOOKAHEAD(2) <MINUS> Sub #SUB(2))*
-;
+MultiplicativeExpression #void:
+	DotExpression
+	(
+		(< TIMES > DotExpression #MUL(2)| < DIVIDE > DotExpression #DIV(2))
 
-Mul #void:
-	Div (LOOKAHEAD(2) <TIMES> Div #MUL(2))*
-;
-
-Div #void:
-	DotExpression (LOOKAHEAD(2) <DIVIDE> DotExpression #DIV(2))*
+	)*
 ;
 
 DotExpression #void:

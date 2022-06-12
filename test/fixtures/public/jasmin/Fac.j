@@ -12,14 +12,17 @@
 		.limit locals 5
 		.limit stack 2
 
-		iconst_1
+		iload_1
+		iconst_1 
+		if_icmpge else
+		iconst_1 
 		istore_2
 
 		goto endif
 
 	else:
 		iload_1
-		iconst_1
+		iconst_1 
 		isub
 		istore_3
 
@@ -49,8 +52,8 @@
 		astore_2
 
 		aload_2
-		bipush 10
-		invokevirtual Fac/compFac(I)I
+		bipush 10 
+		invokevirtual Fac.compFac(I)I
 		istore_3
 
 		iload_3
