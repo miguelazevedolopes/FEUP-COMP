@@ -54,7 +54,7 @@ public class OllirUtils {
             case "SUB" -> code.append("-.i32");
             case "MUL" -> code.append("*.i32");
             case "DIV" -> code.append("/.i32");
-            case "LESSTHAN" -> code.append("<.i32");
+            case "LESSTHAN" -> code.append("<.bool");
             case "ANDD" -> code.append("&&.bool");
         }
         return code.toString();
