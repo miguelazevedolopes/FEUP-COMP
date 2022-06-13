@@ -181,7 +181,7 @@ public class JasminMethod {
         }
         if (!this.method.isConstructMethod()) {
             this.jasminCode.append("\n\t\t.limit locals ").append(n_locals);
-            this.jasminCode.append("\n\t\t.limit stack ").append(max(stackMax,1)).append("\n");
+            this.jasminCode.append("\n\t\t.limit stack ").append(max(stackMax,2)).append("\n");
         }
         this.jasminCode.append(code);
         jasminCode.append("\n.end method");
