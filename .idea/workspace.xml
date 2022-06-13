@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminMethod.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_and.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_and.jmm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/cpf/4_jasmin/control_flow/IfWhileNested.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/cpf/4_jasmin/control_flow/IfWhileNested.jmm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/jasmin/HelloWorld2.j" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/jasmin/HelloWorld2.j" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/jasmin/myclass1.j" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/jasmin/myclass1.j" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -232,30 +237,20 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java</url>
-          <line>120</line>
-          <option name="timeStamp" value="55" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java</url>
-          <line>144</line>
-          <option name="timeStamp" value="56" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java</url>
-          <line>179</line>
-          <option name="timeStamp" value="57" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java</url>
-          <line>220</line>
+          <line>227</line>
           <option name="timeStamp" value="58" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java</url>
-          <line>213</line>
-          <option name="timeStamp" value="59" />
+          <line>75</line>
+          <option name="timeStamp" value="60" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="org.specs.comp.ollir.SingleOpCondInstruction" memberName="instType" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
 </project>

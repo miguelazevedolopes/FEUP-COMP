@@ -10,7 +10,7 @@
 
 .method public sum([I)I
 		.limit locals 6
-		.limit stack 2
+		.limit stack 5
 
 		iconst_0 
 		istore_2

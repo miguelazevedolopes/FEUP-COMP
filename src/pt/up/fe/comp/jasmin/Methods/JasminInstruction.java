@@ -74,6 +74,13 @@ public class JasminInstruction {
     
     private void generateCode(CondBranchInstruction instruction) {
         Instruction condition = instruction.getCondition();
+        if(condition.getInstType() == InstructionType.NOPER){
+            SingleOpInstruction instr = (SingleOpInstruction) condition;
+            constOrLoad(instr.getSingleOperand(), null);
+            addCode("\n\t\tifeq ");
+            addCode(instruction.getLabel());
+            return;
+        }
         if(condition.getInstType() != InstructionType.BINARYOPER){
             return;
         }
@@ -224,7 +231,9 @@ public class JasminInstruction {
                 addCode("and");
             }
             else if(operation.toString().equals("NOTB")){
-                addCode("\n\t\tpop\n\t\tifne label1\n\t\ticonst_1\n\t\tgoto label2\n\tlabel1:\n\t\ticonst_0\n\tlabel2:");
+                String label1 = "label" + method.labelAux++;
+                String label2 = "label" + method.labelAux++;
+                addCode("\n\t\tpop\n\t\tifeq "+label1 +"\n\t\ticonst_1\n\t\tgoto "+label2+"\n\t"+label1+":\n\t\ticonst_0\n\t"+label2+":");
             }
             else{
                 decideType(leftElement);

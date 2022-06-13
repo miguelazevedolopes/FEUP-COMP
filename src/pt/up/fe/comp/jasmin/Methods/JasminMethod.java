@@ -25,6 +25,7 @@ public class JasminMethod {
     private int currStack;
     private List<Report> reports;
     private int nNranches;
+    public int labelAux;
 
 
     public JasminMethod(Method method, String className, String superName) {
@@ -38,6 +39,7 @@ public class JasminMethod {
         this.currStack = 0;
         this.reports = new ArrayList<>();
         this.nNranches = 0;
+        this.labelAux = 0;
         
         addLocalVariable("this", VarScope.FIELD, new Type(ElementType.CLASS));
     }
@@ -181,7 +183,7 @@ public class JasminMethod {
         }
         if (!this.method.isConstructMethod()) {
             this.jasminCode.append("\n\t\t.limit locals ").append(n_locals);
-            this.jasminCode.append("\n\t\t.limit stack ").append(max(stackMax,2)).append("\n");
+            this.jasminCode.append("\n\t\t.limit stack ").append(max(stackMax,5)).append("\n");
         }
         this.jasminCode.append(code);
         jasminCode.append("\n.end method");
