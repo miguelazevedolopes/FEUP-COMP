@@ -219,15 +219,28 @@ public class JasminInstruction {
         method.decrementStack();
         if (operation.toString().equals("LTH")) getLessThanOperation(instruction);
         else {
-            decideType(leftElement);
-            if (operation.toString().equals("ANDB"))
+            if (operation.toString().equals("ANDB")){
+                decideType(leftElement);
                 addCode("and");
-            else
+            }
+            else if(operation.toString().equals("NOTB")){
+                addCode("\n\t\tpop\n\t\tifne label1\n\t\ticonst_1\n\t\tgoto label2\n\tlabel1:\n\t\ticonst_0\n\tlabel2:");
+            }
+            else{
+                decideType(leftElement);
                 addCode(operation.toString().toLowerCase(Locale.ROOT));
-            method.incrementStack();
+            }
             storeOrIastore(element);
+            method.incrementStack();
         }
     }
+
+//    iload_1
+//    ifne label 10
+//    iconst_1
+//    goto label11
+//    label10: iconst_0
+//    label11: istore_1
 
     private void getLessThanOperation(AssignInstruction instruction) {
         addCode("\n\n\t\tif_icmpge ElseLTH" + method.getNBranches() + JasminUtils.getConstSize(method, "1"));
