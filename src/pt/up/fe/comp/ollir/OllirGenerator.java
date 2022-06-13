@@ -12,6 +12,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
     private final OllirSymbolTable ollirTable;
     private String methodSignature;
 
+    private String assignType = "V";
     public OllirGenerator(SymbolTable symbolTable){
         this.code = new StringBuilder();
         this.symbolTable = symbolTable;
@@ -147,11 +148,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
     private Code assignStmtVisit(JmmNode node, Integer dummy){
         var varname = node.getJmmChild(0).get("name");
+        assignType = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature,varname));
         Code thatCode = visit(node.getJmmChild(0));
         Code thisCode = visit(node.getJmmChild(1));
         thisCode.prefix += thatCode.prefix;
         var type = OllirUtils.getOllirType(symbolTable.getVariableType(methodSignature,varname));
         thisCode.code = "\t" + thatCode.code  +" :=." + type + " " + thisCode.code + ";\n";
+        assignType = "V";
         return thisCode;
     }
 
@@ -223,7 +226,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
         var ttype = symbolTable.getReturnType(methodName);
         String type = OllirUtils.getOllirType(ttype == null ? "i32" : ttype.getName());
-        if(isStatic) type = "V"; //thatCode.code has import name
+        if(isStatic) type = assignType; //thatCode.code has import name
         finalcode += ")."+ type;
 
         String temp = ollirTable.newTemp();
@@ -233,7 +236,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         else
             finalcode = "\t" + temp +"."+  type+ " :=." + type + " " + finalcode + ";\n";
 
-        if(isStatic || isStatement(node)){
+        if(type.equals("V") || isStatement(node)){
             thisCode.code = finalcode;
         }
         else{
@@ -246,9 +249,11 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
 
     private boolean isStatement(JmmNode node) {
         String kind = node.getJmmParent().getKind();
+        if(kind.equals("IfStatement") && node.getJmmParent().getJmmChild(0).equals(node)) return false;
         return kind.equals("MethodBody")
                 || kind.equals("IfStatement")
-                || kind.equals("ElseStatement");
+                || kind.equals("ElseStatement")
+                || kind.equals("WhileStatement");
     }
 
     private Code idVisit(JmmNode node, Integer integer) {
