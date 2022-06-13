@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -204,7 +203,7 @@
       <workItem from="1655070526250" duration="4282000" />
       <workItem from="1655117548888" duration="4295000" />
       <workItem from="1655153800411" duration="2127000" />
-      <workItem from="1655157033970" duration="1674000" />
+      <workItem from="1655157033970" duration="2243000" />
     </task>
     <servers />
   </component>
@@ -259,6 +258,11 @@
           <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java</url>
           <line>220</line>
           <option name="timeStamp" value="58" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java</url>
+          <line>213</line>
+          <option name="timeStamp" value="59" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

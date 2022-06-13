@@ -506,7 +506,15 @@ public class JasminInstruction {
         if (element.isLiteral()) {
             String value = ((LiteralElement) element).getLiteral();
             addCode(JasminUtils.getConstSize(method, value));
-        } else loadOrAload(element, varScope);
+        }else if (element.getType().toString().equals("BOOLEAN")){
+            Operand op = (Operand) element;
+            if(op.getName().toString().equals("true"))
+                addCode("\n\t\ticonst_1");
+            else if(op.getName().toString().equals("false"))
+                addCode("\n\t\ticonst_0");
+            else loadOrAload(element, varScope);
+        }
+        else loadOrAload(element, varScope);
     }
 
     private void storeOrIastore(Element element) {

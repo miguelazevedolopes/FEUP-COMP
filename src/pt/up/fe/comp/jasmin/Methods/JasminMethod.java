@@ -11,6 +11,8 @@ import org.specs.comp.ollir.*;
 
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
 
+import static java.lang.Math.max;
+
 
 public class JasminMethod {
     private final Method method;
@@ -66,7 +68,7 @@ public class JasminMethod {
     public void updateMaxStack(int popSize, int pushSize) {
         currStack -= popSize;
         currStack += pushSize;
-        stackMax = Math.max(stackMax, currStack);
+        stackMax = max(stackMax, currStack);
     }
 
 
@@ -179,7 +181,7 @@ public class JasminMethod {
         }
         if (!this.method.isConstructMethod()) {
             this.jasminCode.append("\n\t\t.limit locals ").append(n_locals);
-            this.jasminCode.append("\n\t\t.limit stack ").append(stackMax).append("\n");
+            this.jasminCode.append("\n\t\t.limit stack ").append(max(stackMax,1)).append("\n");
         }
         this.jasminCode.append(code);
         jasminCode.append("\n.end method");
