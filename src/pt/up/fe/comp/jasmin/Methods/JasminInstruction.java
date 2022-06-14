@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.print.event.PrintEvent;
+
 import org.specs.comp.ollir.*;
 
 import freemarker.core.builtins.sourceBI;
@@ -27,6 +29,7 @@ public class JasminInstruction {
     }
 
     private void addCode(String code){
+        System.out.print(code);
         jasminCode.append(code);
     }
 
@@ -39,6 +42,7 @@ public class JasminInstruction {
     }
 
     public String getCode(){
+        System.out.println("[" + instruction.getInstType().toString() + "]");
 
         switch (instruction.getInstType()) {
             case PUTFIELD:
@@ -106,6 +110,7 @@ public class JasminInstruction {
                 addCode("\n\t\tif_icmpeq} ");
                 break;
             case LTH:
+                System.out.println("[LTH]");
                 addCode("\n\t\tif_icmplt ");
                 break;
             case ANDB:
@@ -191,7 +196,7 @@ public class JasminInstruction {
         Element rightElement = ((BinaryOpInstruction) rhs).getRightOperand();
 
         if (iincInstruction(leftElement, rightElement, instruction.getDest(), operation)) return;
-
+        
         Element element = instruction.getDest();
         if (element.getType().getTypeOfElement() == ElementType.INT32 && !element.isLiteral()) {
             if (method.getLocalVariableByKey(element, null).getVarType().getTypeOfElement() == ElementType.ARRAYREF) {
@@ -201,7 +206,7 @@ public class JasminInstruction {
 
                 constOrLoad(leftElement, VarScope.LOCAL);
                 constOrLoad(rightElement, VarScope.LOCAL);
-
+                
                 method.decrementStack();
                 method.decrementStack();
                 decideType(leftElement);
@@ -237,7 +242,9 @@ public class JasminInstruction {
             }
             else{
                 decideType(leftElement);
+                //TODO IINC
                 addCode(operation.toString().toLowerCase(Locale.ROOT));
+                
             }
             storeOrIastore(element);
             method.incrementStack();
@@ -252,7 +259,9 @@ public class JasminInstruction {
 //    label11: istore_1
 
     private void getLessThanOperation(AssignInstruction instruction) {
-        addCode("\n\n\t\tif_icmpge ElseLTH" + method.getNBranches() + JasminUtils.getConstSize(method, "1"));
+        System.out.println("[LTH2");
+        addCode("\n\t\tisub");
+        addCode("\n\n\t\tifge ElseLTH" + method.getNBranches() + JasminUtils.getConstSize(method, "1"));
         storeOrIastore(instruction.getDest());
         addCode("\n\t\tgoto AfterLTH" + method.getNBranches());
 
@@ -575,14 +584,21 @@ public class JasminInstruction {
     private boolean iincInstruction(Element leftElement, Element rightElement, Element dest, OperationType operation) {
         String literal;
         if ((operation == OperationType.ADD  || operation == OperationType.SUB)) {
-            if (sameOperand(dest, leftElement) && rightElement.isLiteral())
+            System.out.println("[ADD]");
+            if (sameOperand(dest, leftElement) && rightElement.isLiteral()){
+                System.out.println("[ADD1]");
                 literal = ((LiteralElement) rightElement).getLiteral();
-            else if (sameOperand(dest, rightElement) && leftElement.isLiteral())
+            }
+            else if (sameOperand(dest, rightElement) && leftElement.isLiteral()){
+                System.out.println("[ADD2]");
+
                 literal = ((LiteralElement) leftElement).getLiteral();
-            else return false;
+            }
+            else{ System.out.println("[return]"); return false;}
             Descriptor var = method.getLocalVariableByKey(dest, null);
             if (var.getVarType().getTypeOfElement() != ElementType.ARRAYREF) {
-                addCode("\n\t\tiinc " + var.getVirtualReg());
+                System.out.println("[ADD3]");
+                addCode("\n\t\tiadd " + var.getVirtualReg());
                 if ((operation == OperationType.ADD))
                     addCode(" " + literal);
                 else
