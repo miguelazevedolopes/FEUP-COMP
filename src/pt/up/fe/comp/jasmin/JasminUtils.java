@@ -59,7 +59,7 @@ public class JasminUtils {
             case MUL:
                 return "imul \n";
             case ADD:
-                return "iinc \n";
+                return "iadd \n";
             case SUB:
                 return "isub \n";
             case DIV:

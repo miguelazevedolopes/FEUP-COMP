@@ -36,7 +36,7 @@
 		iadd
 		istore_2
 
-		iinc 3 1
+		iadd 3 1
 		goto Loop
 
 	End:
