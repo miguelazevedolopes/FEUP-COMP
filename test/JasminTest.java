@@ -154,6 +154,24 @@ public class JasminTest {
     }
 
 
+    // @Test
+    // public void JasminSetAndPrintInline2() {
+        
+    //     String jasminCode =  SpecsIo.getResource("fixtures/public/jasmin/setprintinline.j");
+
+    //     TestUtils.runJasmin(jasminCode);
+    // }
+
+    @Test
+    public void JasminSetAndPrintInline2() {
+        
+        String jasminCode =  SpecsIo.getResource("fixtures/public/jasmin/simple_and.j");
+
+        TestUtils.runJasmin(jasminCode);
+    }
+
+
+
     //test/fixtures/public/cpf/4_jasmin/calls/PrintOtherClassInline.ollir
 
     //fixtures/public/cp2/OllirToJasminFields.ollir
