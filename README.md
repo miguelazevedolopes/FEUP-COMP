@@ -1,5 +1,50 @@
 # Compilers Project
 
+## GROUP: comp2022-2b
+
+
+
+(Names, numbers, self assessment, and contribution of the members of the group to the project according to:)
+
+
+NAME1: Ana Rita Antunes Ramada, NR1: 201904565, GRADE1: 17, CONTRIBUTION1: 25% <br>
+NAME2: Margarida Nazaré Pereira dos Santos, NR1: 201908209, GRADE2: 17, CONTRIBUTION1: 25% <br>
+NAME2: Maria Sofia Diogo Figueiredo, NR1: 201904675, GRADE3: 17, CONTRIBUTION1: 25% <br>
+NAME3: Miguel Azevedo Lopes, NR1: 201704590, GRADE4: 17, CONTRIBUTION1: 25% <br>
+
+
+GLOBAL Grade of the project: 17
+
+
+**SUMMARY**: The tool compiles Jmm code into JVM code. It parses the code, analyses it semantically, generates intermediate ollir code 
+and finally converts it into jasmin.
+
+
+
+
+
+**SEMANTIC ANALYSIS**: (Refer the semantic rules implemented by your tool.)
+
+
+
+
+**CODE GENERATION**: (describe how the code generation of your tool works and identify the possible problems your tool 
+has regarding code generation.)
+
+
+
+
+**PROS**:
+- The compiler is robust
+
+
+
+
+**CONS**: 
+- Not many optimizations
+
+
+
 For this project, you need to install [Java](https://jdk.java.net/), [Gradle](https://gradle.org/install/), and [Git](https://git-scm.com/downloads/) (and optionally, a [Git GUI client](https://git-scm.com/downloads/guis), such as TortoiseGit or GitHub Desktop). Please check the [compatibility matrix](https://docs.gradle.org/current/userguide/compatibility.html) for Java and Gradle versions.
 
 ## Project setup

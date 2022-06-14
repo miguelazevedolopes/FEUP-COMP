@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ac2c18f0-d844-42d1-909a-7bc5f0e67bd4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminInstruction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminMethod.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/jasmin/Methods/JasminMethod.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_and.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/cpf/4_jasmin/arithmetic/Arithmetic_and.jmm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/cpf/4_jasmin/control_flow/IfWhileNested.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/cpf/4_jasmin/control_flow/IfWhileNested.jmm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/jasmin/HelloWorld2.j" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/jasmin/HelloWorld2.j" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/jasmin/myclass1.j" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/jasmin/myclass1.j" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,18 +52,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/mariasofia/Desktop/FEUP/CPD/g09/assign2/src&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/home/mariasofia/Desktop/FEUP/COMP/comp2022-2b",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/test/fixtures/public" />
@@ -210,6 +205,8 @@
       <workItem from="1655117548888" duration="4295000" />
       <workItem from="1655153800411" duration="2127000" />
       <workItem from="1655157033970" duration="2243000" />
+      <workItem from="1655198165490" duration="64000" />
+      <workItem from="1655241170430" duration="317000" />
     </task>
     <servers />
   </component>
