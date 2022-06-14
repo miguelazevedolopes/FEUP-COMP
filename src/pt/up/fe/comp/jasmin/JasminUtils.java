@@ -59,7 +59,7 @@ public class JasminUtils {
             case MUL:
                 return "imul \n";
             case ADD:
-                return "iadd \n";
+                return "iinc \n";
             case SUB:
                 return "isub \n";
             case DIV:
@@ -73,8 +73,8 @@ public class JasminUtils {
         int val = Integer.parseInt(value);
         String res, aux;
         if (val >= 0 && val <= 5) aux = "iconst_";
-        else if (val > 5 && val <= 128) aux = "bipush ";
-        else if (val > 128 && val <= 32768) aux = "sipush ";
+        else if (val > 5 && val < 128) aux = "bipush ";
+        else if (val >= 128 && val < 32768) aux = "sipush ";
         else aux = "ldc ";
         res = "\n\t\t" + aux + val + " ";
         method.incrementStack();

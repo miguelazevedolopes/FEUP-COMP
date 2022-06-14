@@ -106,6 +106,7 @@ public class JasminInstruction {
                 addCode("\n\t\tif_icmpeq} ");
                 break;
             case LTH:
+                System.out.println("[LTH]");
                 addCode("\n\t\tif_icmplt ");
                 break;
             case ANDB:
@@ -252,7 +253,9 @@ public class JasminInstruction {
 //    label11: istore_1
 
     private void getLessThanOperation(AssignInstruction instruction) {
-        addCode("\n\n\t\tif_icmpge ElseLTH" + method.getNBranches() + JasminUtils.getConstSize(method, "1"));
+        System.out.println("[LTH2");
+        addCode("\n\t\tisub");
+        addCode("\n\n\t\tifge ElseLTH" + method.getNBranches() + JasminUtils.getConstSize(method, "1"));
         storeOrIastore(instruction.getDest());
         addCode("\n\t\tgoto AfterLTH" + method.getNBranches());
 
