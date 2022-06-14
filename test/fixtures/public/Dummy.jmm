@@ -3,15 +3,15 @@ class Dummy {
     int y;
     int x;
     public static void main(String[] args) {
-        boolean a;
-        a = true;
-        a = !a;
-        if(a){
-	        ioPlus.printResult(1);
+        int a;
+        int[] b;
+        a = 5 + 6;
+        if(false){
+            a = 0;
         }
-	    else{
-	        ioPlus.printResult(0);
-	    }
+        else{
+            a = 1;
+        }
     }
 
 }
