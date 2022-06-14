@@ -10,12 +10,12 @@
 
 .method public sum([I)I
 		.limit locals 6
-		.limit stack 2
+		.limit stack 5
 
-		iconst_0
+		iconst_0 
 		istore_2
 
-		iconst_0
+		iconst_0 
 		istore_3
 
 	Loop:
@@ -23,6 +23,9 @@
 		arraylength
 		istore 4
 
+		iload_3
+		iload 4
+		if_icmpge End
 		aload_1
 		iload_3
 		iaload
@@ -33,7 +36,7 @@
 		iadd
 		istore_2
 
-		iinc 3 1
+		iadd 3 1
 		goto Loop
 
 	End:

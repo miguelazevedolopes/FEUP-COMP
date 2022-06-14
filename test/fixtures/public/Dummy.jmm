@@ -1,0 +1,17 @@
+import ioPlus;
+class Dummy {
+    int y;
+    int x;
+    public static void main(String[] args) {
+        boolean a;
+        a = true;
+        a = !a;
+        if(a){
+	        ioPlus.printResult(1);
+        }
+	    else{
+	        ioPlus.printResult(0);
+	    }
+    }
+
+}

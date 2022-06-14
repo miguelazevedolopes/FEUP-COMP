@@ -11,6 +11,8 @@ import org.specs.comp.ollir.*;
 
 import pt.up.fe.specs.util.exceptions.NotImplementedException;
 
+import static java.lang.Math.max;
+
 
 public class JasminMethod {
     private final Method method;
@@ -23,6 +25,7 @@ public class JasminMethod {
     private int currStack;
     private List<Report> reports;
     private int nNranches;
+    public int labelAux;
 
 
     public JasminMethod(Method method, String className, String superName) {
@@ -36,6 +39,7 @@ public class JasminMethod {
         this.currStack = 0;
         this.reports = new ArrayList<>();
         this.nNranches = 0;
+        this.labelAux = 0;
         
         addLocalVariable("this", VarScope.FIELD, new Type(ElementType.CLASS));
     }
@@ -66,7 +70,7 @@ public class JasminMethod {
     public void updateMaxStack(int popSize, int pushSize) {
         currStack -= popSize;
         currStack += pushSize;
-        stackMax = Math.max(stackMax, currStack);
+        stackMax = max(stackMax, currStack);
     }
 
 
@@ -135,9 +139,10 @@ public class JasminMethod {
     }
 
     private void generateDeclaration(){
-        jasminCode.append("\n\n.method public");
-
-        if (method.isConstructMethod())
+        boolean isConstructMethod = method.isConstructMethod();
+        jasminCode.append("\n\n.method ");
+        jasminCode.append(getAccessModifiers(method.getMethodAccessModifier(), isConstructMethod));
+        if (isConstructMethod)
             jasminCode.append(" <init>");
         else {
             if (method.isStaticMethod()) jasminCode.append(" static");
@@ -178,7 +183,7 @@ public class JasminMethod {
         }
         if (!this.method.isConstructMethod()) {
             this.jasminCode.append("\n\t\t.limit locals ").append(n_locals);
-            this.jasminCode.append("\n\t\t.limit stack ").append(stackMax).append("\n");
+            this.jasminCode.append("\n\t\t.limit stack ").append(max(stackMax,5)).append("\n");
         }
         this.jasminCode.append(code);
         jasminCode.append("\n.end method");

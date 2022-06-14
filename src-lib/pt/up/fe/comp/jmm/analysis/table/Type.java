@@ -5,7 +5,17 @@ public class Type {
     private final boolean isArray;
 
     public Type(String name, boolean isArray) {
-        this.name = name;
+        switch(name){
+            case "TypeInt":
+                this.name="int";
+                break;
+            case "TypeBoolean":
+                this.name="boolean";
+                break;
+            default:
+                this.name = name;
+                break;
+        }
         this.isArray = isArray;
     }
 

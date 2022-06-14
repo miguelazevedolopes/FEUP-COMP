@@ -51,8 +51,15 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
                 if(child.getNumChildren()>0 && child.getJmmChild(0).getNumChildren() > 0){
                     isArray = true;
                 }
-                Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));
-                fields.add(symbol);
+                if(child.getJmmChild(0).getKind().equals("Id")){
+                    Symbol symbol = new Symbol(new Type(child.getJmmChild(0).get("name"),isArray), child.get("name"));
+                    fields.add(symbol);
+                }
+                else{
+                    Symbol symbol = new Symbol(new Type(child.getJmmChild(0).getKind(),isArray), child.get("name"));
+                    fields.add(symbol);
+                }
+               
 
                 if(++i >= children.size())
                     break;
@@ -71,10 +78,12 @@ public class SymbolTableVisitor extends PreorderJmmVisitor<Boolean, Boolean>{
     public Boolean visitImport(JmmNode node, Boolean dummy){
         List<JmmNode> children = node.getChildren();
 
+        StringBuilder importName = new StringBuilder();
         for (JmmNode child : children){
-            symbolTable.addImport(child.get("name"));
+            importName.append(child.get("name")).append(".");
         }
 
+        symbolTable.addImport(importName.toString().substring(0,importName.length()-1));
         return true;
 
     }

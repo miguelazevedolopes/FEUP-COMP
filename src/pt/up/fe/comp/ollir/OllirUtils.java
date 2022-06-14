@@ -28,23 +28,47 @@ public class OllirUtils {
     public static String getOllirType(String jmmType){
 
         switch(jmmType){
-            case "TypeInt": return "i32";
+            case "int":
+            case "TypeInt":
             case "IntegerLiteral": return "i32";
             case "TypeString": return "String";
+            case "boolean":
             case "TypeBoolean": return "bool";
             case "void": return "V";
             case "TypeIntArray": return "array.i32";
-            case "ANDD": return "&&";
-            case "SUM": return "+";
-            case "SUB": return "-";
-            case "LESSTHAN": return "<";
-            case "MUL": return "*";
-            case "DIV": return "/";
+            case "ANDD": return "bool";
+            case "SUM":
+            case "SUB":
+            case "LESSTHAN":
+            case "MUL":
+            case "DIV": return "i32";
             default: return jmmType;
         }
     }
 
 
+    public static String getCode(String op) {
+        StringBuilder code = new StringBuilder();
+        switch (op){
+            case "SUM" -> code.append("+.i32");
+            case "SUB" -> code.append("-.i32");
+            case "MUL" -> code.append("*.i32");
+            case "DIV" -> code.append("/.i32");
+            case "LESSTHAN" -> code.append("<.bool");
+            case "ANDD" -> code.append("&&.bool");
+        }
+        return code.toString();
+    }
 
-
+    public static String opReturnType(String kind) {
+        switch (kind){
+            case "SUM":
+            case "SUB":
+            case "MUL":
+            case "DIV": return "i32";
+            case "LESSTHAN":
+            case "ANDD": return  "bool";
+            default: return "";
+        }
+    }
 }

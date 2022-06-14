@@ -3,6 +3,8 @@ package pt.up.fe.comp.analysers;
 import java.util.ArrayList;
 import java.util.List;
 
+import freemarker.core.builtins.sourceBI;
+import jasmin.sym;
 import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
 import pt.up.fe.comp.jmm.analysis.table.Type;
@@ -43,6 +45,7 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
         Type returnType=symbolTable.getReturnType(methodName);
         Type returnedValueType=resolveType(node.getJmmChild(0), methodName);
         if(returnedValueType==null) return;
+        if(returnedValueType.getName().equals("UndefinedImport")) return;
         if(!returnType.equals(returnedValueType))
             reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(node.get("line")),Integer.parseInt(node.get("col")), "Return value doesn't match the declared method type. Expected "+returnType+" but got " + returnedValueType));   
     }
@@ -52,7 +55,7 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
             String nodeKind=child.getKind();
             if(nodeKind.equals("WhileStatement")||nodeKind.equals("IfStatement")){
                 Type statementExpressionType = resolveType(child.getJmmChild(0),methodName);
-                if(!statementExpressionType.equals(new Type("TypeBoolean", false))){
+                if(!statementExpressionType.equals(new Type("boolean", false))){
                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Expressions in conditions must return a boolean, instead got "+ statementExpressionType));
                 }
                 visitScope(child, methodName);
@@ -60,12 +63,6 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
             else if(nodeKind.equals("ReturnRule")){
                 visitScope(child, methodName);
                 checkReturnType(child, methodName);
-            }
-            else if(nodeKind.equals("Id")){
-                Symbol s=getDeclaredSymbol(child.get("name"), methodName);
-                if(s==null){
-                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"The variable with name '"+child.get("name")+"' is used without being declared"));
-                }
             }
             else if(nodeKind.equals("Equality")){
                 checkValidEquality(child, methodName);
@@ -75,13 +72,42 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                 visitScope(child, methodName);
                 Type firstOperandType = resolveType(child.getJmmChild(0),methodName);
                 Type secondOperandType = resolveType(child.getJmmChild(1),methodName);
-                if(!firstOperandType.equals(secondOperandType) || !firstOperandType.equals(new Type("TypeInt", false))){
+                if(firstOperandType==null || secondOperandType==null){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Invalid operation"));
+                    return;
+                }
+                if(!firstOperandType.equals(secondOperandType) || !firstOperandType.equals(new Type("int", false))){
                     if(!(firstOperandType.equals(new Type("UndefinedImport",false))||secondOperandType.equals(new Type("UndefinedImport",false))))
                         reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Invalid operation: "+child.getJmmChild(0).getKind()+" + "+child.getJmmChild(1).getKind()));
                 }
             }
             else if(nodeKind.equals("DotExpression")){
+                visitScope(child, methodName);
                 resolveType(child, methodName);
+            }
+            else if(nodeKind.equals("ANDD")||nodeKind.equals("Negation")){
+                visitScope(child, methodName);
+                Type firstOperandType = resolveType(child.getJmmChild(0),methodName);
+                if(nodeKind.equals("Negation") &&  firstOperandType.getName().equals("boolean")) return;
+                if(nodeKind.equals("Negation") &&  !firstOperandType.getName().equals("boolean")){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Negation can only be applied to a boolean type. Instead it got: "+firstOperandType.getName()));
+
+                };
+
+                Type secondOperandType = resolveType(child.getJmmChild(1),methodName);
+                if(firstOperandType==null || secondOperandType==null){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Invalid operation"));
+                    return;
+                }
+                if(!firstOperandType.equals(secondOperandType) || !firstOperandType.getName().equals("boolean")){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),nodeKind+" needs 2 boolean operands. Instead it got "+firstOperandType.getName()+" and "+secondOperandType.getName()));
+                }
+            }
+            else if(nodeKind.equals("This")){
+                if(methodName.equals("main")){
+                    reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"This can't be called inside main, a static method."));
+                    return;
+                }
             }
         }
     }
@@ -89,13 +115,13 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
     private Type resolveType(JmmNode child, String methodName) {
         String nodeKind=child.getKind();
         if(nodeKind.equals("Boolean")||nodeKind.equals("ANDD")||nodeKind.equals("Negation")||nodeKind.equals("LESSTHAN")){
-            return new Type("TypeBoolean", false);
+            return new Type("boolean", false);
         }
         else if(nodeKind.equals("String")){
             return new Type("TypeString", false);
         }
         else if(nodeKind.equals("IntegerLiteral")){
-            return new Type("TypeInt", false);
+            return new Type("int", false);
         }
         else if(nodeKind.equals("Id")){
             Symbol s=getDeclaredSymbol(child.get("name"), methodName);
@@ -110,7 +136,8 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                 else{
                     JmmNode indexAccessNode=child.getJmmChild(0).getJmmChild(0);
                     Type indexAccessType=resolveType(indexAccessNode, methodName);
-                    if(!(indexAccessType.getName().equals("TypeInt")) ){
+                    if(!(indexAccessType.getName().equals("int")) ){
+        
                         reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Variable '"+s.getName()+"': "+"array access must be done using a integer type expression."));
                         return null;
                     }
@@ -126,7 +153,7 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
             }
         }
         else if(nodeKind.equals("SUM")||nodeKind.equals("MUL")||nodeKind.equals("SUB")||nodeKind.equals("DIV")){
-            return new Type("TypeInt", false);
+            return new Type("int", false);
         }
         else if(nodeKind.equals("DotExpression")){
             if(child.getJmmChild(0).getKind().equals("This")){
@@ -135,6 +162,7 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                     List<JmmNode> args=child.getJmmChild(1).getChildren();
                     List<Symbol> params = symbolTable.getParameters(methodCallName);
                     if((args.size()-1)!=params.size()){
+                        System.out.println("erro1");
                         reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. Too many/little arguments."));
                         return null;
                     }
@@ -150,7 +178,16 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                             
                             Type paramType=resolveType(args.get(i), methodName);
                             if(!params.get(i-1).getType().equals(paramType)){
-                                if(!(params.get(i-1).getType().getName().equals("TypeInt") && args.get(i).getKind().equals("IntegerLiteral"))){
+                                if(paramType==null){
+                                    if(args.get(i).getKind().equals("This")){
+                                        if(!(params.get(i-1).getType().getName().equals(symbolTable.getClassName()))){
+                                            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. The param types don't match the ones being passed as argument."));
+                                        }
+                                    }
+                                }
+                                else if(!(params.get(i-1).getType().getName().equals("int") && args.get(i).getKind().equals("IntegerLiteral"))){
+                                    System.out.println("erro2");
+
                                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. The param types don't match the ones being passed as argument."));
                                     return null;
                                 }
@@ -181,6 +218,8 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                                 List<JmmNode> args=child.getJmmChild(1).getChildren();
                                 List<Symbol> params = symbolTable.getParameters(methodCallName);
                                 if((args.size()-1)!=params.size()){
+                                    System.out.println("erro3");
+
                                     reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. Too many/little arguments."));
                                     return null;
                                 }
@@ -196,7 +235,9 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                                         
                                         Type paramType=resolveType(args.get(i), methodName);
                                         if(!params.get(i-1).getType().equals(paramType)){
-                                            if(!(params.get(i-1).getType().getName().equals("TypeInt") && args.get(i).getKind().equals("IntegerLiteral"))){
+                                            if(!(params.get(i-1).getType().getName().equals("int") && args.get(i).getKind().equals("IntegerLiteral"))){
+                                                System.out.println("erro4");
+
                                                 reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"'"+methodCallName+ "' : the declared method's signature doesn't match the one being called. The param types don't match the ones being passed as argument."));
                                                 return null;
                                             }
@@ -216,10 +257,13 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
                         }
                         else if(firstIdentifier.getType().isArray()){
                             if(child.getJmmChild(1).getJmmChild(0).getKind().equals("Length")){
-                                return new Type("TypeInt",false);
+                                return new Type("int",false);
                             }
                         }
-                            
+                        else if(symbolTable.getImports().contains(firstIdentifier.getType().getName())){
+                            return new Type("UndefinedImport", false);
+
+                        }
                         
                     }
                 }
@@ -234,7 +278,7 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
             return null;
         }
         else if(nodeKind.equals("InitializeArray")){
-            return new Type("TypeInt", true);
+            return new Type("int", true);
         }
         else if(nodeKind.equals("NewObject")){
             if(!symbolTable.getClassName().equals(child.getJmmChild(0).get("name"))){
@@ -256,6 +300,9 @@ public class SemanticAnalyser extends PreorderJmmVisitor<Boolean, Boolean>{
         JmmNode secondChild=child.getJmmChild(1);
 
         Type firstChildType = resolveType(firstChild, methodName);
+        if(symbolTable.getLocalVariable(methodName, firstChild.get("name"))==null && symbolTable.isField(firstChild.get("name")) && methodName.equals("main")){
+            reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Can't access non static fields."));
+        }
         Type secondChildType=resolveType(secondChild, methodName);
         if (firstChildType==null || secondChildType ==null){
             reports.add(new Report(ReportType.ERROR,Stage.SEMANTIC,Integer.parseInt(child.get("line")),Integer.parseInt(child.get("col")),"Invalid equality expression."));
