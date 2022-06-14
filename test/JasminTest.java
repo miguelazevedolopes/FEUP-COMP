@@ -63,22 +63,7 @@ public class JasminTest {
     }
 
 
-    @Test
-    public void testRunClass1() throws IOException{
-        Path path = Paths.get("test/fixtures/public/jasmin/myclass1.j");
-        
-        String ollirCode =  SpecsIo.getResource("fixtures/public/ollir/myclass1.ollir");
 
-        OllirResult ollirResult = new OllirResult(ollirCode, null);
-        JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
-
-        Files.writeString(path, jasminResult.getJasminCode());
-        
-        TestUtils.noErrors(jasminResult);
-        jasminResult.run();
-
-        //return new JasminResult(ollirResult, jasminCode, Collections.emptyList());
-    }
     @Test
     public void OllirToJasminBasic() {
         
@@ -140,19 +125,18 @@ public class JasminTest {
         TestUtils.runJasmin(jasminResult.getJasminCode());
     }
 
-    @Test
-    public void JasminSetAndPrintInline() {
+    // @Test
+    // public void JasminSetAndPrintInline() {
         
-        String ollirCode =  SpecsIo.getResource("fixtures/public/cpf/4_jasmin/calls/PrintOtherClassInline.ollir");
+    //     String ollirCode =  SpecsIo.getResource("fixtures/public/cpf/4_jasmin/calls/PrintOtherClassInline.ollir");
 
-        OllirResult ollirResult = new OllirResult(ollirCode, null);
-        JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
+    //     OllirResult ollirResult = new OllirResult(ollirCode, null);
+    //     JasminResult jasminResult = new JasminEmitter().toJasmin(ollirResult);
 
         
-        TestUtils.noErrors(jasminResult);
-        TestUtils.runJasmin(jasminResult.getJasminCode());
-    }
-
+    //     TestUtils.noErrors(jasminResult);
+    //     TestUtils.runJasmin(jasminResult.getJasminCode());
+    // }
 
     // @Test
     // public void JasminSetAndPrintInline2() {
@@ -169,7 +153,6 @@ public class JasminTest {
 
         TestUtils.runJasmin(jasminCode);
     }
-
 
 
     //test/fixtures/public/cpf/4_jasmin/calls/PrintOtherClassInline.ollir

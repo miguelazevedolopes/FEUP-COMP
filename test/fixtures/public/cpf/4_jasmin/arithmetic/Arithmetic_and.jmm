@@ -5,7 +5,7 @@ class Arithmetic_and {
 		boolean a;
 
 		a = true && false;
-		
+
 		if(a) {
 			io.print(1);
 		} else {

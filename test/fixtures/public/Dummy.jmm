@@ -3,20 +3,15 @@ class Dummy {
     int y;
     int x;
     public static void main(String[] args) {
-        int a;
-        int[] b;
-        Dummy c;
-        c = new Dummy();
-        a = 1;
-        b = new int[5];
-        a = 10 + b[3+a] * c.foo( c.anotherFunc(a) * 5 );
+        boolean a;
+        a = true;
+        a = !a;
+        if(a){
+	        ioPlus.printResult(1);
+        }
+	    else{
+	        ioPlus.printResult(0);
+	    }
     }
 
-    public int anotherFunc(int n){
-        return n;
-    }
-
-    public int foo(int n){
-        return n;
-    }
 }
