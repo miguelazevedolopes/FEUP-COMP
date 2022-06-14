@@ -7,13 +7,13 @@
 (Names, numbers, self assessment, and contribution of the members of the group to the project according to:)
 
 
-NAME1: Ana Rita Antunes Ramada, NR1: 201904565, GRADE1: 17, CONTRIBUTION1: 25% <br>
-NAME2: Margarida Nazaré Pereira dos Santos, NR1: 201908209, GRADE2: 17, CONTRIBUTION1: 25% <br>
-NAME2: Maria Sofia Diogo Figueiredo, NR1: 201904675, GRADE3: 17, CONTRIBUTION1: 25% <br>
-NAME3: Miguel Azevedo Lopes, NR1: 201704590, GRADE4: 17, CONTRIBUTION1: 25% <br>
+NAME1: Ana Rita Antunes Ramada, NR1: 201904565, GRADE1: 18, CONTRIBUTION1: 25% <br>
+NAME2: Margarida Nazaré Pereira dos Santos, NR1: 201908209, GRADE2: 18, CONTRIBUTION1: 25% <br>
+NAME2: Maria Sofia Diogo Figueiredo, NR1: 201904675, GRADE3: 18, CONTRIBUTION1: 25% <br>
+NAME3: Miguel Azevedo Lopes, NR1: 201704590, GRADE4: 18, CONTRIBUTION1: 25% <br>
 
 
-GLOBAL Grade of the project: 17
+GLOBAL Grade of the project: 18
 
 
 **SUMMARY**: The tool compiles Jmm code into JVM code. It parses the code, analyses it semantically, generates intermediate ollir code 
@@ -28,20 +28,24 @@ and finally converts it into jasmin.
 
 
 
-**CODE GENERATION**: (describe how the code generation of your tool works and identify the possible problems your tool 
-has regarding code generation.)
+**CODE GENERATION**: 
+Everything was implemented as planned, excluding optimizations.<br>
+Ollir code is generated using a strategy that saves prefix code and actual code for each instruction.
+This facilitates the conversion to 3 address Ollir instructions.<br>
+Some optimizations are done while generating Ollir, such as constant folding and some optimization in "if else" statements.
 
 
 
 
 **PROS**:
 - The compiler is robust
-
-
+- Constant folding (with -o option)
+- Some dead code elimination on "if else" statements (with -o option)
 
 
 **CONS**: 
 - Not many optimizations
+- Ollir does not have minimal number of instructions for some cases
 
 
 
