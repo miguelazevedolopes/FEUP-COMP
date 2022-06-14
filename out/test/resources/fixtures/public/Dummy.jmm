@@ -8,7 +8,7 @@ class Dummy {
         Dummy c;
         c = new Dummy();
         a = 1;
-        b = new int[5];
+        b = new int[5+5];
         a = 10 + b[3+a] * c.foo( c.anotherFunc(a) * 5 );
     }
 
