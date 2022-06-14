@@ -23,7 +23,31 @@ and finally converts it into jasmin.
 
 
 
-**SEMANTIC ANALYSIS**: (Refer the semantic rules implemented by your tool.)
+**SEMANTIC ANALYSIS**: Our compiler verifies all the semantic rules listed in the project's specification. This includes:
+
+***Type Verification***
+
+- Verifies if variable names used in the code have a corresponding declaration, either as a local variable, a method parameter or a field of the class (if applicable). 
+
+- Checks if operands types are compatible with the operation (e.g. int + boolean is an error because + expects two integers.)   
+
+- Checks that arrays aren't used in arithmetic operations (e.g. array1 + array2 is an error) 
+
+- Checks if array access is done over an array 	  
+
+- Checks if array access index is an expression of type integer	  
+
+- Checks if type of the assignee is compatible with the assigned (an_int = a_bool is an error)  
+
+- Checks if expressions in conditions return a boolean (if(2+3) is an error)
+
+***Function Verification***
+
+- When calling methods of the class declared in the code, verifies if the types of arguments of the call are compatible with the types in the method declaration  
+
+- In case the method does not exist, verifies if the class extends another class and reports an error if it does not. If the class extends another class, it assumes the method exists in one of the super classes, and that it is being correctly called 
+
+- When calling methods that belong to other classes other than the class declared in the code, verifies if the classes are being imported 
 
 
 
