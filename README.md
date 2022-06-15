@@ -52,7 +52,7 @@ and finally converts it into jasmin.
 
 
 
-**CODE GENERATION**: 
+**CODE GENERATION**: <br>
 Everything was implemented as planned, excluding optimizations.<br>
 Ollir code is generated using a strategy that saves prefix code and actual code for each instruction.
 This facilitates the conversion to 3 address Ollir instructions.<br>
