@@ -58,8 +58,8 @@ Ollir code is generated using a strategy that saves prefix code and actual code 
 This facilitates the conversion to 3 address Ollir instructions.<br>
 Some optimizations are done while generating Ollir, such as constant folding and some optimization in "if else" statements.
 
-
-
+All jasmin basic structure is being generated, including the constructor, fields, methods and all possible operations.<br>
+Also, the instructions chosen for loading and storing variables were optimized, as well as the insttuctions used to load constants.
 
 **PROS**:
 - The compiler is robust
