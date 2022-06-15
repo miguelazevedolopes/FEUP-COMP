@@ -8,9 +8,9 @@
 
 
 NAME1: Ana Rita Antunes Ramada, NR1: 201904565, GRADE1: 18, CONTRIBUTION1: 25% <br>
-NAME2: Margarida Nazaré Pereira dos Santos, NR1: 201908209, GRADE2: 18, CONTRIBUTION2: 25% <br>
-NAME3: Maria Sofia Diogo Figueiredo, NR1: 201904675, GRADE3: 18, CONTRIBUTION3: 25% <br>
-NAME4: Miguel Azevedo Lopes, NR1: 201704590, GRADE4: 18, CONTRIBUTION4: 25% <br>
+NAME2: Margarida Nazaré Pereira dos Santos, NR2: 201908209, GRADE2: 18, CONTRIBUTION2: 25% <br>
+NAME3: Maria Sofia Diogo Figueiredo, NR3: 201904675, GRADE3: 18, CONTRIBUTION3: 25% <br>
+NAME4: Miguel Azevedo Lopes, NR4: 201704590, GRADE4: 18, CONTRIBUTION4: 25% <br>
 
 
 GLOBAL Grade of the project: 18
