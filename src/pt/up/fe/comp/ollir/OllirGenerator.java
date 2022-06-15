@@ -314,9 +314,13 @@ public class OllirGenerator extends AJmmVisitor<Integer, Code> {
         }
         Code thisCode = new Code();
         var varname = node.get("name");
-        //TODO  check if import
+        for (var i = 0; i <symbolTable.getParameters(methodSignature).size();i++){
+            var param = symbolTable.getParameters(methodSignature).get(i);
+            if(param.getName().equals(node.get("name")))
+                thisCode.code += "$" + (i+1) + ".";
+        }
 
-        thisCode.code = varname;
+        thisCode.code += varname;
         if(symbolTable.isArray(methodSignature,varname)){
             thisCode.code += ".array";
         }
