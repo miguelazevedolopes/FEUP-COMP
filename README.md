@@ -1,7 +1,6 @@
 # Compilers Project
 
-The tool compiles Jmm code into JVM code. It parses the code, analyses it semantically, generates intermediate ollir code 
-and finally converts it into jasmin.
+A compiler tool that compiles J-- (a simplified version of Java) code into Java Virtual Machine (JVM) code. It parses the code, analyses it semantically, generates intermediate ollir code and finally converts it into jasmin.
 
 
 **SEMANTIC ANALYSIS**: Our compiler verifies all the semantic rules listed in the project's specification. This includes:
