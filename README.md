@@ -1,26 +1,7 @@
 # Compilers Project
 
-## GROUP: comp2022-2b
-
-
-
-(Names, numbers, self assessment, and contribution of the members of the group to the project according to:)
-
-
-NAME1: Ana Rita Antunes Ramada, NR1: 201904565, GRADE1: 18, CONTRIBUTION1: 25% <br>
-NAME2: Margarida Nazaré Pereira dos Santos, NR2: 201908209, GRADE2: 18, CONTRIBUTION2: 25% <br>
-NAME3: Maria Sofia Diogo Figueiredo, NR3: 201904675, GRADE3: 18, CONTRIBUTION3: 25% <br>
-NAME4: Miguel Azevedo Lopes, NR4: 201704590, GRADE4: 18, CONTRIBUTION4: 25% <br>
-
-
-GLOBAL Grade of the project: 18
-
-
-**SUMMARY**: The tool compiles Jmm code into JVM code. It parses the code, analyses it semantically, generates intermediate ollir code 
+The tool compiles Jmm code into JVM code. It parses the code, analyses it semantically, generates intermediate ollir code 
 and finally converts it into jasmin.
-
-
-
 
 
 **SEMANTIC ANALYSIS**: Our compiler verifies all the semantic rules listed in the project's specification. This includes:
@@ -125,3 +106,7 @@ The testing framework, which uses the class TestUtils located in ``src-lib/pt/up
 In order for the test class to find your implementations for the stages, it uses the file ``config.properties`` that is in root of your repository. It has four fields, one for each stage (i.e. ``ParserClass``, ``AnalysisClass``, ``OptimizationClass``, ``BackendClass``), and initially it only has one value, ``pt.up.fe.comp.SimpleParser``, associated with the first stage.
 
 During the development of your compiler you will update this file in order to setup the classes that implement each of the compilation stages.
+
+## Disclaimer
+
+This repository, and every other repository (I own) named in the format FEUP-COURSENAME on GitHub correspond to the projects I developed during my time as a student at Faculty of Engineering of University of Porto.
